@@ -967,7 +967,7 @@ function afkLoop(ts){
   // ---- enemies arrive as an army
   var hitX=frontX+30;AFKV.ens=AFKV.ens||[];
   if(!AFKV.ens.length){var A=AF(),TI=towerInfo(A.stage),boss=A.wave>=12,lv=S.lord?lordLevel():1,bv=Math.floor(lv/5)%5,cnt=boss?4:3+Math.floor(Math.random()*4);
-    for(var e=0;e<cnt;e++){var ty=boss&&e===cnt-1?"boss":Math.random()<0.2?"brute":"gob",mh=ty==="boss"?(TI.crown?520:320)*(1+0.1*Math.floor(lv/5)):ty==="brute"?130:60;
+    for(var e=0;e<cnt;e++){var ty=boss&&e===cnt-1?"boss":Math.random()<0.2?"brute":"gob",hs=1+0.12*Math.max(0,A.stage-1),mh=Math.round((ty==="boss"?(TI.crown?520:320)*(1+0.1*Math.floor(lv/5)):ty==="brute"?130:60)*hs);
       AFKV.ens.push({ty:ty,x:W+20+e*20,hp:mh,max:mh,die:0,atk:1.2+e*0.35,nm:ty==="boss"?TI.boss:null,crown:ty==="boss"&&TI.crown,bv:bv,v:Math.random()<0.4})}}
   var front=null;AFKV.ens.forEach(function(E,ix){var stop=hitX+ix*15+(E.ty==="boss"?10:0);if(E.die>0){E.die-=dt;return}if(E.x>stop&&AFKV.slowT<=0)E.x-=42*dt;if(!front)front=E});
   AFKV.ens=AFKV.ens.filter(function(E){return !(E.die<0)});
