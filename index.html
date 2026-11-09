@@ -1377,7 +1377,7 @@ function vHarta(){
 }
 
 function vLagi(){
-  var ob=S.settings.opening,h=H("Treasury (HLBB)","Opening balance","gold")+'<div class="card"><div class="row"><div class="grow"><div class="t">'+(ob?'<span class="m">'+money(n(ob.amt))+'</span>':"Not set")+'</div><div class="d muted">'+(ob?"As of "+fmtDate(ob.date):"Cash in your spending accounts when you start")+'</div></div><button class="btn sm" id="openBal">'+(ob?"Edit":"Set")+'</button></div></div>'+H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
+  var ob=S.settings.opening,TN=monthTotals(now.getFullYear(),now.getMonth()),h=H("Treasury (HLBB)","Balance now · opening","gold")+'<div class="card"><div class="row"><div class="grow"><div class="lbl">Balance now</div><div class="t" style="font-size:1.3em"><span class="m">'+money(TN.baki)+'</span></div><div class="d muted">'+(ob?'Opening <span class="m">'+money(n(ob.amt))+'</span> · as of '+fmtDate(ob.date)+' · then every entry moves it':"Set the cash in your spending account when you start")+'</div></div><button class="btn sm" id="openBal">'+(ob?"Edit":"Set")+'</button></div></div>'+H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
   if(!S.commits.length)h+='<div class="empty">Nothing yet. For example rent, electricity, internet, takaful, subscriptions.</div>';
   S.commits.slice().sort(function(a,b){return (n(a.day)||99)-(n(b.day)||99)}).forEach(function(c){
     h+='<div class="li" data-commit="'+c.id+'"><div class="ic">'+(CAT_AB[c.cat]||"OT")+'</div><div class="grow"><div class="t">'+esc(c.name)+'</div><div class="d">'+esc(c.cat)+' · '+(n(c.day)?"day "+c.day:"due —")+'</div></div><div class="a">'+money(n(c.amt))+'</div></div>'});
