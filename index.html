@@ -509,10 +509,10 @@ function fresh(){
     incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:null}],
     debts:DEBTS.map(function(n){return {id:uid(),name:n,bal:null,orig:null,min:null,day:null,rate:null}}),
     commits:[],
-    goals:[{id:"saving",name:"Main Army",target:null,start:null},{id:"ef",name:"Garrison",target:null,start:null}],
+    goals:[{id:"saving",name:"Main Army (GX Bank)",target:null,start:null},{id:"ef",name:"Garrison (TnG)",target:null,start:null}],
     quests:{},tx:[]};
 }
-function migrate(d){
+function migrate(d){if(d&&d.goals)d.goals.forEach(function(g){if(g.id==="saving"&&g.name==="Main Army")g.name="Main Army (GX Bank)";if(g.id==="ef"&&g.name==="Garrison")g.name="Garrison (TnG)"});
   if(!d.start)d.start=todayStr();
   d.settings=d.settings||{};if(d.settings.soldier==null)d.settings.soldier=10;
   d.quests=d.quests||{};
@@ -1255,7 +1255,7 @@ function vHome(){
   var T=monthTotals(cur.y,cur.m),pd=nextPayday(),isNow=cur.y===now.getFullYear()&&cur.m===now.getMonth();
   var ef=goalById("ef"),efS=ef?goalSaved(ef):0;
   var h=(window.JRPG?jrpgTop(T):'')+'<div class="hero"><div class="sys-h"><span>[Day '+dayNo()+' · Dawn]</span><span>'+MON3[cur.m].toUpperCase()+' '+cur.y+'</span></div>'+
-    '<div class="lbl">Treasury · real balance</div>'+
+    '<div class="lbl">Treasury (HLBB) · real balance</div>'+
     '<div class="big m">'+coin(T.baki,true)+'</div><div class="bigrm m">'+rm(T.baki,true)+'</div>'+
     '<div class="lines">'+
       (T.fromArmy?'<div><span>Paid from armies</span><span class="cn m">+'+coin(T.fromArmy)+'</span></div>':'')+(T.carry?'<div><span>Carried in</span><span class="cn m">'+coin(T.carry,true)+'</span></div>':'')+'<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
@@ -1377,7 +1377,7 @@ function vHarta(){
 }
 
 function vLagi(){
-  var ob=S.settings.opening,h=H("Treasury","Opening balance","gold")+'<div class="card"><div class="row"><div class="grow"><div class="t">'+(ob?'<span class="m">'+money(n(ob.amt))+'</span>':"Not set")+'</div><div class="d muted">'+(ob?"As of "+fmtDate(ob.date):"Cash in your spending accounts when you start")+'</div></div><button class="btn sm" id="openBal">'+(ob?"Edit":"Set")+'</button></div></div>'+H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
+  var ob=S.settings.opening,h=H("Treasury (HLBB)","Opening balance","gold")+'<div class="card"><div class="row"><div class="grow"><div class="t">'+(ob?'<span class="m">'+money(n(ob.amt))+'</span>':"Not set")+'</div><div class="d muted">'+(ob?"As of "+fmtDate(ob.date):"Cash in your spending accounts when you start")+'</div></div><button class="btn sm" id="openBal">'+(ob?"Edit":"Set")+'</button></div></div>'+H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
   if(!S.commits.length)h+='<div class="empty">Nothing yet. For example rent, electricity, internet, takaful, subscriptions.</div>';
   S.commits.slice().sort(function(a,b){return (n(a.day)||99)-(n(b.day)||99)}).forEach(function(c){
     h+='<div class="li" data-commit="'+c.id+'"><div class="ic">'+(CAT_AB[c.cat]||"OT")+'</div><div class="grow"><div class="t">'+esc(c.name)+'</div><div class="d">'+esc(c.cat)+' · '+(n(c.day)?"day "+c.day:"due —")+'</div></div><div class="a">'+money(n(c.amt))+'</div></div>'});
@@ -1444,7 +1444,7 @@ function txSheet(opts){
       var dd=debtById(st.debtId);if(dd)h+='<div class="hint">HP now: '+rm(n(dd.bal))+(n(dd.min)?' · monthly '+rm(dd.min):'')+'. The strike lowers HP automatically.</div>'}
     if(st.type==="save"){h+='<div class="chips">'+S.goals.map(function(g){return '<button class="chipb'+(st.goalId===g.id?" on":"")+'" data-goal="'+g.id+'">'+esc(g.name)+'</button>'}).join("")+'</div><div class="pills">'+[[1,"Recruit"],[-1,"Withdraw"]].map(function(p){return '<button class="pill'+(st.dir===p[0]?" on":"")+'" data-dir="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
       if(st.goalId==="ef"&&st.dir<0)h+='<div class="redpanel">[Warning: the Garrison is your Treasury floor]<br>Withdraw only after a council decision, my lord.</div>'}
-    if(st.type==="out"||st.type==="debt"){h+='<div class="lbl" style="margin-bottom:6px">Paid from</div><div class="chips">'+[["","Treasury"]].concat(S.goals.map(function(g){return [g.id,g.name]})).map(function(p){return '<button class="chipb'+((st.acct||"")===p[0]?" on":"")+'" data-acct="'+p[0]+'">'+esc(p[1])+'</button>'}).join("")+'</div>';
+    if(st.type==="out"||st.type==="debt"){h+='<div class="lbl" style="margin-bottom:6px">Paid from</div><div class="chips">'+[["","Treasury (HLBB)"]].concat(S.goals.map(function(g){return [g.id,g.name]})).map(function(p){return '<button class="chipb'+((st.acct||"")===p[0]?" on":"")+'" data-acct="'+p[0]+'">'+esc(p[1])+'</button>'}).join("")+'</div>';
       if(st.acct==="ef")h+='<div class="redpanel">[Paying from the Garrison, your Treasury floor]<br>The Garrison loses soldiers, my lord.</div>'}
     h+='<div class="grid2"><div class="field"><label class="lbl" for="fDate">Date</label><input id="fDate" type="date" value="'+esc(keep.date)+'"></div><div class="field"><label class="lbl" for="fNote">Note</label><input id="fNote" placeholder="e.g. Nasi lemak" value="'+esc(keep.note)+'"></div></div>';
     h+='<div class="row"><button class="btn grow" id="fSave">Save</button>'+(ex?'<button class="btn r" id="fDel">Delete</button>':'')+'</div>';
