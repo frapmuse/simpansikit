@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>SimpanSikit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SimpanSikit">
+<meta name="theme-color" content="#02060d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* Layout: one night look (Moon Ledger). Moonlit bay header, system panels with thick cartoon outlines, Luna's speech bubble, coin amounts (g/s/c) with RM underneath, floating gold coin to log, bottom bar of five rooms */
+:root{
+  color-scheme:dark;
+  --bg:#141842; --bg2:#1b2158; --card:#222a66; --card2:#2a3377; --ink:#eef0fb; --silver:#c9cee8; --muted:#9ea6d4; --line:#38428a;
+  --ol:#070923;
+  --sys:#3d7dff; --sys2:#2557d6; --glow:#8fd8ff;
+  --gold:#ffc83d; --gold-d:#c98d0c; --teal:#22c3b0; --green:#43d17f; --red:#ff5d55; --red-d:#b8302a; --purple:#a77bff;
+  --pop:0 4px 0 var(--ol);
+  --f-display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,sans-serif;
+  --f-num:"Chakra Petch",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;-webkit-tap-highlight-color:transparent}
+body{background-image:radial-gradient(rgba(255,255,255,.05) 1.4px,transparent 1.5px);background-size:20px 20px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#0d1035}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.num,.cn{font-family:var(--f-num);font-weight:700;font-variant-numeric:tabular-nums}
+.rmv{display:block;font-size:.72em;font-weight:700;color:var(--muted);font-family:var(--f-num);font-variant-numeric:tabular-nums}
+body.hide .m{filter:blur(8px)}
+.wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 130px}
+
+/* header */
+.top{background:linear-gradient(180deg,#0d1035,#1c2a7a);position:relative;overflow:hidden}
+.top .wrap{padding-block:14px 60px;position:relative;z-index:2}
+.stars{position:absolute;inset:0;background-image:radial-gradient(2px 2px at 12% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 35% 15%,#fffc,transparent),radial-gradient(2px 2px at 58% 42%,#fff9,transparent),radial-gradient(1.5px 1.5px at 8% 72%,#fffa,transparent),radial-gradient(1.5px 1.5px at 46% 78%,#fff8,transparent),radial-gradient(1.5px 1.5px at 70% 12%,#fff9,transparent)}
+.scene{position:absolute;right:0;bottom:8px;width:270px;max-width:66%;z-index:1}
+.waves{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:34px;z-index:3}
+.waves .w1{fill:#2f5fc0;stroke:var(--ol);stroke-width:2.5}
+.waves .w2{fill:var(--bg);stroke:var(--ol);stroke-width:3}
+.hrow{display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--f-display);font-size:36px;line-height:1;color:var(--gold);-webkit-text-stroke:1.5px var(--ol);text-shadow:0 3px 0 var(--ol);letter-spacing:.5px}
+.brand small{display:block;font-family:var(--f-num);font-size:12px;font-weight:700;color:var(--silver);letter-spacing:.16em;text-transform:uppercase;margin-top:6px;text-shadow:none;-webkit-text-stroke:0}
+.hrow .sp{flex:1}
+.ibtn{width:44px;height:44px;border-radius:14px;border:3px solid var(--ol);background:var(--sys);color:#fff;display:grid;place-items:center;box-shadow:0 3px 0 var(--ol)}
+.ibtn svg{width:22px;height:22px}
+.month{display:inline-flex;align-items:center;gap:6px;margin-top:14px}
+.month button{border:3px solid var(--ol);background:var(--gold);color:var(--ol);width:38px;height:38px;border-radius:12px;font-size:20px;font-weight:900;box-shadow:0 3px 0 var(--ol);line-height:1}
+.month b{font-family:var(--f-display);font-weight:400;font-size:20px;min-width:150px;text-align:center;text-shadow:0 2px 0 var(--ol)}
+
+/* headings, cards */
+h2{font-family:var(--f-display);font-weight:400;font-size:25px;line-height:1.05;margin:26px 0 10px;text-wrap:balance}
+h2 small{display:block;font-family:var(--f-num);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;color:var(--glow)}
+h2.k-gold small{color:var(--gold)} h2.k-teal small{color:var(--teal)} h2.k-green small{color:var(--green)} h2.k-red small{color:var(--red)} h2.k-purple small{color:var(--purple)}
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:var(--pop);border:3px solid var(--ol);position:relative}
+.stack{display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:11.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.pos{color:var(--green)} .neg{color:var(--red)} .goldt{color:var(--gold)}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.btn{border:3px solid var(--ol);border-radius:14px;padding:11px 16px;font-weight:900;background:var(--sys);color:#fff;box-shadow:0 4px 0 var(--ol);min-height:48px}
+.btn.y{background:var(--gold);color:var(--ol)}
+.btn.g{background:var(--card2);color:var(--ink)}
+.btn.r{background:var(--red);color:#fff}
+.btn.sm{min-height:40px;padding:6px 12px;border-radius:12px;font-size:14px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ol)}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:12px;font-weight:700}
+.hint{font-size:13px;color:var(--muted);font-weight:700;margin:-4px 0 12px}
+
+/* Luna */
+.luna{display:flex;gap:10px;align-items:flex-end;margin-top:14px}
+.luna svg{width:54px;height:54px;flex:none}
+.bubble{position:relative;background:var(--card2);border:3px solid var(--ol);border-radius:18px 18px 18px 6px;padding:10px 12px;font-weight:700;font-size:14.5px;box-shadow:var(--pop);flex:1;min-width:0}
+.bubble b{display:block;font-family:var(--f-num);font-size:11px;letter-spacing:.14em;color:var(--purple);text-transform:uppercase;margin-bottom:2px}
+.bubble.warn{background:color-mix(in srgb,var(--red) 22%,var(--card))}
+.bubble .pl{font-family:var(--f-num);font-size:13px;color:#ffb3ae;margin-bottom:4px}
+
+/* hero: Dawn panel */
+.hero{background:linear-gradient(180deg,var(--sys),var(--sys2));color:#fff;border-radius:22px;padding:14px 16px 16px;box-shadow:0 5px 0 var(--ol),0 0 0 4px color-mix(in srgb,var(--glow) 35%,transparent);margin-top:-32px;position:relative;z-index:4;border:3px solid var(--ol)}
+.sys-h{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-num);font-weight:700;font-size:12.5px;letter-spacing:.1em;color:var(--glow);border-bottom:2px dashed rgba(143,216,255,.5);padding-bottom:8px;margin-bottom:10px}
+.hero .lbl{color:#d6e6ff}
+.hero .big{font-family:var(--f-num);font-weight:700;font-size:38px;line-height:1.05;margin:2px 0 0;color:var(--gold);text-shadow:0 3px 0 var(--ol);-webkit-text-stroke:1px var(--ol)}
+.hero .bigrm{font-family:var(--f-num);font-weight:700;color:#cfe0ff;font-size:14px;margin-bottom:6px}
+.lines{font-family:var(--f-num);font-weight:600;font-size:14px;background:rgba(5,12,60,.35);border-radius:14px;padding:10px 12px;border:2px solid rgba(143,216,255,.3);display:flex;flex-direction:column;gap:4px}
+.lines div{display:flex;justify-content:space-between;gap:10px}
+.lines span:first-child{color:#cfe0ff}
+.lines .tot{border-top:2px dashed rgba(143,216,255,.45);padding-top:6px;margin-top:2px;color:var(--gold)}
+.lines .tot span:first-child{color:var(--gold)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.tile{background:var(--card);border:3px solid var(--ol);border-radius:18px;padding:13px;box-shadow:var(--pop);min-width:0}
+.tile .v{font-family:var(--f-num);font-weight:700;font-size:21px;margin-top:4px;line-height:1.1}
+.tile .v.t{font-family:var(--f-display);font-weight:400;font-size:23px}
+.tile .s{font-size:12.5px;color:var(--muted);margin-top:4px;font-weight:700}
+
+/* realm */
+.realm{display:flex;gap:14px;align-items:center}
+.realm svg{width:64px;height:64px;flex:none}
+.realm .tier{font-family:var(--f-display);font-size:26px;line-height:1;color:var(--gold)}
+.bar{height:16px;border-radius:99px;background:var(--bg);overflow:hidden;border:2.5px solid var(--ol)}
+.bar i{display:block;height:100%;background:var(--sys)}
+.bar.gold i{background:linear-gradient(180deg,#ffe07a,var(--gold))}
+.bar.green i{background:var(--green)}
+.bar.teal i{background:var(--teal)}
+
+/* quests */
+.q{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:2px dashed var(--line)}
+.q:last-child{border-bottom:0}
+.check{width:34px;height:34px;border-radius:11px;border:3px solid var(--ol);background:var(--bg);display:grid;place-items:center;flex:none;color:#fff;font-weight:900}
+.check.on{background:var(--teal)}
+.check.auto{cursor:default}
+.q .t{font-weight:800}
+.q .d{font-size:12.5px;color:var(--muted);font-weight:700}
+
+/* lists */
+.li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:2px dashed var(--line)}
+.li:last-child{border-bottom:0}
+.ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-family:var(--f-display);font-size:15px;flex:none;background:var(--gold);color:var(--ol);border:2.5px solid var(--ol)}
+.ic.in{background:var(--green)}
+.ic.debt{background:var(--red);color:#fff}
+.ic.save{background:var(--purple);color:#fff}
+.li .t{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .d{font-size:13px;color:var(--muted);font-weight:700}
+.li .a{white-space:nowrap;text-align:right}
+.dayhead{display:flex;justify-content:space-between;font-family:var(--f-num);font-weight:700;font-size:13px;letter-spacing:.06em;color:var(--muted);margin:16px 4px 5px}
+
+/* pills */
+.pills{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.pill{border:3px solid var(--ol);border-radius:999px;padding:7px 14px;font-weight:900;background:var(--card);color:var(--ink);white-space:nowrap;font-size:14px;box-shadow:0 3px 0 var(--ol)}
+.pill.on{background:var(--sys);color:#fff}
+
+/* categories */
+.catrow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin:10px 0;font-weight:800;font-size:14px}
+.catrow .bar{grid-column:1/-1;height:14px}
+
+/* trend */
+.trend{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:10px;position:relative}
+.trend .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;min-width:0}
+.trend .b{width:100%;max-width:34px;border-radius:9px 9px 4px 4px;background:var(--green);border:2.5px solid var(--ol)}
+.trend .b.none{background:var(--line);height:6px;border-width:0}
+.trend .x{font-size:11px;font-weight:900;color:var(--muted)}
+.trend .est{position:absolute;left:0;right:0;border-top:3px dashed var(--gold)}
+
+/* foes */
+.foes{display:flex;flex-direction:column;gap:12px}
+.foe{background:var(--card);border:3px solid var(--ol);border-radius:20px;padding:12px 14px;text-align:left;box-shadow:var(--pop);position:relative;width:100%;overflow:hidden;color:var(--ink)}
+.foe-top{display:flex;align-items:center;gap:12px}
+.foe-top svg{width:48px;height:48px;flex:none}
+.foe-n{font-family:var(--f-display);font-size:19px;line-height:1.1}
+.foe-m{font-size:12.5px;font-weight:700;color:var(--muted);margin-top:2px}
+.hpl{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--f-num);font-weight:700;font-size:13px;margin:10px 0 4px;gap:8px}
+.hpl>span:first-child{color:var(--red)}
+.hp{height:16px;border-radius:99px;background:var(--bg);border:2.5px solid var(--ol);overflow:hidden}
+.hp i{display:block;height:100%;background:linear-gradient(180deg,#ff8a80,var(--red))}
+.foe .tag{background:var(--gold);color:var(--ol);border:2px solid var(--ol);font-size:12px;font-weight:900;border-radius:99px;padding:2px 8px;flex:none;white-space:nowrap}
+.foe.done{background:color-mix(in srgb,var(--green) 14%,var(--card))}
+.foe.done .foe-top svg{filter:grayscale(1);opacity:.45}
+.seal{position:absolute;right:14px;top:12px;transform:rotate(-12deg);background:var(--green);color:var(--ol);border:3px solid var(--ol);font-family:var(--f-display);font-size:18px;padding:4px 10px;border-radius:8px;box-shadow:0 3px 0 var(--ol)}
+
+/* armies */
+.army{display:flex;gap:14px;align-items:center}
+.army svg{width:70px;height:78px;flex:none}
+.army .hc{font-family:var(--f-num);font-weight:700;font-size:26px;line-height:1.05}
+.floor{display:inline-block;background:var(--red);color:#fff;border:2px solid var(--ol);border-radius:99px;font-size:11px;font-weight:900;padding:1px 8px;letter-spacing:.06em}
+
+/* banner */
+.ping{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:70;width:min(92%,440px);background:linear-gradient(180deg,#ffe07a,var(--gold));color:var(--ol);border:3px solid var(--ol);border-radius:16px;box-shadow:0 5px 0 var(--ol);padding:10px 14px;font-family:var(--f-num);font-weight:700;font-size:14px;text-align:center}
+.ping b{display:block;font-family:var(--f-display);font-weight:400;font-size:24px}
+
+/* nav */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));pointer-events:none}
+nav.bottom .in{max-width:520px;margin:0 auto;background:var(--card);border:3px solid var(--ol);border-radius:24px;box-shadow:0 5px 0 var(--ol);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;pointer-events:auto}
+nav.bottom button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0;border-radius:16px;font-size:11px;font-weight:900;color:var(--muted)}
+nav.bottom button svg{width:28px;height:28px}
+nav.bottom button.on{background:var(--sys);color:#fff}
+.fab{position:fixed;right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:21;width:68px;height:68px;border-radius:50%;border:3.5px solid var(--ol);background:radial-gradient(circle at 35% 30%,#ffe9a0,var(--gold) 55%,var(--gold-d));color:var(--ol);box-shadow:0 5px 0 var(--ol);display:grid;place-items:center}
+.fab::after{content:"";position:absolute;inset:7px;border-radius:50%;border:2.5px dashed rgba(7,9,35,.45)}
+.fab svg{width:32px;height:32px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(4,5,20,.6);z-index:40}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--bg2);border:3px solid var(--ol);border-bottom:0;border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet .in{max-width:520px;margin:0 auto}
+.grab{width:48px;height:6px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+.sheet h3{font-family:var(--f-display);font-weight:400;font-size:28px;margin:4px 0 12px}
+.amt{display:flex;align-items:center;gap:8px;background:var(--card);border:3px solid var(--ol);border-radius:18px;padding:8px 14px;box-shadow:0 3px 0 var(--ol)}
+.amt span{font-family:var(--f-display);color:var(--muted);font-size:22px}
+.amt input{border:0;background:none;outline:none;font-family:var(--f-num);font-weight:700;font-size:34px;width:100%;min-width:0}
+.coinprev{font-family:var(--f-num);font-weight:700;color:var(--gold);margin:6px 4px 12px;min-height:20px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field input{background:var(--card);border:3px solid var(--ol);border-radius:14px;padding:10px 12px;font-size:16px;width:100%;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chipb{border:2.5px solid var(--ol);background:var(--card);border-radius:14px;padding:8px 12px;font-weight:900;font-size:14px;box-shadow:0 2px 0 var(--ol)}
+.chipb.on{background:var(--gold);color:var(--ol)}
+.redpanel{background:color-mix(in srgb,var(--red) 22%,var(--card));border:3px solid var(--ol);border-radius:14px;padding:10px 12px;font-family:var(--f-num);font-weight:700;font-size:13.5px;margin-bottom:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(180px + env(safe-area-inset-bottom,0px));background:var(--sys);color:#fff;border:3px solid var(--ol);box-shadow:0 4px 0 var(--ol);padding:10px 16px;border-radius:14px;font-family:var(--f-num);font-weight:700;z-index:60;font-size:14px;max-width:90%}
+textarea.dump{width:100%;min-height:120px;font-family:var(--f-num);font-size:12px;border-radius:12px;border:3px solid var(--ol);background:var(--card);padding:10px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(40px);opacity:.5}}.ping{animation:drop .35s ease-out}@keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}}
+
+
+/* ===== Holo System HUD skin ===== */
+:root{
+  --bg:#040a14; --bg2:#081426; --card:rgba(12,38,66,.55); --card2:rgba(18,52,88,.7); --ink:#e6f7ff; --silver:#bfe6ff; --muted:#7fb4d6; --line:rgba(95,212,255,.25);
+  --ol:#5fd4ff; --cy:#5fd4ff; --cyd:rgba(95,212,255,.6); --sys:#5fd4ff; --sys2:#1b6fa8; --glow:#5fd4ff;
+  --gold:#ffd166; --green:#3dffa8; --red:#ff4d6d; --purple:#b18cff; --teal:#3df0e0;
+  --f-display:"Rajdhani",system-ui,sans-serif; --f-body:"Rajdhani",system-ui,sans-serif; --f-num:"Share Tech Mono",ui-monospace,monospace;
+  --hglow:0 0 0 1px rgba(95,212,255,.55),0 0 18px rgba(95,212,255,.18),inset 0 0 24px rgba(95,212,255,.08);
+}
+html,body{font-family:var(--f-body);font-size:17px;font-weight:600}
+body{background-color:var(--bg);background-image:linear-gradient(rgba(95,212,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(95,212,255,.06) 1px,transparent 1px),radial-gradient(ellipse at 50% 0%,rgba(27,111,168,.35),transparent 60%);background-size:28px 28px,28px 28px,100% 700px;background-repeat:repeat,repeat,no-repeat}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+body::before{background:#02060d}
+.num,.cn,.rmv{font-family:var(--f-num);font-weight:400;letter-spacing:0}
+.top{background:linear-gradient(180deg,#02060d,#061a30)}
+.stars{opacity:.5}
+.scene{display:none}
+.hring{position:absolute;right:18px;top:16px;width:96px;height:96px;z-index:1;border-radius:50%;border:2px solid var(--cyd);box-shadow:0 0 18px rgba(95,212,255,.35),inset 0 0 18px rgba(95,212,255,.2)}
+.hring::before{content:"";position:absolute;inset:12px;border-radius:50%;border:1px dashed rgba(95,212,255,.5)}
+.hring::after{content:"";position:absolute;left:30px;top:22px;width:44px;height:44px;border-radius:50%;box-shadow:-10px 4px 0 0 #bfe6ff;filter:drop-shadow(0 0 6px #5fd4ff)}
+@media (prefers-reduced-motion:no-preference){.hring::before{animation:spin 18s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}}
+.waves{display:none}
+.top .wrap{padding-block:16px 44px}
+.top{border-bottom:1px solid var(--cyd);box-shadow:0 1px 18px rgba(95,212,255,.25)}
+.brand{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:32px;letter-spacing:.06em;color:#e6f7ff;-webkit-text-stroke:0;text-shadow:0 0 12px rgba(95,212,255,.8)}
+.brand small{font-family:var(--f-num);font-size:11px;color:var(--cy);letter-spacing:.22em}
+.ibtn,.month button{border:1px solid var(--cyd);background:rgba(95,212,255,.08);color:var(--cy);box-shadow:0 0 10px rgba(95,212,255,.2);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.month b{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:16px;text-shadow:0 0 10px rgba(95,212,255,.6)}
+h2{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#e6f7ff;text-shadow:0 0 10px rgba(95,212,255,.45);margin-top:28px}
+h2 small{font-family:var(--f-num);font-weight:400;font-size:11px;letter-spacing:.2em}
+
+.lbl{font-family:var(--f-num);font-weight:400;font-size:11px;letter-spacing:.16em;color:var(--muted)}
+.card,.tile,.foe,.bubble,.hero{background:linear-gradient(180deg,rgba(18,56,94,.62),rgba(6,22,40,.72));border:0;box-shadow:var(--hglow);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card::before,.tile::before,.hero::before{content:"";position:absolute;left:0;top:0;width:28px;height:2px;background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.hero{margin-top:-18px;padding:14px 16px 16px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:0;right:0;height:40%;top:-40%;background:linear-gradient(180deg,transparent,rgba(95,212,255,.10),transparent);pointer-events:none}
+@media (prefers-reduced-motion:no-preference){.hero::after{animation:sweep 5s linear infinite}@keyframes sweep{to{top:110%}}}
+.sys-h{font-family:var(--f-num);font-weight:400;color:var(--cy);border-bottom:1px solid var(--cyd);letter-spacing:.14em}
+.sys-h span:first-child::before{content:"◈ SYSTEM  ";}
+.hero .lbl{color:var(--muted)}
+.hero .big{font-family:var(--f-num);font-weight:400;font-size:38px;color:var(--gold);-webkit-text-stroke:0;text-shadow:0 0 14px rgba(255,209,102,.6)}
+.hero .bigrm{color:var(--silver);font-family:var(--f-num);font-weight:400}
+.lines{background:rgba(2,10,20,.5);border:1px solid var(--line);font-family:var(--f-num);font-weight:400;font-size:14px;border-radius:0}
+.lines span:first-child{color:var(--silver)}
+.lines .tot{border-top:1px dashed var(--cyd)}
+.luna svg{width:56px;height:56px;filter:drop-shadow(0 0 8px rgba(95,212,255,.7))}
+.bubble{font-weight:600;font-size:16px}
+.bubble b{font-family:var(--f-num);font-weight:400;color:var(--purple);letter-spacing:.2em}
+.bubble.warn{background:linear-gradient(180deg,rgba(110,20,40,.6),rgba(40,6,16,.75));box-shadow:0 0 0 1px rgba(255,77,109,.7),0 0 18px rgba(255,77,109,.25)}
+.bubble .pl,.redpanel{font-family:var(--f-num);font-weight:400}
+.tile .v{font-family:var(--f-num);font-weight:400;font-size:20px}
+.tile .v.pos{color:var(--green);text-shadow:0 0 10px rgba(61,255,168,.4)}
+.tile .v.t{font-family:"Rajdhani",sans-serif;font-weight:700;color:var(--gold);text-shadow:0 0 10px rgba(255,209,102,.4)}
+.tile .s{font-weight:600}
+.realm svg{filter:drop-shadow(0 0 6px rgba(95,212,255,.5))}
+.realm .tier{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);text-shadow:0 0 12px rgba(255,209,102,.5)}
+.bar,.hp{height:10px;background:rgba(2,10,20,.8);border:1px solid var(--cyd);border-radius:0;background-image:repeating-linear-gradient(90deg,transparent 0 9px,rgba(95,212,255,.18) 9px 10px)}
+.bar i{background:var(--cy);box-shadow:0 0 10px var(--cy)}
+.bar.gold i{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.bar.green i{background:var(--green);box-shadow:0 0 10px var(--green)}
+.bar.teal i{background:var(--teal);box-shadow:0 0 10px var(--teal)}
+.hp{border-color:rgba(255,77,109,.7)}
+.hp i{background:var(--red);box-shadow:0 0 10px var(--red)}
+.hpl{font-family:var(--f-num);font-weight:400}
+.check{border:1px solid var(--cyd);background:rgba(2,10,20,.7);border-radius:0;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);color:#02060d}
+.check.on{background:var(--teal);box-shadow:0 0 12px var(--teal)}
+.li,.q{border-bottom:1px solid var(--line)}
+.q .t,.li .t{font-weight:700;font-size:17px}
+.ic{border:1px solid var(--cyd);background:rgba(95,212,255,.1);color:var(--cy);border-radius:0;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:var(--f-num);font-weight:400;font-size:13px}
+.ic.in{color:var(--green);border-color:var(--green);background:rgba(61,255,168,.1)}
+.ic.debt{color:var(--red);border-color:var(--red);background:rgba(255,77,109,.1)}
+.ic.save{color:var(--purple);border-color:var(--purple);background:rgba(177,140,255,.1)}
+.dayhead{font-family:var(--f-num);font-weight:400;letter-spacing:.14em}
+.foe{box-shadow:0 0 0 1px rgba(255,77,109,.55),0 0 16px rgba(255,77,109,.15),inset 0 0 22px rgba(255,77,109,.06)}
+.foe-top svg{filter:drop-shadow(0 0 6px rgba(255,77,109,.8))}
+.foe-n{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:19px;letter-spacing:.04em}
+.foe .tag{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:0;font-family:var(--f-num);font-weight:400;box-shadow:0 0 8px rgba(255,209,102,.3)}
+.foe.done{box-shadow:0 0 0 1px rgba(61,255,168,.6),0 0 16px rgba(61,255,168,.2)}
+.seal{background:transparent;color:var(--green);border:2px solid var(--green);border-radius:0;box-shadow:0 0 12px rgba(61,255,168,.5);font-family:var(--f-num);font-weight:400;letter-spacing:.12em}
+.army svg{filter:drop-shadow(0 0 6px rgba(177,140,255,.6))}
+.army .hc{font-family:var(--f-num);font-weight:400}
+.floor{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:0;font-family:var(--f-num);font-weight:400}
+.btn{border:1px solid var(--cyd);border-radius:0;background:rgba(95,212,255,.12);color:var(--cy);box-shadow:0 0 12px rgba(95,212,255,.18);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.btn.y{background:var(--gold);color:#02060d;border-color:var(--gold);box-shadow:0 0 14px rgba(255,209,102,.45)}
+.btn.g{background:rgba(95,212,255,.06);color:var(--ink)}
+.btn.r{background:rgba(255,77,109,.18);color:var(--red);border-color:var(--red)}
+.btn:active{transform:none;filter:brightness(1.3)}
+.pill,.chipb{border:1px solid var(--cyd);border-radius:0;background:rgba(95,212,255,.06);box-shadow:none;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em}
+.pill.on,.chipb.on{background:var(--cy);color:#02060d;box-shadow:0 0 12px rgba(95,212,255,.5)}
+nav.bottom .in{background:rgba(4,14,26,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0;border-radius:0;box-shadow:0 0 0 1px var(--cyd),0 0 20px rgba(95,212,255,.2);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+nav.bottom button{color:var(--muted);font-family:var(--f-num);font-weight:400;letter-spacing:.08em;font-size:10px;border-radius:0}
+nav.bottom button.on{background:rgba(95,212,255,.12);color:var(--cy);box-shadow:inset 0 -2px 0 var(--cy);text-shadow:0 0 8px var(--cy)}
+nav.bottom button.on svg{filter:drop-shadow(0 0 6px var(--cy))}
+.fab{border:0;border-radius:0;background:radial-gradient(circle,rgba(255,209,102,.95),#c99a1e);color:#02060d;box-shadow:none;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);filter:drop-shadow(0 0 12px rgba(255,209,102,.7))}
+.fab::after{display:none}
+.sheet{background:linear-gradient(180deg,#071a2e,#040a14);border:0;border-top:1px solid var(--cy);box-shadow:0 -6px 30px rgba(95,212,255,.2)}
+.grab{background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.sheet h3{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e6f7ff;text-shadow:0 0 10px rgba(95,212,255,.5)}
+.amt,.field input,textarea.dump{border:1px solid var(--cyd);background:rgba(2,10,20,.8);border-radius:0;box-shadow:inset 0 0 12px rgba(95,212,255,.08)}
+.amt input{font-family:var(--f-num);font-weight:400;color:var(--gold)}
+.amt span{font-family:var(--f-num);color:var(--cy)}
+.coinprev{font-family:var(--f-num);font-weight:400}
+.redpanel{background:rgba(110,20,40,.5);border:1px solid var(--red);border-radius:0}
+.toast{background:rgba(4,14,26,.92);color:var(--cy);border:1px solid var(--cyd);border-radius:0;box-shadow:0 0 18px rgba(95,212,255,.35);font-family:var(--f-num);font-weight:400;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.ping{background:rgba(30,22,4,.92);color:var(--gold);border:1px solid var(--gold);border-radius:0;box-shadow:0 0 22px rgba(255,209,102,.45);font-family:var(--f-num);font-weight:400}
+.ping b{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.2em}
+.goldt{color:var(--gold)}
+html{padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="stars"></div><span class="hring"></span>
+  <svg class="scene" viewBox="0 0 230 130" aria-hidden="true"><circle cx="150" cy="58" r="40" fill="#f4f1ff" stroke="#070923" stroke-width="3"/><circle cx="166" cy="48" r="34" fill="#1c2a7a"/><circle cx="128" cy="66" r="4" fill="#dcd8f5"/><path d="M150 130 L176 92 Q196 84 214 92 L230 100 V130Z" fill="#3a4680" stroke="#070923" stroke-width="3" stroke-linejoin="round"/><path d="M180 86 Q198 74 216 86" fill="#2b9e6a" stroke="#070923" stroke-width="3"/><rect x="186" y="62" width="4" height="24" fill="#cfd3ea" stroke="#070923" stroke-width="2"/><rect x="195.5" y="62" width="4" height="24" fill="#cfd3ea" stroke="#070923" stroke-width="2"/><rect x="205" y="62" width="4" height="24" fill="#cfd3ea" stroke="#070923" stroke-width="2"/><path d="M176 64 Q197 56 218 64 L212 52 Q197 46 182 52Z" fill="#c9534a" stroke="#070923" stroke-width="3" stroke-linejoin="round"/><path d="M190 50 L197 40 L204 50" fill="#c9534a" stroke="#070923" stroke-width="3" stroke-linejoin="round"/><circle cx="197" cy="74" r="3.5" fill="#ffc83d"/><path d="M20 130 V70 M30 130 V60 M12 130 V82" stroke="#2b9e6a" stroke-width="5" stroke-linecap="round"/><path d="M20 70 q-10 -4 -14 -12 M30 60 q10 -4 14 -12 M12 82 q-8 -2 -10 -9 M30 80 q9 -3 12 -10" stroke="#2b9e6a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+  <div class="wrap">
+    <div class="hrow">
+      <div class="brand">SimpanSikit<small>Moon Ledger · Wangyue Bay</small></div>
+      <div class="sp"></div>
+      <button class="ibtn" id="eye" aria-label="Hide amounts"></button>
+    </div>
+    <div class="month">
+      <button id="mPrev" aria-label="Previous month">‹</button>
+      <b id="mLabel"></b>
+      <button id="mNext" aria-label="Next month">›</button>
+    </div>
+  </div>
+  <svg class="waves" viewBox="0 0 400 34" preserveAspectRatio="none"><path class="w1" d="M-10 12 Q20 2 50 12 T110 12 T170 12 T230 12 T290 12 T350 12 T410 12 V40 H-10Z"/><path class="w2" d="M-10 22 Q15 12 40 22 T90 22 T140 22 T190 22 T240 22 T290 22 T340 22 T390 22 T440 22 V40 H-10Z"/></svg>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<button class="fab" id="fab" aria-label="Log an entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<nav class="bottom"><div class="in" id="nav"></div></nav>
+<div id="layer"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="simpansikit.v1";
+var CATS=["Housing","Utilities & Internet","Car & Fuel","Food & Groceries","Lyla","Subscriptions","Insurance/Takaful","Sedekah","SB","Other"];
+var CAT_AB={"Housing":"HS","Utilities & Internet":"UT","Car & Fuel":"CR","Food & Groceries":"FD","Lyla":"LY","Subscriptions":"SU","Insurance/Takaful":"TK","Sedekah":"SD","SB":"SB","Other":"OT"};
+var OLDCAT={"Rumah":"Housing","Utiliti & Internet":"Utilities & Internet","Kereta & Minyak":"Car & Fuel","Makan & Dapur":"Food & Groceries","Anak Lyla":"Lyla","Langganan":"Subscriptions","Insurans/Takaful":"Insurance/Takaful","Lain-lain":"Other"};
+var DEBTS=["Atome PayLater","Atome i-Cash","TikTok PayLater","TikTok TrustFinancing-i","Grab PayLater","Ryt Credit PayLater","Atome Card","Boost PayLater"];
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var MON3=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var TIERS=[["Hamlet",0,5000],["Village",5000,20000],["Stronghold",20000,50000],["Town",50000,100000],["Citadel",100000,250000],["City",250000,500000],["County",500000,1000000],["Commandery",1000000,1500000],["Province",1500000,2000000],["Kingdom",2000000,5000000],["Empire",5000000,Infinity]];
+
+function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)}
+function pad(x){return (x<10?"0":"")+x}
+function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function todayStr(){return ymd(new Date())}
+function fresh(){
+  return {v:2,start:todayStr(),
+    settings:{hide:false,method:"snowball",extra:null,soldier:10,tier:null},
+    incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:null}],
+    debts:DEBTS.map(function(n){return {id:uid(),name:n,bal:null,orig:null,min:null,day:null,rate:null}}),
+    commits:[],
+    goals:[{id:"saving",name:"Main Army",target:null,start:null},{id:"ef",name:"Garrison",target:null,start:null}],
+    quests:{},tx:[]};
+}
+function migrate(d){
+  if(!d.start)d.start=todayStr();
+  d.settings=d.settings||{};if(d.settings.soldier==null)d.settings.soldier=10;
+  d.quests=d.quests||{};
+  (d.incomes||[]).forEach(function(i){if(i.name==="Gaji Perseni")i.name="Perseni salary";if(i.name==="Gaji PM")i.name="PM salary"});
+  (d.goals||[]).forEach(function(g){if(g.id==="saving"&&g.name==="Saving")g.name="Main Army";if(g.id==="ef"&&g.name==="Emergency Fund")g.name="Garrison"});
+  (d.tx||[]).forEach(function(t){if(t.cat&&OLDCAT[t.cat])t.cat=OLDCAT[t.cat]});
+  (d.commits||[]).forEach(function(c){if(c.cat&&OLDCAT[c.cat])c.cat=OLDCAT[c.cat]});
+  d.v=2;return d;
+}
+var storageOK=true,S;
+try{var raw=localStorage.getItem(KEY);S=raw?migrate(JSON.parse(raw)):fresh()}catch(e){storageOK=false;S=fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));storageOK=true}catch(e){storageOK=false}}
+
+var now=new Date(),cur={y:now.getFullYear(),m:now.getMonth()},tab="home",recFilter="all";
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function n(v){return (v===null||v===undefined||v==="")?null:Number(v)}
+function rm(v,sign){if(v===null||v===undefined||isNaN(v))return "—";return (sign&&v<0?"−":"")+"RM "+Math.abs(v).toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function coin(v,sign){
+  if(v===null||v===undefined||isNaN(v))return "—";
+  var c=Math.round(Math.abs(v)*100),g=Math.floor(c/10000),s=Math.floor((c%10000)/100),k=c%100,p=[];
+  if(g)p.push(g.toLocaleString("en-MY")+"g");if(s)p.push(s+"s");if(k||!p.length)p.push(k+"c");
+  return (sign&&v<0?"−":"")+p.join(" ");
+}
+function money(v,opt){opt=opt||{};if(v===null||v===undefined||isNaN(v))return '<span class="cn">—</span>';
+  return '<span class="cn m '+(opt.cls||"")+'">'+(opt.pre||"")+coin(v,opt.sign)+'</span><span class="rmv m">'+(opt.pre||"")+rm(v,opt.sign)+'</span>'}
+function mkey(y,m){return y+"-"+pad(m+1)}
+function inMonth(t,y,m){return t.date&&t.date.slice(0,7)===mkey(y,m)}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
+function dateInMonth(y,m,day){return mkey(y,m)+"-"+pad(Math.min(day||1,dim(y,m)))}
+function fmtDate(s){var p=s.split("-");return parseInt(p[2],10)+" "+MON3[parseInt(p[1],10)-1]}
+function sum(a,f){return a.reduce(function(s,x){return s+(f?f(x):x)},0)}
+function debtById(id){return S.debts.find(function(d){return d.id===id})}
+function goalById(id){return S.goals.find(function(g){return g.id===id})}
+function incById(id){return S.incomes.find(function(i){return i.id===id})}
+function dayNo(){var a=new Date(S.start+"T00:00:00"),b=new Date();b.setHours(0,0,0,0);return Math.max(1,Math.round((b-a)/864e5)+1)}
+
+function commitPaid(c,y,m){return S.tx.some(function(x){return x.commitId===c.id&&inMonth(x,y,m)})}
+function debtPaidAmt(d,y,m){return sum(S.tx.filter(function(x){return x.type==="debt"&&x.debtId===d.id&&inMonth(x,y,m)}),function(x){return x.amt})}
+function goalSaved(g){return (n(g.start)||0)+sum(S.tx.filter(function(x){return x.type==="save"&&x.goalId===g.id}),function(x){return x.amt})}
+function monthTotals(y,m){
+  var t=S.tx.filter(function(x){return inMonth(x,y,m)}),o={inc:0,out:0,debt:0,save:0,list:t};
+  t.forEach(function(x){o[{in:"inc",out:"out",debt:"debt",save:"save"}[x.type]]+=x.amt});
+  o.lebihan=o.inc-o.out-o.debt;o.baki=o.lebihan-o.save;
+  var uc=S.commits.filter(function(c){return n(c.amt)&&!commitPaid(c,y,m)});
+  var ud=S.debts.filter(function(d){return n(d.bal)>0&&n(d.min)&&debtPaidAmt(d,y,m)<d.min});
+  o.pending=sum(uc,function(c){return c.amt})+sum(ud,function(d){return Math.min(d.min-debtPaidAmt(d,y,m),d.bal)});
+  o.free=o.baki-o.pending;return o;
+}
+function nextPayday(){
+  var t=new Date();t.setHours(0,0,0,0);var best=null;
+  S.incomes.forEach(function(i){if(!n(i.day))return;
+    var d=new Date(t.getFullYear(),t.getMonth(),Math.min(i.day,dim(t.getFullYear(),t.getMonth())));
+    if(d<t){d=new Date(t.getFullYear(),t.getMonth()+1,1);d.setDate(Math.min(i.day,dim(d.getFullYear(),d.getMonth())))}
+    var days=Math.round((d-t)/864e5);if(!best||days<best.days)best={inc:i,date:d,days:days}});
+  return best;
+}
+function netWorth(){return sum(S.goals,goalSaved)-sum(S.debts,function(d){return n(d.bal)||0})}
+function realm(nw){
+  var v=Math.max(0,nw),i=0;while(i<TIERS.length-1&&v>=TIERS[i][2])i++;
+  var T=TIERS[i],name=T[0],p=T[2]===Infinity?1:(v-T[1])/(T[2]-T[1]);
+  if(i<2)name+=" ("+(p<1/3?"Low":p<2/3?"Mid":"High")+")";
+  return {i:i,name:name,p:p,next:TIERS[i+1]?TIERS[i+1][0]:null,need:T[2]===Infinity?0:T[2]-v};
+}
+function simulate(){
+  var ds=S.debts.filter(function(d){return n(d.bal)>0}).map(function(d){return {id:d.id,name:d.name,bal:d.bal,min:n(d.min)||0,rate:n(d.rate)||0,done:null}});
+  var missing=ds.filter(function(d){return !d.min}).map(function(d){return d.name});
+  if(!ds.length)return {months:0,order:[],missing:missing,total:0,done:{}};
+  var budget=sum(ds,function(d){return d.min})+(n(S.settings.extra)||0);
+  if(budget<=0)return {months:null,order:[],missing:missing,total:sum(ds,function(d){return d.bal}),done:{}};
+  var method=S.settings.method,m=0;
+  function sortT(a){return a.filter(function(d){return d.bal>0.005}).sort(method==="avalanche"?function(a,b){return b.rate-a.rate||a.bal-b.bal}:function(a,b){return a.bal-b.bal})}
+  var order=sortT(ds.slice()).map(function(d){return d.name});
+  while(ds.some(function(d){return d.bal>0.005})&&m<600){
+    m++;var left=budget;
+    ds.forEach(function(d){if(d.bal>0.005)d.bal+=d.bal*d.rate/1200});
+    ds.forEach(function(d){if(d.bal>0.005){var p=Math.min(d.min,d.bal,left);d.bal-=p;left-=p}});
+    sortT(ds).forEach(function(d){if(left>0){var p=Math.min(d.bal,left);d.bal-=p;left-=p}});
+    ds.forEach(function(d){if(d.bal<=0.005&&d.done===null)d.done=m});
+  }
+  var done={};ds.forEach(function(d){done[d.id]=d.done});
+  return {months:m>=600?null:m,order:order,missing:missing,done:done,budget:budget,total:sum(S.debts,function(d){return n(d.bal)||0})};
+}
+function addMonths(k){var d=new Date();d.setDate(1);d.setMonth(d.getMonth()+k);return MON3[d.getMonth()]+" "+d.getFullYear()}
+
+function questState(date){
+  var t=S.tx.filter(function(x){return x.date===date}),man=S.quests[date]||{};
+  return [
+    {k:"log",t:"Log today's spending",d:"Any entry in the ledger today",on:t.length>0,auto:true},
+    {k:"meal",t:"One no-spend meal",d:"Tap when you've done it",on:!!man.meal,auto:false},
+    {k:"recruit",t:"Recruit soldiers",d:"Put any amount into an army",on:t.some(function(x){return x.type==="save"&&x.amt>0}),auto:true}
+  ];
+}
+function fragments(){
+  var days={};S.tx.forEach(function(x){days[x.date]=1});Object.keys(S.quests).forEach(function(d){days[d]=1});
+  return Object.keys(days).filter(function(d){return questState(d).every(function(q){return q.on})}).length;
+}
+
+var LUNA='<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="rgba(95,212,255,.08)" stroke="#5fd4ff" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M36 10 A21 21 0 1 0 49 43 A17 17 0 1 1 36 10Z" fill="rgba(191,230,255,.25)" stroke="#bfe6ff" stroke-width="2"/><circle cx="24" cy="30" r="2.2" fill="#e6f7ff"/><circle cx="31" cy="31" r="2.2" fill="#e6f7ff"/><path d="M24 37 Q27.5 39.5 31 37" stroke="#e6f7ff" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M47 13 l1.4 3 3 1.4 -3 1.4 -1.4 3 -1.4-3 -3-1.4 3-1.4z" fill="#ffd166"/></svg>';
+var MON='<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 L42 14 V34 L24 44 L6 34 V14Z" fill="rgba(255,77,109,.12)" stroke="#ff4d6d" stroke-width="2"/><path d="M15 20 L21 23 M33 20 L27 23" stroke="#ff4d6d" stroke-width="2.4" stroke-linecap="round"/><circle cx="18" cy="25" r="2.4" fill="#ff8fa3"/><circle cx="30" cy="25" r="2.4" fill="#ff8fa3"/><path d="M17 33 L20 30 L24 33 L28 30 L31 33" stroke="#ff4d6d" stroke-width="2" fill="none"/></svg>';
+function KEEP(i){var roofs=["#8a6a44","#8a6a44","#c9534a","#c9534a","#3d7dff","#3d7dff","#a77bff","#a77bff","#ffc83d","#ffc83d","#ffc83d"];var r=roofs[i]||"#8a6a44";
+  return '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 58 H60" stroke="#070923" stroke-width="3" stroke-linecap="round"/><rect x="14" y="30" width="36" height="28" rx="3" fill="#cfd3ea" stroke="#070923" stroke-width="3"/><rect x="27" y="42" width="10" height="16" rx="5" fill="#2a3377" stroke="#070923" stroke-width="2.5"/><path d="M8 32 Q32 22 56 32 L50 20 Q32 12 14 20Z" fill="'+r+'" stroke="#070923" stroke-width="3" stroke-linejoin="round"/>'+(i>=2?'<path d="M24 18 L32 6 L40 18" fill="'+r+'" stroke="#070923" stroke-width="3" stroke-linejoin="round"/>':'')+'<path d="M32 6 V0" stroke="#070923" stroke-width="2"/><path d="M32 1 L42 4 L32 7Z" fill="#ffc83d" stroke="#070923" stroke-width="1.5"/></svg>'}
+function BANNER(p,col){var h=Math.round(44*Math.max(0,Math.min(1,p))),id="bc"+col.slice(1);
+  return '<svg viewBox="0 0 70 78" aria-hidden="true"><defs><clipPath id="'+id+'"><path d="M12 8 H62 V60 L37 50 L12 60Z"/></clipPath></defs><path d="M10 4 V76" stroke="#070923" stroke-width="4" stroke-linecap="round"/><path d="M12 8 H62 V60 L37 50 L12 60Z" fill="#2a3377"/><rect x="12" y="'+(60-h)+'" width="50" height="'+h+'" fill="'+col+'" clip-path="url(#'+id+')"/><path d="M12 8 H62 V60 L37 50 L12 60Z" fill="none" stroke="#070923" stroke-width="3" stroke-linejoin="round"/><path d="M44 18 A10 10 0 1 0 50 34 A8 8 0 1 1 44 18Z" fill="#f4f1ff" stroke="#070923" stroke-width="2"/></svg>'}
+var ICO={
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeoff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>'
+};
+var NAV=[
+  {id:"home",t:"Ledger",i:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 4h7a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-5a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h5z"/></svg>'},
+  {id:"rekod",t:"Records",i:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>'},
+  {id:"hutang",t:"Moonvault",i:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M14 4h6v6l-9 9-3-3z"/><path d="M5 14l5 5M4 20l3-3"/></svg>'},
+  {id:"harta",t:"Armies",i:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M6 3v18"/><path d="M6 4h12v10l-6-2.5L6 14"/></svg>'},
+  {id:"lagi",t:"Council",i:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>'}
+];
+function H(title,eb,k){return '<h2 class="k-'+(k||"blue")+'"><small>◆ '+eb+'</small>'+title+'</h2>'}
+
+function txLabel(x){
+  if(x.type==="in"){var i=incById(x.src);return "Tribute: "+(i?i.name:"income")}
+  if(x.type==="debt"){var d=debtById(x.debtId);return "Strike: "+(d?d.name:"debt")}
+  if(x.type==="save"){var g=goalById(x.goalId);return (x.amt<0?"Withdraw from ":"Recruits to ")+(g?g.name:"army")}
+  return x.note||x.cat||"Spending";
+}
+function txIcon(x){
+  if(x.type==="in")return '<div class="ic in">TR</div>';
+  if(x.type==="debt")return '<div class="ic debt">MV</div>';
+  if(x.type==="save")return '<div class="ic save">AR</div>';
+  return '<div class="ic">'+(CAT_AB[x.cat]||"OT")+'</div>';
+}
+function txRow(x){
+  var sub=x.type==="out"?esc(x.cat)+(x.commitId?" · payroll":""):(x.note?esc(x.note):"");
+  var cls=x.type==="in"?"pos":(x.type==="save"?"":"neg"),pre=x.type==="in"?"+":(x.type==="save"?(x.amt<0?"+":"→ "):"−");
+  return '<div class="li" data-tx="'+x.id+'">'+txIcon(x)+'<div class="grow"><div class="t">'+esc(txLabel(x))+'</div><div class="d">'+fmtDate(x.date)+(sub?" · "+sub:"")+'</div></div><div class="a">'+money(Math.abs(x.amt),{cls:cls,pre:pre})+'</div></div>';
+}
+
+function lunaLine(T,isNow){
+  var today=todayStr(),anyToday=S.tx.some(function(x){return x.date===today});
+  if(T.free<0)return '<div class="luna">'+LUNA+'<div class="bubble warn"><b>Luna</b><div class="pl">[Warning: unpaid payroll is bigger than the treasury by '+coin(-T.free)+']</div>Shall we slow spending until the next tribute, my lord? Or I can show which payroll to move.</div></div>';
+  if(isNow&&!T.list.some(function(x){return x.type==="in"}))return '<div class="luna">'+LUNA+'<div class="bubble"><b>Luna</b>No tribute recorded this month yet, my lord. Tap the gold coin when your salary lands, and I will count it.</div></div>';
+  if(isNow&&!anyToday)return '<div class="luna">'+LUNA+'<div class="bubble"><b>Luna</b>The ledger is quiet today, my lord. One entry keeps the daily quests moving.</div></div>';
+  return '<div class="luna">'+LUNA+'<div class="bubble"><b>Luna</b>Treasury steady, my lord. <span class="cn m goldt">'+coin(T.free)+'</span> can still join the armies this month.</div></div>';
+}
+function vHome(){
+  var T=monthTotals(cur.y,cur.m),pd=nextPayday(),isNow=cur.y===now.getFullYear()&&cur.m===now.getMonth();
+  var ef=goalById("ef"),efS=ef?goalSaved(ef):0;
+  var h='<div class="hero"><div class="sys-h"><span>[Day '+dayNo()+' · Dawn]</span><span>'+MON3[cur.m].toUpperCase()+' '+cur.y+'</span></div>'+
+    '<div class="lbl">Treasury · real balance</div>'+
+    '<div class="big m">'+coin(T.baki,true)+'</div><div class="bigrm m">'+rm(T.baki,true)+'</div>'+
+    '<div class="lines">'+
+      '<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
+      '<div><span>Spent</span><span class="cn m">−'+coin(T.out)+'</span></div>'+
+      '<div><span>Moonvault strikes</span><span class="cn m">−'+coin(T.debt)+'</span></div>'+
+      '<div><span>Sent to armies</span><span class="cn m">−'+coin(T.save)+'</span></div>'+
+      '<div class="tot"><span>Surplus before armies</span><span class="cn m">'+coin(T.lebihan,true)+'</span></div>'+
+    '</div></div>';
+  h+=lunaLine(T,isNow);
+  h+='<div class="tiles"><div class="tile"><div class="lbl">Free for armies</div><div class="v m '+(T.free<0?"neg":"pos")+'">'+coin(T.free,true)+'</div><div class="s">After unpaid payroll &amp; debts (<span class="m">'+rm(T.pending)+'</span>)</div></div>';
+  if(pd&&isNow){var perDay=pd.days>0?T.free/pd.days:null;
+    h+='<div class="tile"><div class="lbl">Next tribute</div><div class="v t">'+(pd.days===0?"Today!":"In "+pd.days+" days")+'</div><div class="s">'+esc(pd.inc.name)+', '+pd.date.getDate()+' '+MON3[pd.date.getMonth()]+(perDay!==null?' · <span class="m">'+coin(perDay,true)+'</span>/day':'')+'</div></div>';
+  } else h+='<div class="tile"><div class="lbl">Garrison (floor)</div><div class="v m">'+coin(efS)+'</div><div class="s m">'+rm(efS)+'</div></div>';
+  h+='</div>';
+
+  var nw=netWorth(),R=realm(nw),hasData=S.goals.some(function(g){return goalSaved(g)})||S.debts.some(function(d){return n(d.bal)});
+  h+=H("Your realm","Realm tier","purple")+'<div class="card"><div class="realm">'+KEEP(R.i)+'<div class="grow"><div class="tier">'+R.name+'</div><div class="muted" style="font-size:13px;font-weight:800;margin-top:3px">Net worth <span class="cn m">'+coin(nw,true)+'</span> <span class="m">('+rm(nw,true)+')</span></div></div></div>'+
+    '<div class="bar gold" style="margin:12px 0 6px"><i style="width:'+(R.p*100)+'%"></i></div><div class="hint" style="margin:0">'+(!hasData?'Fill your armies and Moonvault debts to see the true tier.':nw<0?'Debts still outweigh the armies. Every strike lifts the realm.':(R.next?'<span class="m">'+coin(R.need)+'</span> more to '+R.next+'.':'The highest tier.'))+' Net worth here = armies minus debts in this ledger.</div></div>';
+
+  if(isNow){var qs=questState(todayStr()),fr=fragments();
+    h+=H("Daily quests","Today","teal")+'<div class="card">';
+    qs.forEach(function(q){h+='<div class="q"><button class="check'+(q.on?" on":"")+(q.auto?" auto":"")+'" '+(q.auto?'aria-disabled="true"':'data-quest="'+q.k+'"')+' aria-label="'+esc(q.t)+'">'+(q.on?"✓":"")+'</button><div class="grow"><div class="t">'+q.t+'</div><div class="d">'+q.d+'</div></div></div>'});
+    h+='<div style="margin-top:8px"><div class="lbl" style="color:var(--teal)">Card fragments '+(fr%10)+'/10 · Summon cards '+Math.floor(fr/10)+'</div><div class="bar teal" style="margin-top:6px"><i style="width:'+((fr%10)*10)+'%"></i></div></div></div>';
+  }
+
+  h+=H("Payroll this month","Bills &amp; debts due","gold")+'<div class="card">';
+  var items=[];
+  S.commits.forEach(function(c){items.push({k:"c",o:c,day:n(c.day)||99,paid:commitPaid(c,cur.y,cur.m)})});
+  S.debts.forEach(function(d){if(n(d.bal)>0&&n(d.min))items.push({k:"d",o:d,day:n(d.day)||99,paid:debtPaidAmt(d,cur.y,cur.m)>=d.min})});
+  items.sort(function(a,b){return a.paid-b.paid||a.day-b.day});
+  if(!items.length)h+='<div class="empty">No payroll yet. Add fixed bills in <b>Council → Payroll</b>, and monthly payments for each debt in <b>Moonvault</b>.</div>';
+  items.forEach(function(it){var o=it.o,amt=it.k==="c"?o.amt:o.min;
+    h+='<div class="li"><button class="check'+(it.paid?' on':'')+'" data-pay="'+it.k+':'+o.id+'" aria-label="Mark paid">'+(it.paid?'✓':'')+'</button><div class="grow"><div class="t">'+esc(o.name)+'</div><div class="d">'+(n(o.day)?"Day "+o.day:"Due day not set")+' · '+(it.k==="c"?esc(o.cat):"Moonvault")+'</div></div><div class="a">'+money(n(amt))+'</div></div>'});
+  h+='</div>';
+
+  var latest=T.list.slice().sort(function(a,b){return b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0)}).slice(0,6);
+  h+=H("Latest entries","The ledger's record")+'<div class="card">'+(latest.length?latest.map(txRow).join(""):'<div class="empty">No entries this month. Tap the gold coin to log spending or tribute.</div>')+'</div>';
+  if(!storageOK)h+='<div class="redpanel" style="margin-top:12px">[Warning: this browser will not keep data. Make a ledger copy in Council → Backup.]</div>';
+  return h;
+}
+
+function vRekod(){
+  var T=monthTotals(cur.y,cur.m);
+  var h=H("Tribute","Income","green")+'<div class="card stack">';
+  S.incomes.forEach(function(i){
+    var a=T.list.filter(function(x){return x.type==="in"&&x.src===i.id}),got=sum(a,function(x){return x.amt}),diff=a.length&&n(i.est)?got-i.est:null;
+    h+='<div class="row"><div class="grow"><div style="font-weight:900">'+esc(i.name)+'</div><div class="muted" style="font-size:13px;font-weight:700">Estimate <span class="m">'+coin(n(i.est))+'</span> · '+(n(i.day)?"lands on day "+i.day:"day not set")+'</div></div>'+
+      (a.length?'<div style="text-align:right">'+money(got,{cls:"pos"})+(diff!==null?'<div class="cn m '+(diff<0?"neg":"pos")+'" style="font-size:12.5px">'+(diff>=0?"+":"−")+coin(Math.abs(diff))+' vs est.</div>':'')+'</div>'
+      :'<button class="btn y sm" data-gaji="'+i.id+'">Tribute landed</button>')+'</div>';
+  });
+  var pm=incById("pm");
+  if(pm){var cols=[],max=n(pm.est)||0;
+    for(var k=5;k>=0;k--){var d=new Date(cur.y,cur.m-k,1),a=S.tx.filter(function(x){return x.type==="in"&&x.src==="pm"&&inMonth(x,d.getFullYear(),d.getMonth())}),v=a.length?sum(a,function(x){return x.amt}):null;if(v>max)max=v;cols.push({l:MON3[d.getMonth()],v:v})}
+    h+='<div><div class="lbl">PM salary, last 6 months</div><div class="trend">';
+    if(n(pm.est)&&max)h+='<div class="est" style="bottom:calc(19px + '+(pm.est/max*100*0.78)+'px)"></div>';
+    cols.forEach(function(c){h+='<div class="col">'+(c.v!==null?'<div class="b" style="height:'+Math.max(6,c.v/max*100*0.78)+'px"></div>':'<div class="b none"></div>')+'<div class="x">'+c.l+'</div></div>'});
+    h+='</div><div class="hint" style="margin:6px 0 0">Gold dashed line = estimate <span class="m">'+coin(n(pm.est))+'</span>. Months with no entry stay empty.</div></div>';
+  }
+  h+='</div>';
+  var out=T.list.filter(function(x){return x.type==="out"});
+  h+=H("Storehouse report","Spending by category","gold")+'<div class="card">';
+  if(!out.length)h+='<div class="empty">No spending this month.</div>';
+  else{var by={};out.forEach(function(x){by[x.cat]=(by[x.cat]||0)+x.amt});var arr=Object.keys(by).sort(function(a,b){return by[b]-by[a]}),mx=by[arr[0]];
+    arr.forEach(function(c){h+='<div class="catrow"><span>'+esc(c)+'</span><span class="cn m">'+coin(by[c])+'</span><div class="bar gold"><i style="width:'+(by[c]/mx*100)+'%"></i></div></div>'})}
+  h+='</div>';
+  h+=H("All entries","The ledger's record")+'<div class="pills">';
+  [["all","All"],["out","Spending"],["in","Tribute"],["debt","Moonvault"],["save","Armies"]].forEach(function(p){h+='<button class="pill'+(recFilter===p[0]?" on":"")+'" data-filter="'+p[0]+'">'+p[1]+'</button>'});
+  h+='</div>';
+  var list=T.list.filter(function(x){return recFilter==="all"||x.type===recFilter}).sort(function(a,b){return b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0)});
+  h+='<div class="hint">'+list.length+' entries · out <span class="m">'+coin(T.out+T.debt)+'</span> · in <span class="m">'+coin(T.inc)+'</span></div>';
+  if(!list.length)h+='<div class="card"><div class="empty">No entries.</div></div>';
+  var days={};list.forEach(function(x){(days[x.date]=days[x.date]||[]).push(x)});
+  Object.keys(days).forEach(function(d){var tot=sum(days[d].filter(function(x){return x.type==="out"||x.type==="debt"}),function(x){return x.amt});
+    h+='<div class="dayhead"><span>['+fmtDate(d)+']</span><span class="m">'+(tot?"−"+coin(tot):"")+'</span></div><div class="card" style="padding-block:4px">'+days[d].map(txRow).join("")+'</div>'});
+  h+='<div class="hint" style="margin-top:12px">Tap any entry to edit or delete it.</div>';
+  return h;
+}
+
+function vHutang(){
+  var sim=simulate(),orig=sum(S.debts,function(d){return n(d.orig)||n(d.bal)||0}),bal=sum(S.debts,function(d){return n(d.bal)||0}),pct=orig?(orig-bal)/orig:0;
+  var h=H("Moonvault","Road to 0 debt","red")+'<div class="card stack">';
+  h+='<div class="row"><div class="grow"><div class="lbl">Total HP left</div><div style="font-size:26px">'+(bal?money(bal,{cls:"neg"}):'<span class="cn">—</span>')+'</div></div><div style="text-align:right"><div class="lbl">Phantom · debt-free</div><div class="cn pos" style="font-size:22px">'+(orig?Math.round(pct*100)+" / 100":"—")+'</div></div></div>';
+  h+='<div class="bar green"><i style="width:'+(pct*100)+'%"></i></div>';
+  h+='<div class="pills">'+[["snowball","Snowball (smallest first)"],["avalanche","Avalanche (highest rate first)"]].map(function(p){return '<button class="pill'+(S.settings.method===p[0]?" on":"")+'" data-method="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
+  h+='<div class="field" style="margin:0"><label class="lbl" for="extra">Extra per month for debts, RM (optional)</label><input id="extra" inputmode="decimal" placeholder="e.g. 200" value="'+(n(S.settings.extra)!==null?S.settings.extra:"")+'"></div>';
+  if(!bal)h+='<div class="hint" style="margin:0">Tap each foe to set its balance, monthly payment and due day. The clear date appears after that.</div>';
+  else if(sim.months===null)h+='<div class="hint" style="margin:0">Add monthly payments to estimate the clear date.</div>';
+  else h+='<div><div class="lbl">Estimated debt-free</div><div style="font-family:var(--f-display);font-size:24px">'+addMonths(sim.months)+' <span class="muted" style="font-family:var(--f-body);font-size:13.5px;font-weight:800">('+sim.months+' months, '+coin(sim.budget)+'/month)</span></div></div>';
+  if(sim.missing.length)h+='<div class="hint" style="margin:0">Not counted, monthly payment empty: '+sim.missing.map(esc).join(", ")+'.</div>';
+  h+='<div class="hint" style="margin:0">Numbers only, not financial advice. The method is your call, my lord.</div></div>';
+  h+=H("Kingdom Tower","Foes in clearing order","red")+'<div class="foes">';
+  var rank={};sim.order.forEach(function(nm,i){rank[nm]=i+1});
+  S.debts.slice().sort(function(a,b){return (rank[a.name]||99)-(rank[b.name]||99)}).forEach(function(d){
+    var done=n(d.orig)>0&&n(d.bal)===0,o=n(d.orig)||n(d.bal),hp=o?(n(d.bal)||0)/o:0;
+    h+='<button class="foe'+(done?' done':'')+'" data-debt="'+d.id+'"><div class="foe-top">'+MON+'<div class="grow"><div class="foe-n">'+esc(d.name)+'</div><div class="foe-m">'+(n(d.min)?'<span class="m">'+coin(d.min)+'</span>/mo':'Payment —')+' · '+(n(d.day)?'day '+d.day:'due —')+(sim.done[d.id]?' · clear ~'+addMonths(sim.done[d.id]):'')+'</div></div>'+(rank[d.name]&&!done?'<span class="tag">Stage '+rank[d.name]+'</span>':'')+'</div><div class="hpl"><span>HP</span><span class="cn m">'+coin(n(d.bal))+(o?' / '+coin(o):'')+'</span></div><div class="hp"><i style="width:'+(hp*100)+'%"></i></div>'+(done?'<div class="seal">CLEARED</div>':'')+'</button>';
+  });
+  h+='</div><div style="margin-top:12px"><button class="btn g" id="addDebt" style="width:100%">+ Add another foe (debt)</button></div>';
+  return h;
+}
+
+function vHarta(){
+  var sv=n(S.settings.soldier)||10;
+  var h=H("Armies","Savings","purple")+'<div class="hint">1 soldier = '+rm(sv)+' ('+coin(sv)+'). Change it in Council.</div><div class="stack">';
+  S.goals.forEach(function(g){
+    var s=goalSaved(g),t=n(g.target),p=t?s/t:0,isEF=g.id==="ef",col=isEF?"#ff5d55":"#a77bff";
+    h+='<div class="card"><div class="army">'+BANNER(p,col)+'<div class="grow"><div class="row" style="gap:8px;flex-wrap:wrap"><span style="font-family:var(--f-display);font-size:21px">'+esc(g.name)+'</span>'+(isEF?'<span class="floor">TREASURY FLOOR</span>':'')+'</div>'+
+      '<div class="hc m">'+Math.floor(s/sv).toLocaleString("en-MY")+(t?' <span class="muted" style="font-size:16px">/ '+Math.floor(t/sv).toLocaleString("en-MY")+'</span>':'')+' <span style="font-size:13px" class="muted">soldiers</span></div>'+
+      '<div class="muted" style="font-size:13px;font-weight:800"><span class="m">'+coin(s)+' · '+rm(s)+'</span>'+(t?' · '+(p>=1?'MAX':Math.round(p*100)+'%'):' · target not set')+'</div></div></div>'+
+      '<div class="bar" style="margin:12px 0"><i style="width:'+Math.min(100,p*100)+'%;background:'+col+'"></i></div>'+
+      '<div class="row" style="gap:8px"><button class="btn y sm grow" data-gin="'+g.id+'">+ Recruit</button><button class="btn g sm grow" data-gout="'+g.id+'">Withdraw</button><button class="btn g sm" data-gedit="'+g.id+'">Edit</button></div></div>';
+  });
+  h+='</div>';
+  var T=monthTotals(cur.y,cur.m);
+  h+=H("This month","Barracks","purple")+'<div class="card"><div class="row"><div class="grow"><div class="lbl">Sent in '+MONTHS[cur.m]+'</div><div style="font-size:20px">'+money(T.save)+'</div></div><div style="text-align:right"><div class="lbl">Free for armies</div><div style="font-size:20px">'+money(T.free,{cls:T.free<0?"neg":"pos",sign:true})+'</div></div></div></div>';
+  return h;
+}
+
+function vLagi(){
+  var h=H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
+  if(!S.commits.length)h+='<div class="empty">Nothing yet. For example rent, electricity, internet, takaful, subscriptions.</div>';
+  S.commits.slice().sort(function(a,b){return (n(a.day)||99)-(n(b.day)||99)}).forEach(function(c){
+    h+='<div class="li" data-commit="'+c.id+'"><div class="ic">'+(CAT_AB[c.cat]||"OT")+'</div><div class="grow"><div class="t">'+esc(c.name)+'</div><div class="d">'+esc(c.cat)+' · '+(n(c.day)?"day "+c.day:"due —")+'</div></div><div class="a">'+money(n(c.amt))+'</div></div>'});
+  h+='<button class="btn g" id="addCommit" style="width:100%;margin-top:8px">+ Add payroll item</button>';
+  h+='<div class="hint" style="margin:10px 0 0">Per month: <span class="m">'+coin(sum(S.commits,function(c){return n(c.amt)||0}))+'</span></div></div>';
+  h+=H("Tribute sources","Income","green")+'<div class="card">';
+  S.incomes.forEach(function(i){h+='<div class="li" data-inc="'+i.id+'"><div class="ic in">TR</div><div class="grow"><div class="t">'+esc(i.name)+'</div><div class="d">'+(n(i.day)?"Lands on day "+i.day:"Landing day not set")+'</div></div><div class="a">'+money(n(i.est))+'</div></div>'});
+  h+='</div>';
+  h+=H("Ledger settings","System")+'<div class="card stack"><div class="hint" style="margin:0">Coins: 1g = RM100 · 1s = RM1 · 1c = RM0.01. Inputs are always in RM.</div>'+
+    '<div class="field" style="margin:0"><label class="lbl" for="soldier">Value of 1 soldier (RM)</label><input id="soldier" inputmode="decimal" value="'+esc(S.settings.soldier)+'"></div></div>';
+  h+=H("Ledger copy","Backup")+'<div class="card stack">'+
+    '<div class="hint" style="margin:0">Your data lives only on this phone. Make a copy often and keep it in Files or iCloud Drive.</div>'+
+    '<button class="btn" id="exp">Export ledger copy</button>'+
+    '<label class="btn g" for="impFile" style="text-align:center;display:block">Import from file</label><input type="file" id="impFile" accept=".json,application/json,text/plain" hidden>'+
+    '<button class="btn g" id="impPaste">Import by pasting text</button>'+
+    '<div id="dumpBox"></div>'+
+    '<button class="btn r" id="reset">Erase all data</button></div>';
+  h+='<div class="hint" style="margin-top:16px;text-align:center">SimpanSikit · Moon Ledger · private to my lord<br>Inspired by New Earth Online: Wrong Server Lord by dizzypapaya</div>';
+  return h;
+}
+
+function render(){
+  document.body.classList.toggle("hide",!!S.settings.hide);
+  $("eye").innerHTML=S.settings.hide?ICO.eyeoff:ICO.eye;
+  $("mLabel").textContent=MONTHS[cur.m]+" "+cur.y;
+  $("nav").innerHTML=NAV.map(function(x){return '<button data-tab="'+x.id+'" class="'+(tab===x.id?"on":"")+'">'+x.i+x.t+'</button>'}).join("");
+  $("view").innerHTML={home:vHome,rekod:vRekod,hutang:vHutang,harta:vHarta,lagi:vLagi}[tab]();
+  checkTier();
+}
+function checkTier(){
+  var R=realm(netWorth()),last=S.settings.tier;
+  if(last===null||last===undefined){S.settings.tier=R.i;save();return}
+  if(R.i>last){var from=TIERS[last][0];S.settings.tier=R.i;save();
+    var b=document.createElement("div");b.className="ping";b.innerHTML='<b>PING!</b>[SERVER ANNOUNCEMENT]<br>[Your realm has risen: '+from+' → '+TIERS[R.i][0].toUpperCase()+']';document.body.appendChild(b);setTimeout(function(){b.remove()},4200)}
+  else if(R.i<last){S.settings.tier=R.i;save()}
+}
+function toast(msg){var t=document.createElement("div");t.className="toast";t.textContent="["+msg+"]";document.body.appendChild(t);setTimeout(function(){t.remove()},1900)}
+
+function openSheet(html,onMount){
+  $("layer").innerHTML='<div class="scrim" id="scrim"></div><div class="sheet" role="dialog" aria-modal="true"><div class="in"><div class="grab"></div>'+html+'</div></div>';
+  $("scrim").onclick=closeSheet;if(onMount)onMount($("layer").querySelector(".sheet"));
+}
+function closeSheet(){$("layer").innerHTML=""}
+function val(id){var e=$(id);return e?e.value.trim():""}
+function numVal(id){var v=val(id).replace(/,/g,"");if(v==="")return null;var x=parseFloat(v);return isNaN(x)?null:Math.round(x*100)/100}
+function dayVal(id){var x=numVal(id);if(x===null)return null;x=Math.round(x);return x>=1&&x<=31?x:null}
+function confirmSheet(title,body,yes,onYes,onNo){
+  openSheet('<h3>'+title+'</h3><div class="hint" style="margin:0 0 14px;font-size:14px">'+body+'</div><div class="row"><button class="btn g grow" id="cNo">Cancel</button><button class="btn r grow" id="cYes">'+yes+'</button></div>',function(){$("cNo").onclick=onNo||closeSheet;$("cYes").onclick=onYes});
+}
+
+function txSheet(opts){
+  opts=opts||{};
+  var ex=opts.tx,st={type:ex?ex.type:(opts.type||"out"),cat:ex?ex.cat:(opts.cat||null),src:ex?ex.src:(opts.src||"perseni"),debtId:ex?ex.debtId:(opts.debtId||null),goalId:ex?ex.goalId:(opts.goalId||"saving"),dir:ex&&ex.type==="save"&&ex.amt<0?-1:(opts.dir||1)};
+  var keep={amt:ex?String(Math.abs(ex.amt)):(opts.amt!=null?String(opts.amt):""),date:ex?ex.date:(opts.date||todayStr()),note:ex?(ex.note||""):(opts.note||"")};
+  function body(){
+    var h='<h3>'+(ex?"Edit entry":"New entry")+'</h3>';
+    if(!ex)h+='<div class="pills">'+[["out","Spending"],["in","Tribute"],["debt","Moonvault"],["save","Armies"]].map(function(p){return '<button class="pill'+(st.type===p[0]?" on":"")+'" data-st="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
+    h+='<div class="amt"><span>RM</span><input id="fAmt" inputmode="decimal" placeholder="0.00" value="'+esc(keep.amt)+'" autocomplete="off"></div><div class="coinprev" id="cprev"></div>';
+    if(st.type==="out")h+='<div class="lbl" style="margin-bottom:6px">Category</div><div class="chips">'+CATS.map(function(c){return '<button class="chipb'+(st.cat===c?" on":"")+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>'}).join("")+'</div>';
+    if(st.type==="in"){h+='<div class="chips">'+S.incomes.map(function(i){return '<button class="chipb'+(st.src===i.id?" on":"")+'" data-src="'+i.id+'">'+esc(i.name)+'</button>'}).join("")+'</div>';
+      var inc=incById(st.src);if(inc&&n(inc.est))h+='<div class="hint">Estimate for '+esc(inc.name)+': '+rm(inc.est)+'. Enter the real amount from your payslip.</div>'}
+    if(st.type==="debt"){h+='<div class="chips">'+S.debts.filter(function(d){return n(d.bal)!==0||d.id===st.debtId}).map(function(d){return '<button class="chipb'+(st.debtId===d.id?" on":"")+'" data-debtc="'+d.id+'">'+esc(d.name)+'</button>'}).join("")+'</div>';
+      var dd=debtById(st.debtId);if(dd)h+='<div class="hint">HP now: '+rm(n(dd.bal))+(n(dd.min)?' · monthly '+rm(dd.min):'')+'. The strike lowers HP automatically.</div>'}
+    if(st.type==="save"){h+='<div class="chips">'+S.goals.map(function(g){return '<button class="chipb'+(st.goalId===g.id?" on":"")+'" data-goal="'+g.id+'">'+esc(g.name)+'</button>'}).join("")+'</div><div class="pills">'+[[1,"Recruit"],[-1,"Withdraw"]].map(function(p){return '<button class="pill'+(st.dir===p[0]?" on":"")+'" data-dir="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
+      if(st.goalId==="ef"&&st.dir<0)h+='<div class="redpanel">[Warning: the Garrison is your Treasury floor]<br>Withdraw only after a council decision, my lord.</div>'}
+    h+='<div class="grid2"><div class="field"><label class="lbl" for="fDate">Date</label><input id="fDate" type="date" value="'+esc(keep.date)+'"></div><div class="field"><label class="lbl" for="fNote">Note</label><input id="fNote" placeholder="e.g. Nasi lemak" value="'+esc(keep.note)+'"></div></div>';
+    h+='<div class="row"><button class="btn grow" id="fSave">Save</button>'+(ex?'<button class="btn r" id="fDel">Delete</button>':'')+'</div>';
+    return h;
+  }
+  function prev(){var v=numVal("fAmt"),e=$("cprev");if(e)e.textContent=v?"= "+coin(v):""}
+  function mount(){
+    openSheet(body(),function(sh){
+      var a=$("fAmt");a.oninput=prev;prev();if(!ex&&!keep.amt)setTimeout(function(){a.focus()},60);
+      sh.onclick=function(e){var b=e.target.closest("button");if(!b)return;
+        keep={amt:val("fAmt"),date:val("fDate"),note:val("fNote")};
+        if(b.dataset.st){st.type=b.dataset.st;mount()}
+        else if(b.dataset.cat){st.cat=b.dataset.cat;mount()}
+        else if(b.dataset.src){st.src=b.dataset.src;mount()}
+        else if(b.dataset.debtc){st.debtId=b.dataset.debtc;var d=debtById(st.debtId);if(!keep.amt&&d&&n(d.min))keep.amt=String(d.min);mount()}
+        else if(b.dataset.goal){st.goalId=b.dataset.goal;mount()}
+        else if(b.dataset.dir){st.dir=Number(b.dataset.dir);mount()}
+        else if(b.id==="fSave")doSave();
+        else if(b.id==="fDel")confirmSheet("Delete this entry?",esc(txLabel(ex))+" · "+rm(Math.abs(ex.amt))+" · "+fmtDate(ex.date),"Delete",function(){undoEffect(ex);S.tx=S.tx.filter(function(x){return x.id!==ex.id});save();closeSheet();render();toast("Entry deleted")},mount);
+      };
+    });
+  }
+  function doSave(){
+    var amt=numVal("fAmt");if(!amt||amt<=0){toast("Enter an amount first");return}
+    if(st.type==="out"&&!st.cat){toast("Pick a category");return}
+    if(st.type==="debt"&&!st.debtId){toast("Pick a foe");return}
+    if(ex)undoEffect(ex);
+    var t=ex||{id:uid(),ts:Date.now()};
+    t.type=st.type;t.amt=st.type==="save"?amt*st.dir:amt;t.date=val("fDate")||todayStr();t.note=val("fNote");
+    t.cat=st.type==="out"?st.cat:null;t.src=st.type==="in"?st.src:null;t.debtId=st.type==="debt"?st.debtId:null;t.goalId=st.type==="save"?st.goalId:null;
+    if(opts.commitId&&!ex)t.commitId=opts.commitId;if(t.type!=="out")delete t.commitId;
+    applyEffect(t);if(!ex)S.tx.push(t);
+    save();closeSheet();render();
+    toast(ex?"Ledger updated":t.type==="debt"?"Strike landed · HP −"+coin(amt):t.type==="in"?"Tribute counted +"+coin(amt):t.type==="save"?(t.amt>0?"+"+Math.floor(amt/(n(S.settings.soldier)||10))+" soldiers joined":"Withdrawn "+coin(amt)):"Logged −"+coin(amt));
+  }
+  mount();
+}
+function applyEffect(t){if(t.type==="debt"){var d=debtById(t.debtId);if(d&&n(d.bal)!==null){if(n(d.orig)===null||d.orig<d.bal)d.orig=d.bal;d.bal=Math.max(0,Math.round((d.bal-t.amt)*100)/100);t.applied=true}}}
+function undoEffect(t){if(t.type==="debt"&&t.applied){var d=debtById(t.debtId);if(d&&n(d.bal)!==null)d.bal=Math.round((d.bal+t.amt)*100)/100;t.applied=false}}
+
+function debtSheet(d){
+  var isNew=!d;d=d||{id:uid(),name:"",bal:null,orig:null,min:null,day:null,rate:null};
+  var v=function(x){return x===null||x===undefined?"":esc(x)};
+  openSheet('<h3>'+(isNew?"New foe":esc(d.name))+'</h3>'+
+    '<div class="field"><label class="lbl" for="dName">Name</label><input id="dName" value="'+v(d.name)+'"></div>'+
+    '<div class="grid2"><div class="field"><label class="lbl" for="dBal">Balance now (RM)</label><input id="dBal" inputmode="decimal" value="'+v(d.bal)+'"></div><div class="field"><label class="lbl" for="dMin">Monthly payment</label><input id="dMin" inputmode="decimal" value="'+v(d.min)+'"></div></div>'+
+    '<div class="grid2"><div class="field"><label class="lbl" for="dDay">Due day (1-31)</label><input id="dDay" inputmode="numeric" value="'+v(d.day)+'"></div><div class="field"><label class="lbl" for="dRate">Rate % per year</label><input id="dRate" inputmode="decimal" placeholder="optional" value="'+v(d.rate)+'"></div></div>'+
+    '<div class="hint">Never enter account or card numbers here. The rate is only used for Avalanche.</div>'+
+    (!isNew&&n(d.bal)>0?'<button class="btn y" id="dPay" style="width:100%;margin-bottom:10px">Log a strike (payment)</button>':'')+
+    '<div class="row"><button class="btn grow" id="dSave">Save</button>'+(!isNew?'<button class="btn r" id="dDel">Remove</button>':'')+'</div>',function(){
+    $("dSave").onclick=function(){var name=val("dName");if(!name){toast("Name the foe");return}
+      var bal=numVal("dBal");d.name=name;
+      if(bal!==d.bal){d.bal=bal;if(bal!==null&&(n(d.orig)===null||bal>d.orig))d.orig=bal;if(bal===null)d.orig=null}
+      d.min=numVal("dMin");d.day=dayVal("dDay");d.rate=numVal("dRate");
+      if(isNew)S.debts.push(d);save();closeSheet();render();toast("Foe updated")};
+    if($("dPay"))$("dPay").onclick=function(){txSheet({type:"debt",debtId:d.id,amt:n(d.min)})};
+    if($("dDel"))$("dDel").onclick=function(){confirmSheet("Remove "+esc(d.name)+"?","Old strikes stay in the records.","Remove",function(){S.debts=S.debts.filter(function(x){return x.id!==d.id});save();closeSheet();render()},function(){debtSheet(d)})};
+  });
+}
+function commitSheet(c){
+  var isNew=!c;c=c||{id:uid(),name:"",cat:"Housing",amt:null,day:null};var cat=c.cat;
+  function draw(k){
+    openSheet('<h3>'+(isNew?"New payroll item":"Edit payroll item")+'</h3>'+
+      '<div class="field"><label class="lbl" for="cName">Name</label><input id="cName" placeholder="e.g. House rent" value="'+esc(k?k.name:c.name)+'"></div>'+
+      '<div class="grid2"><div class="field"><label class="lbl" for="cAmt">Per month (RM)</label><input id="cAmt" inputmode="decimal" value="'+esc(k?k.amt:(c.amt==null?"":c.amt))+'"></div><div class="field"><label class="lbl" for="cDay">Due day (1-31)</label><input id="cDay" inputmode="numeric" value="'+esc(k?k.day:(c.day==null?"":c.day))+'"></div></div>'+
+      '<div class="lbl" style="margin-bottom:6px">Category</div><div class="chips">'+CATS.map(function(x){return '<button class="chipb'+(cat===x?" on":"")+'" data-cc="'+esc(x)+'">'+esc(x)+'</button>'}).join("")+'</div>'+
+      '<div class="row"><button class="btn grow" id="cSave">Save</button>'+(!isNew?'<button class="btn r" id="cDel">Remove</button>':'')+'</div>',function(sh){
+      sh.querySelectorAll("[data-cc]").forEach(function(b){b.onclick=function(){cat=b.dataset.cc;draw({name:val("cName"),amt:val("cAmt"),day:val("cDay")})}});
+      $("cSave").onclick=function(){var nm=val("cName");if(!nm){toast("Enter a name");return}c.name=nm;c.amt=numVal("cAmt");c.day=dayVal("cDay");c.cat=cat;if(isNew)S.commits.push(c);save();closeSheet();render();toast("Payroll saved")};
+      if($("cDel"))$("cDel").onclick=function(){S.commits=S.commits.filter(function(x){return x.id!==c.id});save();closeSheet();render();toast("Payroll item removed")};
+    });
+  }
+  draw();
+}
+function incSheet(i){
+  openSheet('<h3>'+esc(i.name)+'</h3><div class="grid2"><div class="field"><label class="lbl" for="iEst">Monthly estimate (RM)</label><input id="iEst" inputmode="decimal" value="'+(i.est==null?"":i.est)+'"></div><div class="field"><label class="lbl" for="iDay">Lands on day (1-31)</label><input id="iDay" inputmode="numeric" value="'+(i.day==null?"":i.day)+'"></div></div>'+
+    '<div class="hint">For variable pay this estimate is only for comparison. Log the real amount each month.</div><button class="btn" id="iSave" style="width:100%">Save</button>',function(){
+    $("iSave").onclick=function(){i.est=numVal("iEst");i.day=dayVal("iDay");save();closeSheet();render();toast("Saved")}});
+}
+function goalSheet(g){
+  openSheet('<h3>'+esc(g.name)+'</h3><div class="grid2"><div class="field"><label class="lbl" for="gT">Target (RM)</label><input id="gT" inputmode="decimal" value="'+(g.target==null?"":g.target)+'"></div><div class="field"><label class="lbl" for="gS">Already saved (RM)</label><input id="gS" inputmode="decimal" value="'+(g.start==null?"":g.start)+'"></div></div>'+
+    '<div class="hint">Already saved = money in this pot before you started the ledger.</div><button class="btn" id="gSave" style="width:100%">Save</button>',function(){
+    $("gSave").onclick=function(){g.target=numVal("gT");g.start=numVal("gS");save();closeSheet();render();toast("Army updated")}});
+}
+
+function exportData(){
+  var json=JSON.stringify(S,null,1),name="simpansikit-ledger-"+todayStr()+".json",done=false;
+  try{var file=new File([json],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:name}).catch(function(){});done=true}}catch(e){}
+  if(!done){try{var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([json],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){}}
+  $("dumpBox").innerHTML='<div class="hint" style="margin:0 0 6px">If no file appears, copy this text into Notes or Files:</div><textarea class="dump" id="dump" readonly>'+esc(json)+'</textarea><button class="btn g sm" id="copyDump" style="margin-top:8px">Copy text</button>';
+  $("copyDump").onclick=function(){var t=$("dump");if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(function(){toast("Copied")},function(){t.select()});else t.select()};
+}
+function importText(txt){
+  try{var d=JSON.parse(txt);if(!d||!Array.isArray(d.tx)||!Array.isArray(d.debts))throw 0;
+    confirmSheet("Replace the current ledger?","This copy has "+d.tx.length+" entries and "+d.debts.length+" debts. The ledger on this phone will be replaced.","Replace",function(){S=migrate(d);save();closeSheet();render();toast("Ledger copy loaded")});
+  }catch(e){toast("That ledger copy is not valid")}
+}
+
+document.addEventListener("click",function(e){
+  if(e.target.closest("#layer"))return;
+  var b=e.target.closest("[data-tab],[data-tx],[data-pay],[data-gaji],[data-filter],[data-method],[data-debt],[data-gin],[data-gout],[data-gedit],[data-commit],[data-inc],[data-quest]");
+  if(b){var ds=b.dataset;
+    if(ds.tab){tab=ds.tab;render();window.scrollTo(0,0);return}
+    if(ds.tx){var t=S.tx.find(function(x){return x.id===ds.tx});if(t)txSheet({tx:t});return}
+    if(ds.quest){var td=todayStr();S.quests[td]=S.quests[td]||{};S.quests[td][ds.quest]=!S.quests[td][ds.quest];save();render();if(questState(td).every(function(q){return q.on}))toast("All quests done · +1 card fragment");return}
+    if(ds.pay){var p=ds.pay.split(":");
+      if(p[0]==="c"){var c=S.commits.find(function(x){return x.id===p[1]});
+        if(commitPaid(c,cur.y,cur.m))txSheet({tx:S.tx.find(function(x){return x.commitId===c.id&&inMonth(x,cur.y,cur.m)})});
+        else txSheet({type:"out",cat:c.cat,amt:n(c.amt),note:c.name,commitId:c.id,date:dateInMonth(cur.y,cur.m,n(c.day)||new Date().getDate())});
+      }else{var d=debtById(p[1]);txSheet({type:"debt",debtId:d.id,amt:Math.max(0,Math.min(d.min-debtPaidAmt(d,cur.y,cur.m),d.bal))||d.min,date:dateInMonth(cur.y,cur.m,n(d.day)||new Date().getDate())})}
+      return}
+    if(ds.gaji){var i=incById(ds.gaji);txSheet({type:"in",src:i.id,amt:i.id==="pm"?null:n(i.est),date:n(i.day)?dateInMonth(cur.y,cur.m,i.day):todayStr()});return}
+    if(ds.filter){recFilter=ds.filter;render();return}
+    if(ds.method){S.settings.method=ds.method;save();render();return}
+    if(ds.debt){debtSheet(debtById(ds.debt));return}
+    if(ds.gin){txSheet({type:"save",goalId:ds.gin,dir:1});return}
+    if(ds.gout){txSheet({type:"save",goalId:ds.gout,dir:-1});return}
+    if(ds.gedit){goalSheet(goalById(ds.gedit));return}
+    if(ds.commit){commitSheet(S.commits.find(function(x){return x.id===ds.commit}));return}
+    if(ds.inc){incSheet(incById(ds.inc));return}
+  }
+  var t2=e.target;
+  if(t2.closest("#addDebt"))debtSheet(null);
+  else if(t2.closest("#addCommit"))commitSheet(null);
+  else if(t2.closest("#exp"))exportData();
+  else if(t2.closest("#impPaste")){$("dumpBox").innerHTML='<textarea class="dump" id="pasteIn" placeholder="Paste the ledger copy here"></textarea><button class="btn sm" id="doPaste" style="margin-top:8px">Import</button>';$("doPaste").onclick=function(){importText($("pasteIn").value)}}
+  else if(t2.closest("#reset"))confirmSheet("Erase all data?","Every entry, debt and payroll item on this phone will be gone. Export a ledger copy first.","Erase all",function(){S=fresh();save();closeSheet();tab="home";render();toast("Ledger erased")});
+});
+document.addEventListener("change",function(e){
+  if(e.target.id==="impFile"&&e.target.files[0]){var r=new FileReader();r.onload=function(){importText(r.result)};r.readAsText(e.target.files[0]);e.target.value=""}
+  if(e.target.id==="extra"){S.settings.extra=numVal("extra");save();render()}
+  if(e.target.id==="soldier"){var v=numVal("soldier");S.settings.soldier=v&&v>0?v:10;save();render();toast("1 soldier = "+rm(S.settings.soldier))}
+});
+$("fab").onclick=function(){txSheet({type:"out",date:(cur.y===now.getFullYear()&&cur.m===now.getMonth())?todayStr():dateInMonth(cur.y,cur.m,1)})};
+$("eye").onclick=function(){S.settings.hide=!S.settings.hide;save();render()};
+$("mPrev").onclick=function(){cur.m--;if(cur.m<0){cur.m=11;cur.y--}render()};
+$("mNext").onclick=function(){cur.m++;if(cur.m>11){cur.m=0;cur.y++}render()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+render();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+})();
+</script>
+
+</body>
+</html>
