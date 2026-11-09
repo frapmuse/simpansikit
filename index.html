@@ -940,9 +940,7 @@ function afkLoop(ts){
   // ---- party
   var pl0=partyList().map(rwById),heroes=pl0.length?pl0:partyHeroes(),groups=Math.max(1,Math.ceil(heroes.length/4)),gi=Math.floor(t/25)%groups,field=heroes.slice(gi*4,gi*4+4),sq=troopSprites();
   var frontX=Math.min(W*0.52,190),U=[];
-  for(var i=0;i<sq;i++){var cav=i%3===2;U.push({id:"s"+i,k:cav?"c":"s",x:frontX-26-i*((frontX-34)/Math.max(1,sq)),y:gy-5,s:0.75})}
-  field.forEach(function(r,j){U.push({id:r.id,k:"h",r:r,x:frontX-30-j*30,y:gy,s:1})});
-  U.push({id:"yf",k:"y",x:frontX,y:gy,s:1});
+  var hx0=frontX-58,hsp=22,yfx=Math.max(26,hx0-field.length*hsp-8);U.push({id:"yf",k:"y",x:yfx,y:gy,s:1});field.slice().reverse().forEach(function(r,jj){var j=field.length-1-jj;U.push({id:r.id,k:"h",r:r,x:hx0-j*hsp,y:gy,s:1})});for(var i=sq-1;i>=0;i--){var cav=i%3===2,row=i%2;U.push({id:"s"+i,k:cav?"c":"s",x:frontX-Math.floor(i/2)*16-row*7,y:gy-(row?6:0),s:0.75})}
   AFKV.hp=AFKV.hp||{};U.forEach(function(m){if(AFKV.hp[m.id]==null)AFKV.hp[m.id]=1;AFKV.hp[m.id]=Math.min(1,AFKV.hp[m.id]+0.04*dt)});
   // ---- enemies: waves of 1-3
   var hitX=frontX+30;AFKV.ens=AFKV.ens||[];
