@@ -385,6 +385,30 @@ nav.bottom{background:linear-gradient(180deg,rgba(2,6,13,0),#02060d 16px);paddin
 .prog2 .v{font-size:18px}
 .skipb{width:100%;margin-top:8px}
 .foe-b{font-size:12px;color:var(--gold);font-weight:700;margin-top:1px}
+
+/* ===== Lord Sheet, classes, talents, party ===== */
+.lordc .row{align-items:center}
+.lordc .lv{font-family:var(--f-num);font-size:30px;color:var(--gold);line-height:1}
+.statg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat{padding:8px 10px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.stat .k{display:flex;justify-content:space-between;align-items:baseline}
+.stat .k b{font-family:var(--f-num);font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:400}
+.stat .k span{font-family:var(--f-num);font-size:20px;color:var(--ink)}
+.stat .d{font-size:12px;color:var(--muted);line-height:1.2;margin-top:2px}
+.stat.na .k span{color:var(--muted)}
+.opt{display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--ink)}
+.opt.on{border-color:var(--gold);background:rgba(255,209,102,.12)}
+.opt[disabled]{opacity:.45}
+.opt .t{font-weight:700;font-size:16px}
+.opt .d{font-size:13px;color:var(--muted)}
+.achv{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line)}
+.achv:last-child{border-bottom:0}
+.achv .ic3{width:22px;text-align:center;font-size:16px}
+.achv.lock{opacity:.45}
+.sheetline{font-family:var(--f-num);font-size:13px;color:var(--silver);line-height:1.5}
+.sheetline b{color:var(--gold);font-weight:400}
+.divine{margin-top:8px;font-size:13px;color:var(--purple)}
+.hcell .pty{font-family:var(--f-num);font-size:9px;color:var(--gold);letter-spacing:.1em}
 html{padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0}
 [hidden]{display:none!important}
@@ -453,7 +477,7 @@ function migrate(d){
   var sm=d.summon=d.summon||{};sm.opened=sm.opened||0;sm.bonus=sm.bonus||0;sm.owned=sm.owned||{};sm.log=sm.log||[];if(sm.hero===undefined)sm.hero=null;sm.skin=sm.skin||"holo";sm.luck=!!sm.luck;if(!sm.starter){sm.starter=true;sm.bonus+=10}
   var fn=d.fin=d.fin||{};fn.souls=fn.souls||0;fn.merit=fn.merit||0;fn.seen=fn.seen||{};fn.cleared=fn.cleared||{};fn.elite=fn.elite||{};fn.log=fn.log||[];fn.skips=fn.skips||{};sm.gcards=sm.gcards||[];
   var af=d.afk=d.afk||{};af.stage=af.stage||1;af.wave=af.wave||0;af.crownDay=af.crownDay||'';
-  var af=d.afk;af.jade=af.jade||0;af.last=af.last||Date.now();af.kills=af.kills||0;af.gear=af.gear||{};af.fragBought=af.fragBought||0;af.buys=af.buys||{};
+  var af=d.afk;var ld=d.lord=d.lord||{};ld.talents=ld.talents||[];ld.cls=ld.cls||null;ld.party=ld.party||[];ld.phantom=ld.phantom||{g:0,grade:0};ld.ach=ld.ach||{};if(!ld.party.length&&sm.hero)ld.party=[sm.hero];af.jade=af.jade||0;af.last=af.last||Date.now();af.kills=af.kills||0;af.gear=af.gear||{};af.fragBought=af.fragBought||0;af.buys=af.buys||{};
   d.v=2;return d;
 }
 var storageOK=true,S;
@@ -627,7 +651,7 @@ function rollGrade(){
   return pool[0][0];
 }
 function drawCard(){
-  var sm=SM(),gf=(sm.gcards&&sm.gcards.length)?sm.gcards.shift():null,wasLucky=!!sm.luck&&!gf,first=!gf&&!(n(sm.opened)>0),g=gf?rollFloor(gf):first?"Celestial":rollGrade();if(!gf)sm.luck=false;
+  var sm=SM(),gf=(sm.gcards&&sm.gcards.length)?sm.gcards.shift():null,wasLucky=!!sm.luck&&!gf,first=!gf&&!(n(sm.opened)>0),g=gf?rollFloor(gf):first?"Celestial":rollGrade();if(!gf&&!first&&hasTalent("luck")){var g2=rollGrade(),gx=function(q){return GRADES.findIndex(function(z){return z[0]===q})};if(gx(g2)>gx(g))g=g2}if(!gf)sm.luck=false;
   var inG=REWARDS.filter(function(r){return r.g===g&&(!(first||gf)||r.t==="hero")}),fresh=inG.filter(function(r){return !sm.owned[r.id]});
   var r=(fresh.length?fresh:inG)[Math.floor(Math.random()*(fresh.length?fresh.length:inG.length))];
   var dupe=r.t!=="blessing"&&!!sm.owned[r.id];
@@ -636,7 +660,7 @@ function drawCard(){
   else sm.owned[r.id]=1;
   if(!gf)sm.opened=(n(sm.opened)||0)+1;
   sm.log.push({date:todayStr(),id:r.id,dupe:dupe});
-  if(r.t==="hero"&&!dupe&&!sm.hero)sm.hero=r.id;
+  if(r.t==="hero"&&!dupe&&!sm.hero)sm.hero=r.id;if(r.t==="hero"&&!dupe&&S.lord&&S.lord.party.indexOf(r.id)<0&&S.lord.party.length<partySize())S.lord.party.push(r.id);
   save();return {r:r,dupe:dupe,lucky:wasLucky};
 }
 var BASECSS=null;
@@ -647,7 +671,7 @@ function applySkin(){
   var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#02060d");
 }
 function heroLine(T){
-  var h=SM().hero,r=h&&rwById(h);if(!r||!SM().owned[h])return "";
+  var h=advisorId(),r=h&&rwById(h);if(!r||!SM().owned[h])return "";
   var say="",y=cur.y,m=cur.m;
   if(h==="h_xiaohe")say=T.pending>0?"Payroll still unpaid this month: <span class=\"cn m goldt\">"+coin(T.pending)+"</span>. Shall we settle it before the armies march, my lord?":"Every payroll item this month is settled, my lord.";
   else if(h==="h_waner"){var k=T.list.length;say=k?"This month's ledger holds "+k+" entr"+(k===1?"y":"ies")+", my lord. All are recorded.":"The record book for this month is still blank, my lord."}
@@ -699,7 +723,7 @@ function summonSheet(){
       $("sfront").innerHTML='<div class="gr">'+(r.g==="Anomaly"?"! Anomaly !":r.g)+'</div><div class="ic2">'+rwIcon(r)+'</div><div class="rw">'+esc(r.name)+'</div><div class="ty">'+(r.t==="hero"?"Hero advisor · "+esc(r.role):r.t==="skin"?"Panel skin":r.t==="blessing"?"Blessing":"Badge")+'</div><div class="ln">'+esc(r.line)+'</div>';
       function finish(){
         $("scard").classList.add("flip");done=true;busy=false;
-        var note=res.dupe?"[Duplicate: turned into 3 card fragments]":r.t==="hero"?(SM().hero===r.id?"[Hero joined · now your advisor on the Ledger]":"[Hero joined · set as advisor in the Council]"):r.t==="skin"?"[Skin unlocked · apply it in the Council]":r.t==="blessing"?"[PING! The wheel spun past every grade]":"[Badge added to your collection]";
+        var note=res.dupe?"[Duplicate: turned into 3 card fragments]":r.t==="hero"?(LD().party.indexOf(r.id)>=0?"[Hero joined · added to your party]":"[Hero joined · set as advisor in the Council]"):r.t==="skin"?"[Skin unlocked · apply it in the Council]":r.t==="blessing"?"[PING! The wheel spun past every grade]":"[Badge added to your collection]";
         setTimeout(function(){$("snote").textContent=note;if(cardsLeft()>0)$("sAgain").style.display=""},reduce?0:650);
       }
       if(reduce){w.textContent=r.g;finish();return}
@@ -724,10 +748,10 @@ function hallSection(){
   h+='<div class="row" style="align-items:center"><div class="grow"><div class="lbl" style="color:var(--purple)">Summon cards '+left+' · Fragments '+(totalFrag()%10)+'/10</div><div class="hint" style="margin:4px 0 0">All 3 daily quests = 1 fragment. 10 fragments = 1 card.</div></div><button class="btn sum'+(left?" ready":"")+'" data-sum="1">Summon</button></div>';
   var allH=REWARDS.filter(function(r){return r.t==="hero"}),own=allH.filter(function(r){return sm.owned[r.id]}),GO={Celestial:0,Mythical:1,Legendary:2,Epic:3,Rare:4,Fine:5,Common:6};
   own.sort(function(a,b){return GO[a.g]-GO[b.g]});
-  h+='<div class="lbl" style="margin:14px 0 8px">Hero advisors '+own.length+'/'+allH.length+' · tap to set</div><div class="hgrid">';
+  h+='<div class="lbl" style="margin:14px 0 8px">Party '+partyList().length+'/'+partySize()+' · heroes '+own.length+'/'+allH.length+' · tap to add or remove</div><div class="hgrid">';
   if(!own.length)h+='<div class="empty" style="grid-column:1/-1">No heroes yet. Open a Summon card.</div>';
-  own.forEach(function(r){var on=sm.hero===r.id,c=gradeCol(r.g);
-    h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div><div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">ADVISOR</div>':'')+'</button>'});
+  own.forEach(function(r){var on=LD().party.indexOf(r.id)>=0,c=gradeCol(r.g);
+    h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div><div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">PARTY</div>':'')+'</button>'});
   h+='</div><button class="btn g sm" data-roster="1" style="width:100%;margin-top:10px">Hero roster · all '+allH.length+'</button>';
   h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="skinrow">';
   var sk=[{id:"holo",g:"Common"}].concat(REWARDS.filter(function(r){return r.t==="skin"}).map(function(r){return {id:r.skin,g:r.g,rid:r.id}}));
@@ -737,7 +761,7 @@ function hallSection(){
   REWARDS.filter(function(r){return r.t==="badge"}).forEach(function(r){var own=!!sm.owned[r.id],secret=r.g==="Celestial"&&!own;
     h+='<span class="bdg'+(own?"":" lock")+'" style="--bc:'+gradeCol(r.g)+'">'+(secret?"???":esc(r.name))+'</span>'});
   h+='</div>';
-  if(sm.hero&&rwById(sm.hero))h+='<button class="btn g sm" data-hero="none" style="margin-top:12px">Dismiss advisor</button>';
+  if(partyList().length)h+='<button class="btn g sm" data-hero="none" style="margin-top:12px">Clear party</button>';
   h+='</div>';
   return h;
 }
@@ -754,12 +778,12 @@ function AF(){return S.afk}
 function gearCost(k){return Math.round(GEAR[k].base*Math.pow(1.6,AF().gear[k]||0))}
 function fragCost(){return 600+150*(n(AF().fragBought)||0)}
 function fragBuysToday(){var b=AF().buys||{};return b.date===todayStr()?b.n:0}
-function armyTroops(){var sv=sum(S.goals,function(g){return Math.max(0,goalSaved(g))}),per=n(S.settings.soldier)||10;return Math.floor(sv/per)}
+function armyTroops(){var sv=sum(S.goals,function(g){return Math.max(0,goalSaved(g))}),per=n(S.settings.soldier)||10;return Math.floor(sv/per*(S.lord&&S.lord.cls==="steward"?1.1:1))}
 function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor(Math.log(t+1)/Math.log(2.2)))}
 function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
 function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3,Celestial:5};
   var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
-  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()}
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()}
 function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
 function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;if(off)addSouls(Math.floor(dt/60000*6));return off?gain:0}
 function jfmt(v){return Math.floor(v).toLocaleString("en-US")}
@@ -817,7 +841,7 @@ function afkLoop(ts){
   c.strokeStyle="#4f8a3e";c.lineWidth=1;var sc3=(t*22)%14;for(var gx=-sc3;gx<W;gx+=14){c.beginPath();c.moveTo(gx,gy+4);c.lineTo(gx+2,gy);c.moveTo(gx+4,gy+4);c.lineTo(gx+4,gy+1);c.stroke()}
   var TIc=towerInfo(AF().stage);c.font="700 7px Rajdhani,sans-serif";c.textAlign="left";c.fillStyle="rgba(0,0,0,.45)";var stl="STAGE "+AF().stage+" · "+TIc.name.toUpperCase()+"  "+Math.min(12,AF().wave)+"/12";c.fillRect(3,3,c.measureText(stl).width+6,10);c.fillStyle="#ffd166";c.fillText(stl,6,10.5);
   // ---- party
-  var heroes=partyHeroes(),groups=Math.max(1,Math.ceil(heroes.length/4)),gi=Math.floor(t/25)%groups,field=heroes.slice(gi*4,gi*4+4),sq=troopSprites();
+  var pl0=partyList().map(rwById),heroes=pl0.length?pl0:partyHeroes(),groups=Math.max(1,Math.ceil(heroes.length/4)),gi=Math.floor(t/25)%groups,field=heroes.slice(gi*4,gi*4+4),sq=troopSprites();
   var frontX=Math.min(W*0.52,190),U=[];
   for(var i=0;i<sq;i++){var cav=i%3===2;U.push({id:"s"+i,k:cav?"c":"s",x:frontX-26-i*((frontX-34)/Math.max(1,sq)),y:gy-24,s:0.75})}
   field.forEach(function(r,j){U.push({id:r.id,k:"h",r:r,x:frontX-30-j*30,y:gy,s:1})});
@@ -829,7 +853,7 @@ function afkLoop(ts){
   var front=null;AFKV.ens.forEach(function(E,ix){var stop=hitX+ix*26+(E.ty==="boss"?8:0);if(E.die>0){E.die-=dt;return}if(E.x>stop)E.x-=42*dt;if(!front)front=E});
   AFKV.ens=AFKV.ens.filter(function(E){return !(E.die<0)});
   var engaged=front&&front.x<=hitX+(front.ty==="boss"?10:2);
-  if(engaged){front.hp-=(24+jadeRate()*3)*dt;
+  if(engaged){front.hp-=(24+jadeRate()*3)*dt*(front.ty==="boss"&&LD().cls==="strategist"?1.2:1);
     AFKV.shot-=dt;if(AFKV.shot<=0){AFKV.shot=0.3;var a=U[Math.floor(Math.random()*U.length)];AFKV.fx.push({x:a.x+8,y:a.y-20,k:a.k,col:a.k==="h"?gradeCol(a.r.g):"#e8d9a8",life:a.k==="y"?0.25:0.32,dmg:Math.round((a.k==="y"?18:a.k==="h"?12:a.k==="c"?8:5)*(1+0.15*(AF().gear.blade||0))+Math.random()*6)})}
     AFKV.ens.forEach(function(E){if(E.die>0||E.x>hitX+70)return;E.atk-=dt;if(E.atk<=0){E.atk=E.ty==="boss"?0.9:1.5;var tg=Math.random()<0.6?U[U.length-1]:U[Math.floor(Math.random()*U.length)],dm=E.ty==="boss"?0.2:0.1;AFKV.hp[tg.id]=Math.max(0.15,AFKV.hp[tg.id]-dm);AFKV.pops.push({x:tg.x,y:tg.y-46,txt:"-"+Math.round(dm*(E.ty==="boss"?300:200))+" hp",col:"#ff6b81",life:0.8})}});
     if(front.hp<=0){front.die=0.45;AF().kills=(AF().kills||0)+1;addSouls(front.ty==="boss"?50:front.ty==="brute"?10:1);if(AFKV.ens.filter(function(q){return q.die<=0&&q!==front}).length===0){var A2=AF();if(front.ty==="boss"){var TI2=towerInfo(A2.stage);if(TI2.crown&&A2.crownDay!==todayStr()){A2.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;showPing("<b>PING!</b>[CROWN TAKEN · "+esc(TI2.name)+"]<br>[Reward: +1 card fragment]")}else toast("Stage "+A2.stage+" cleared · "+TI2.name);A2.stage++;A2.wave=0}else A2.wave++;save()}var g=Math.max(1,Math.round(AFKV.killGain));AFKV.killGain=0;AFKV.pops.push({x:front.x,y:gy-50,txt:"+"+g+" ◆",col:"#7dffcf",life:1.3,big:true})}}
@@ -854,12 +878,24 @@ function afkLoop(ts){
     el(0,-29.5,5,5,"#f1c79b");c.fillStyle=OL;c.fillRect(1.5,-30.5,1.3,1.3);
     poly([-5.5,-30,0,-37,5.5,-30],"#e3c15a");poly([0,-37,-3,-44,2,-38],col,0.6);
     var sw=atk?Math.sin(ph*1.8)*0.8:0;c.save();c.translate(7,-20);c.rotate(-0.5+sw);ln(0,6,0,-22,"#6b4423",1.6);poly([0,-22,5,-28,4,-18,0,-17],"#e8edf5",0.7);c.restore()}
-  function yefeng(ph,atk){var fl=Math.sin(t*5)*2.5,lg=Math.sin(ph)*2.5;
-    poly([-3,-30,-20-fl,-4,-14,-2,4,-24],"#2a5fb8");
-    ln(-3,-10,-4+lg,0,"#1d2433",3.2);ln(3,-10,4-lg,0,"#1d2433",3.2);
-    poly([-7,-31,7,-31,10,-8,-10,-8],"#eef2f8");ln(-8,-19,8,-19,"#3d7dff",2.2);poly([-2,-31,2,-31,0,-24],"#c9d3e6",0.6);
-    el(0,-36,5.6,5.6,"#f3cfa6");c.fillStyle="#141826";c.beginPath();c.ellipse(0,-38.5,6,3.8,0,Math.PI,0);c.fill();el(-1,-44,2.6,2.2,"#141826",0);c.fillRect(1.8,-37,1.4,1.4);
-    var sw=atk?Math.sin(t*12)*0.9:0;c.save();c.translate(8,-22);c.rotate(-0.9+sw);c.shadowColor="#9fe8ff";c.shadowBlur=10;ln(0,0,0,-28,"#e6f9ff",2.6);c.shadowBlur=0;ln(-4,-1,4,-1,"#ffd166",2);c.restore()}
+  function yefeng(ph,atk){var fl=Math.sin(t*5)*2.5,g1=Math.sin(t*9)*3.5,g2=Math.cos(t*9)*3.5,HB="#15131c",IN="#2b2f7a";
+    // Phantom, black steed
+    ln(9,-12,10+g1,0,HB,2.6);ln(6,-12,5-g1,0,HB,2.6);ln(-8,-12,-9+g2,0,HB,2.6);ln(-11,-12,-12-g2,0,HB,2.6);
+    c.beginPath();c.moveTo(-14,-18);c.quadraticCurveTo(-23,-14,-21,-5);c.strokeStyle="#0a0910";c.lineWidth=3;c.stroke();
+    el(0,-17,14.5,6.5,HB);poly([9,-20,13,-32,19,-31,14,-17],HB);el(19.5,-30,5.2,3,HB,0.35);c.fillStyle="#9fe8ff";c.fillRect(19.5,-31.5,1.4,1.2);
+    ln(10,-21,13.5,-31,"#3a3570",2.2);
+    poly([-7,-23,7,-23,8,-17,-8,-17],IN);ln(-8,-17,8,-17,"#e2b85a",1);
+    // rider: indigo robe, black dragon-scale plate, cape
+    poly([-4,-38,-21-fl,-26,-15,-21,1,-28],IN);
+    poly([-6,-24,6,-24,9,-15,-8,-15],IN);ln(3,-20,6,-12,"#1d1b26",2.6);
+    poly([-5.5,-38,5.5,-38,6.5,-24,-6.5,-24],"#1b1b26");
+    c.strokeStyle="#4a4d6b";c.lineWidth=0.7;for(var ry=-36;ry<-25;ry+=3){for(var rx=-4;rx<5;rx+=3){c.beginPath();c.arc(rx+((ry/3)%2?1.5:0),ry,1.4,0,Math.PI);c.stroke()}}
+    el(-6,-36,2.6,2.2,"#2a2a3a");el(6,-36,2.6,2.2,"#2a2a3a");ln(-6,-25,6,-25,"#e2b85a",1.2);
+    // head and long half-up hair
+    c.beginPath();c.moveTo(-3,-45);c.quadraticCurveTo(-12-fl,-40,-15-fl*1.4,-30);c.quadraticCurveTo(-9-fl,-36,-2,-40);c.closePath();c.fillStyle="#0e0d14";c.fill();
+    el(0,-43,5.4,5.4,"#f3cfa6");c.fillStyle="#0e0d14";c.beginPath();c.ellipse(0,-45.5,5.8,3.6,0,Math.PI,0);c.fill();el(-0.5,-49.5,2.3,2,"#0e0d14",0);ln(-2,-50,2,-50,"#e2b85a",0.9);c.fillRect(2,-44,1.3,1.3);
+    // Moonripple: straight sword with a keris wave
+    var sw=atk?Math.sin(t*12)*0.9:0;c.save();c.translate(7,-30);c.rotate(-0.9+sw);c.shadowColor="#9fe8ff";c.shadowBlur=10;c.beginPath();c.moveTo(0,0);for(var k=1;k<=10;k++)c.lineTo(Math.sin(k*1.4)*1.1,-k*2.8);c.strokeStyle="#e6f9ff";c.lineWidth=2.2;c.stroke();c.shadowBlur=0;ln(-4,-1,4,-1,"#e2b85a",2);c.restore()}
   function enemy(E){var big=E.ty==="boss"?1.6:E.ty==="brute"?1.25:1,ph=t*8+E.x*0.1,lg=Math.sin(ph)*3;c.save();c.translate(E.x,gy);c.scale(-big,big);
     var skin=E.ty==="boss"?"#7d6a8f":E.ty==="brute"?"#6f8a5a":"#6aa03a";
     ln(-3,-9,-4+lg,0,"#2a1d14",2.6);ln(3,-9,4-lg,0,"#2a1d14",2.6);
@@ -876,7 +912,7 @@ function afkLoop(ts){
   U.forEach(function(m,ix){var bob=Math.sin(t*7+ix*1.7)*0.8;c.save();c.translate(m.x,m.y+bob);c.scale(m.s,m.s);var ph=t*7+ix;
     if(m.k==="s")spearman(ph,engaged);else if(m.k==="c")horseman(ph,engaged);else if(m.k==="h")general(m.r,ph,engaged);else yefeng(ph,engaged);
     c.restore();
-    var top=m.k==="y"?50:m.k==="h"?54:m.k==="c"?40*m.s:36*m.s;hpbar(m.x,m.y-top,AFKV.hp[m.id],"#3dffa8");if(m.k==="h")LB.push(m);
+    var top=m.k==="y"?60:m.k==="h"?54:m.k==="c"?40*m.s:36*m.s;hpbar(m.x,m.y-top,AFKV.hp[m.id],"#3dffa8");if(m.k==="h")LB.push(m);
     if(m.k==="y"){c.fillStyle="#bfe6ff";c.font="700 7px Rajdhani,sans-serif";c.textAlign="center";c.fillText("YE FENG",m.x,m.y-top-3)}});
   c.font="700 7px Rajdhani,sans-serif";c.textAlign="center";
   LB.forEach(function(m){var nm=m.r.name,sp=nm.indexOf(" "),ls=nm.length>=10&&sp>0?[nm.slice(0,sp),nm.slice(sp+1)]:[nm];
@@ -915,14 +951,14 @@ function addMerit(v){var f=FN(),before=lordRank().i;f.merit=(f.merit||0)+v;var a
 var DROPS={ordinary:{souls:1,merit:1,frag:0},elite:{souls:10,merit:100,frag:1},boss:{souls:50,merit:2000,frag:3,card:"Epic"},crown:{souls:500,merit:5000,frag:5,card:"Legendary"}};
 function finReward(kind,foe,what){
   var D=DROPS[kind],f=FN(),sm=SM();
-  if(D.frag)sm.bonus=(n(sm.bonus)||0)+D.frag;
+  var fr=D.frag+(kind==="elite"&&hasTalent("tide")?1:0);if(fr)sm.bonus=(n(sm.bonus)||0)+fr;if(kind==="boss"||kind==="crown")addPhantom(2);
   if(D.card)sm.gcards.push(D.card);
   f.log.unshift({d:todayStr(),k:kind,foe:foe,what:what});if(f.log.length>60)f.log.length=60;save();
   var tf=totalFrag()%10;
   if(kind==="boss"||kind==="crown")showPing('<b>PING!</b>['+(kind==="crown"?"WORLD":"SERVER")+' ANNOUNCEMENT]<br>['+(kind==="crown"?"CROWN BOSS":"BOSS")+' DEFEATED · '+esc(foe)+']<br>['+esc(what)+' cleared · Souls +'+D.souls+' · Merit +'+D.merit+' · Fragments +'+D.frag+']<br>[Drop: Summon Card ('+(kind==="crown"?"Legendary":"Epic")+'+) · open it in the Summon Hall]');
   else if(kind==="elite")toast("ELITE slain · "+what+" paid early · Souls +10 · Merit +100 · Fragment +1");
   else toast("Ordinary foe slain · Souls +1 · Merit +1");
-  addSouls(D.souls);addMerit(D.merit);save();
+  addSouls(D.souls);addMerit(Math.round(D.merit*(hasTalent("scales")?1.1:1)));save();
 }
 function checkFin(){
   var f=FN();if(!f)return;
@@ -937,6 +973,108 @@ function checkFin(){
     if(rec<dueD&&new Date(x.date+"T00:00")<=dueD){f.elite[key]=1;finReward("elite",nm,nm)}});
 }
 function skipsToday(){var k=FN().skips||{};return k.d===todayStr()?k.n:0}
+
+
+/* ===== Lord Sheet, talents, classes, party, Phantom, achievements (Character Builds brief) ===== */
+var TALENTS=[
+ {id:"divine",name:"Divine Eyes",d:"Luna points out the biggest leak in this month's spending."},
+ {id:"luck",name:"Supreme Luck",d:"Summon cards roll twice and keep the better grade."},
+ {id:"scales",name:"Even Scales",d:"+10% Merit from every real-life kill."},
+ {id:"tide",name:"Tide Ledger",d:"+1 extra card fragment for every bill paid early."},
+ {id:"market",name:"Market Voice",d:"Side income counts toward Merit. Opens when side-income sources exist.",soon:true}
+];
+var CLASSES=[
+ {id:"steward",name:"Steward",hero:"Xiao He",d:"For saving steadily. Your armies field +10% soldiers in battle."},
+ {id:"strategist",name:"Strategist",hero:"Han Xin",d:"For killing debt. Bosses take +20% damage in battle."},
+ {id:"merchant",name:"Merchant",hero:"Fan Li",d:"For side income or a business. +10 Merit for each tribute you log."},
+ {id:"guardian",name:"Guardian",hero:"Hang Tuah",d:"Safety first. Luna warns when free money drops under one week of payroll."},
+ {id:"envoy",name:"Envoy",hero:"Zheng He",d:"For travel, Hajj or umrah savings. The voyage map comes with travel pots.",soon:true},
+ {id:"builder",name:"Builder",hero:"Lu Ban",d:"For a house or renovation. Building progress comes with storehouse goals.",soon:true},
+ {id:"swordkeris",name:"Sword-Keris",hero:"Ye Feng",d:"Hybrid path. Unlocks at Count.",lockRank:3,soon:true}
+];
+var PARTY_SIZE=[2,3,4,5,6,7,7,7];
+var PHANTOM_G=["Common","Fine","Rare","Epic","Legendary"];
+function LD(){return S.lord}
+function lordLevel(){return Math.floor(Math.sqrt((FN().merit||0)/220))+1}
+function hasTalent(id){return LD().talents.indexOf(id)>=0}
+function talentSlots(){var r=lordRank().i;return r>=5?3:r>=3?2:1}
+function partySize(){return PARTY_SIZE[lordRank().i]||2}
+function partyList(){var sm=SM();return LD().party.filter(function(id){return sm.owned[id]&&rwById(id)})}
+function advisorId(){var pl=partyList();if(pl.length){var d=Math.floor(Date.now()/86400000);return pl[d%pl.length]}return SM().hero}
+function graceMult(){return 1+0.01*Math.floor(lordLevel()/5)}
+function phantomMult(){return 1+0.05*(LD().phantom.grade||0)}
+function addPhantom(v){var ph=LD().phantom;ph.g=(ph.g||0)+v;while(ph.g>=100&&ph.grade<PHANTOM_G.length-1){ph.g-=100;ph.grade++;showPing('<b>PING!</b>[Phantom grew → '+PHANTOM_G[ph.grade].toUpperCase()+']<br>[Jade ×'+phantomMult().toFixed(2)+']')}if(ph.grade>=PHANTOM_G.length-1)ph.g=Math.min(ph.g,100)}
+function monthlyExpenses(){var c=sum(S.commits,function(x){return n(x.amt)||0})+sum(S.debts,function(d){return n(d.bal)>0?(n(d.min)||0):0});if(c>0)return c;var T=monthTotals(now.getFullYear(),now.getMonth());return T.out>0?T.out:null}
+function streakDays(){var days={};S.tx.forEach(function(x){days[x.date]=1});var d=new Date(),k=0;if(!days[todayStr()])d.setDate(d.getDate()-1);
+  for(var i=0;i<400;i++){var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");if(!days[ds])break;k++;d.setDate(d.getDate()-1)}return k}
+function onTimePct(){var a=0,ok=0;S.tx.forEach(function(x){var due=null;if(x.commitId){var c=S.commits.find(function(cc){return cc.id===x.commitId});if(c&&n(c.day))due=c.day}else if(x.type==="debt"&&x.amt>0){var d=debtById(x.debtId);if(d&&n(d.day))due=d.day}
+  if(due===null)return;a++;if(parseInt(x.date.slice(8,10),10)<=due)ok++});return a?ok/a:null}
+function lordStats(){
+  var T=monthTotals(now.getFullYear(),now.getMonth()),ex=monthlyExpenses(),ef=goalById("ef"),efS=ef?goalSaved(ef):0,sim=simulate(),cap=function(v){return Math.max(0,Math.min(99,Math.round(v)))};
+  var cash=Math.max(0,T.baki),st=[];
+  st.push({k:"HP",n:"Cash buffer",v:ex?cap(cash/ex*16):null,d:ex?(cash/ex).toFixed(1)+" months of expenses in the treasury":"Add payroll to measure"});
+  var xtra=n(S.settings.extra);st.push({k:"ATK",n:"Surplus at debt",v:xtra?cap(xtra/10):null,d:xtra?rm(xtra)+" a month above minimums":"Set the extra per month in Moonvault"});
+  var pol=S.commits.filter(function(c){return c.cat==="Insurance/Takaful"}).length;st.push({k:"DEF",n:"Protection",v:pol?cap(pol*20):null,d:pol?pol+" takaful/insurance item"+(pol>1?"s":"")+" in payroll":"Add takaful items to payroll"});
+  st.push({k:"STR",n:"Savings rate",v:T.inc>0?cap(T.save/T.inc*200):null,d:T.inc>0?Math.round(T.save/T.inc*100)+"% of this month's tribute saved":"Needs tribute this month"});
+  st.push({k:"STM",n:"Emergency fund",v:ex?cap(efS/ex*16):null,d:ex?(efS/ex).toFixed(1)+" months held in the Garrison":"Add payroll to measure"});
+  var hasDebt=S.debts.some(function(d){return n(d.bal)>0});st.push({k:"SPD",n:"Debt payoff speed",v:!hasDebt?(S.debts.some(function(d){return n(d.orig)>0})?99:null):sim.months?cap(99-sim.months*2):null,d:!hasDebt?"No debt HP recorded":sim.months?sim.months+" months to debt-free":"Needs monthly payments"});
+  st.push({k:"INT",n:"Budget accuracy",v:null,d:"Opens when budgets are added"});
+  st.push({k:"WIS",n:"Investing",v:null,d:"Opens when investments are tracked"});
+  var ot=onTimePct();st.push({k:"POL",n:"Bills on time",v:ot===null?null:cap(ot*99),d:ot===null?"Needs bills with due days":Math.round(ot*100)+"% paid on or before due"});
+  st.push({k:"LUK",n:"Windfalls",v:null,d:"Opens when windfalls are logged"});
+  st.push({k:"LEAD",n:"Automation",v:null,d:"Opens when auto-transfers are tracked"});
+  var sk=streakDays();st.push({k:"CHA",n:"Consistency",v:cap(sk*3),d:sk+" day logging streak"});
+  return {st:st,spirit:T.free,total:sum(st,function(x){return x.v||0})};
+}
+var ACH=[
+ {id:"stronghold",name:"First Stronghold on Earth",d:"Reach the Stronghold realm tier.",test:function(){return realm(netWorth()).i>=2}},
+ {id:"guarded",name:"The Guarded Lord",d:"Garrison holds 6 months of expenses.",test:function(){var ex=monthlyExpenses(),ef=goalById("ef");return ex&&ef&&goalSaved(ef)>=ex*6}},
+ {id:"ironbrow",name:"Breaker of the Iron Brow",d:"Clear the debt guarded by Chiyou.",test:function(){return S.debts.some(function(d){return bossName(d).indexOf("Chiyou")===0&&FN().cleared[d.id]})}},
+ {id:"envoysend",name:"Envoy's End",d:"Clear your biggest debt.",test:function(){var f=FN(),big=null,mx=0;Object.keys(f.seen).forEach(function(k){if(f.seen[k]>mx){mx=f.seen[k];big=k}});return big&&f.cleared[big]}},
+ {id:"celebrated",name:"Celebrated",d:"Renown 10,000. Opens when Renown is tracked.",test:function(){return false}},
+ {id:"fivearts",name:"Five Arts Master",d:"All five arts at Master. Opens with arts.",test:function(){return false}},
+ {id:"longtable",name:"The Long Table",d:"12 Monthly Councils in a row. Opens with the Monthly Council.",test:function(){return false}}
+];
+function checkLord(){var L=LD();if(!L)return;
+  if(L.cls==="merchant"){L.tribSeen=L.tribSeen||{};var mn=0;S.tx.forEach(function(x){if(x.type==="in"&&!L.tribSeen[x.id]){L.tribSeen[x.id]=1;mn+=10}});if(mn){addMerit(mn);save()}}
+  if(L.lastDay!==todayStr()){L.lastDay=todayStr();addPhantom(1);save()}
+  ACH.forEach(function(a){if(!L.ach[a.id]&&a.test()){L.ach[a.id]=todayStr();save();showPing('<b>PING!</b>[ACHIEVEMENT UNLOCKED]<br>['+a.name+']')}});
+}
+function divineLine(T){if(!hasTalent("divine")||!(T.out>0))return "";var by={};T.list.forEach(function(x){if(x.type==="out")by[x.cat||"Other"]=(by[x.cat||"Other"]||0)+x.amt});var top=Object.keys(by).sort(function(a,b){return by[b]-by[a]})[0];
+  return '<div class="divine">[Divine Eyes] Biggest leak this month: '+esc(top)+' · <span class="cn m">'+coin(by[top])+'</span> ('+Math.round(by[top]/T.out*100)+'% of spending)</div>'}
+function guardianLine(T){if(LD().cls!=="guardian")return "";var wk=sum(S.commits,function(c){return n(c.amt)||0})/4;if(!(wk>0)||T.free>=wk)return "";return '<div class="redpanel" style="margin-top:8px">[Guardian · Hang Tuah] Free money '+coin(T.free,true)+' is under one week of payroll ('+coin(wk)+'), my lord.</div>'}
+function lordCard(){var L=LD(),LR=lordRank(),cl=CLASSES.find(function(c){return c.id===L.cls}),ST=lordStats();
+  var h=H("Lord sheet","Ye Feng's path","purple")+'<button class="card lordc" data-lord="1" style="width:100%;text-align:left;color:inherit;font:inherit;border:0;cursor:pointer">';
+  h+='<div class="row"><div><div class="lbl">Level</div><div class="lv">Lv '+lordLevel()+'</div></div><div class="grow" style="padding-left:12px"><div style="font-weight:700;font-size:17px">'+LR.name+(cl?' · '+cl.name:'')+'</div><div class="muted" style="font-size:13px">'+(L.talents.length?L.talents.map(function(t){return TALENTS.find(function(x){return x.id===t}).name}).join(" · "):'No talent yet')+' · Total '+ST.total+'</div></div><div class="lbl" style="color:var(--gold)">OPEN ›</div></div>';
+  if(!L.cls||!L.talents.length)h+='<div class="hint" style="margin:10px 0 0;color:var(--gold)">[Choose your class and talent, my lord]</div>';
+  return h+'</button>'}
+function lordSheet(){
+  var L=LD(),LR=lordRank(),BG=bladeGrade(),ST=lordStats(),cl=CLASSES.find(function(c){return c.id===L.cls}),ph=L.phantom,pl=partyList();
+  var h='<h3>Lord sheet</h3><div class="card" style="padding:12px 14px"><div class="sheetline">[Lord · <b>Lv '+lordLevel()+'</b> · '+LR.name+' · Total '+ST.total+']<br>[Merit '+jfmt(FN().merit||0)+(LR.next?' / '+jfmt((FN().merit||0)+LR.need)+' ('+LR.next+')':'')+']<br>'+
+    '[Class: <b>'+(cl?cl.name+' · '+cl.hero:'not chosen')+'</b>]<br>[Talents: <b>'+(L.talents.length?L.talents.map(function(t){return TALENTS.find(function(x){return x.id===t}).name.toUpperCase()}).join(" · "):'none')+'</b> · slots '+talentSlots()+']<br>'+
+    '[Weapon: MOONRIPPLE (<b>'+BG.name+'</b>) · Souls '+jfmt(FN().souls||0)+(BG.next?' / '+jfmt((FN().souls||0)+BG.need):'')+']<br>[Mount: PHANTOM (<b>'+PHANTOM_G[ph.grade||0]+'</b>) · Growth '+(ph.g||0)+' / 100]<br>'+
+    '[Party '+pl.length+'/'+partySize()+': '+(pl.length?pl.map(function(id){return esc(rwById(id).name)}).join(" · "):'empty')+']<br>[Lord\'s Grace: jade ×'+graceMult().toFixed(2)+'] [Spirit Pool: <span class="m">'+coin(ST.spirit,true)+'</span>]</div></div>';
+  h+='<div class="row" style="margin:10px 0"><button class="btn grow" id="pickCls">'+(cl?"Change class":"Choose class")+'</button><button class="btn grow" id="pickTal">Talents</button></div>';
+  h+='<div class="lbl" style="margin:8px 0 6px">Stats · from your real ledger</div><div class="statg">';
+  ST.st.forEach(function(x){h+='<div class="stat'+(x.v===null?' na':'')+'"><div class="k"><b>'+x.k+'</b><span>'+(x.v===null?'—':x.v)+'</span></div><div class="d"><b style="color:var(--silver);font-weight:700">'+x.n+'</b> · '+esc(x.d)+'</div></div>'});
+  h+='</div><div class="hint" style="margin:8px 0 0">Scores run 0-99. A dash means the app has no data for it yet; nothing is guessed.</div>';
+  h+='<div class="lbl" style="margin:14px 0 6px">Achievements</div><div class="card" style="padding:4px 12px">';
+  ACH.forEach(function(a){var on=L.ach[a.id];h+='<div class="achv'+(on?'':' lock')+'"><div class="ic3">'+(on?'★':'☆')+'</div><div class="grow"><div style="font-weight:700">'+a.name+'</div><div class="muted" style="font-size:13px">'+a.d+(on?' · '+on:'')+'</div></div></div>'});
+  h+='</div><button class="btn g" id="lordX" style="width:100%;margin-top:12px">Close</button>';
+  openSheet(h,function(){$("lordX").onclick=function(){closeSheet();render()};$("pickCls").onclick=classSheet;$("pickTal").onclick=talentSheet});
+}
+function classSheet(){var L=LD(),mk=new Date().toISOString().slice(0,7),locked=L.cls&&L.clsMonth===mk;
+  var h='<h3>Choose class</h3><div class="hint" style="margin:0 0 10px">'+(locked?'You changed class this month. You can change again next month, my lord.':'Pick a path. You can change once a month (at the Monthly Council).')+'</div>';
+  CLASSES.forEach(function(c){var dis=locked||(c.lockRank&&lordRank().i<c.lockRank);h+='<button class="opt'+(L.cls===c.id?' on':'')+'" data-cls="'+c.id+'"'+(dis?' disabled':'')+'><div class="t">'+c.name+' · <span class="muted" style="font-weight:600">'+c.hero+'</span></div><div class="d">'+c.d+'</div></button>'});
+  h+='<button class="btn g" id="clsX" style="width:100%">Back</button>';
+  openSheet(h,function(sh){$("clsX").onclick=lordSheet;sh.querySelectorAll("[data-cls]").forEach(function(b){b.onclick=function(){L.cls=b.dataset.cls;L.clsMonth=mk;save();toast("Class: "+CLASSES.find(function(c){return c.id===L.cls}).name);lordSheet()}})});
+}
+function talentSheet(){var L=LD(),slots=talentSlots();
+  var h='<h3>Talents</h3><div class="hint" style="margin:0 0 10px">Slots: '+slots+' (more open at Count and Duke). Tap to add or remove.</div>';
+  TALENTS.forEach(function(t){var on=hasTalent(t.id),dis=t.soon||(!on&&L.talents.length>=slots);h+='<button class="opt'+(on?' on':'')+'" data-tal="'+t.id+'"'+(dis&&!on?' disabled':'')+'><div class="t">'+t.name+(t.soon?' · <span class="muted">soon</span>':'')+'</div><div class="d">'+t.d+'</div></button>'});
+  h+='<button class="btn g" id="talX" style="width:100%">Back</button>';
+  openSheet(h,function(sh){$("talX").onclick=lordSheet;sh.querySelectorAll("[data-tal]").forEach(function(b){b.onclick=function(){var id=b.dataset.tal,i=L.talents.indexOf(id);if(i>=0)L.talents.splice(i,1);else if(L.talents.length<talentSlots())L.talents.push(id);save();talentSheet()}})});
+}
 
 function lunaLine(T,isNow){
   var today=todayStr(),anyToday=S.tx.some(function(x){return x.date===today});
@@ -959,7 +1097,7 @@ function vHome(){
       '<div class="tot"><span>Surplus before armies</span><span class="cn m">'+coin(T.lebihan,true)+'</span></div>'+
     '</div></div>';
   h+=lunaLine(T,isNow);
-  if(isNow)h+=heroLine(T);
+  if(isNow)h+=divineLine(T)+guardianLine(T)+heroLine(T);
   h+='<div class="tiles"><div class="tile"><div class="lbl">Free for armies</div><div class="v m '+(T.free<0?"neg":"pos")+'">'+coin(T.free,true)+'</div><div class="s">After unpaid payroll &amp; debts (<span class="m">'+rm(T.pending)+'</span>)</div></div>';
   if(pd&&isNow){var perDay=pd.days>0?T.free/pd.days:null;
     h+='<div class="tile"><div class="lbl">Next tribute</div><div class="v t">'+(pd.days===0?"Today!":"In "+pd.days+" days")+'</div><div class="s">'+esc(pd.inc.name)+', '+pd.date.getDate()+' '+MON3[pd.date.getMonth()]+(perDay!==null?' · <span class="m">'+coin(perDay,true)+'</span>/day':'')+'</div></div>';
@@ -970,6 +1108,7 @@ function vHome(){
   h+=H("Your realm","Realm tier","purple")+'<div class="card"><div class="realm">'+KEEP(R.i)+'<div class="grow"><div class="tier">'+R.name+'</div><div class="muted" style="font-size:13px;font-weight:800;margin-top:3px">Net worth <span class="cn m">'+coin(nw,true)+'</span> <span class="m">('+rm(nw,true)+')</span></div></div></div>'+
     '<div class="bar gold" style="margin:12px 0 6px"><i style="width:'+(R.p*100)+'%"></i></div><div class="hint" style="margin:0">'+(!hasData?'Fill your armies and Moonvault debts to see the true tier.':nw<0?'Debts still outweigh the armies. Every strike lifts the realm.':(R.next?'<span class="m">'+coin(R.need)+'</span> more to '+R.next+'.':'The highest tier.'))+' Net worth here = armies minus debts in this ledger.</div></div>';
 
+  h+=lordCard();
   if(isNow){var qs=questState(todayStr()),fr=totalFrag(),cl=cardsLeft();
     h+=H("Daily quests","Today","teal")+'<div class="card">';
     qs.forEach(function(q){h+='<div class="q"><button class="check'+(q.on?" on":"")+(q.auto?" auto":"")+'" '+(q.auto?'aria-disabled="true"':'data-quest="'+q.k+'"')+' aria-label="'+esc(q.t)+'">'+(q.on?"✓":"")+'</button><div class="grow"><div class="t">'+q.t+'</div><div class="d">'+q.d+'</div></div></div>'});
@@ -1099,7 +1238,7 @@ function render(){
   $("mLabel").textContent=MONTHS[cur.m]+" "+cur.y;
   $("nav").innerHTML=NAV.map(function(x){return '<button data-tab="'+x.id+'" class="'+(tab===x.id?"on":"")+'">'+x.i+x.t+'</button>'}).join("");
   $("view").innerHTML={home:vHome,rekod:vRekod,hutang:vHutang,harta:vHarta,lagi:vLagi}[tab]();
-  checkTier();checkFin();afkInfo();
+  checkTier();checkFin();checkLord();afkInfo();
 }
 function checkTier(){
   var R=realm(netWorth()),last=S.settings.tier;
@@ -1236,7 +1375,7 @@ function importText(txt){
 
 document.addEventListener("click",function(e){
   if(e.target.closest("#layer"))return;
-  var b=e.target.closest("[data-tab],[data-tx],[data-pay],[data-gaji],[data-filter],[data-method],[data-debt],[data-gin],[data-gout],[data-gedit],[data-commit],[data-inc],[data-quest],[data-sum],[data-hero],[data-skin],[data-roster],[data-camp],[data-skip]");
+  var b=e.target.closest("[data-tab],[data-tx],[data-pay],[data-gaji],[data-filter],[data-method],[data-debt],[data-gin],[data-gout],[data-gedit],[data-commit],[data-inc],[data-quest],[data-sum],[data-hero],[data-skin],[data-roster],[data-camp],[data-skip],[data-lord]");
   if(b){var ds=b.dataset;
     if(ds.tab){tab=ds.tab;render();window.scrollTo(0,0);return}
     if(ds.tx){var t=S.tx.find(function(x){return x.id===ds.tx});if(t)txSheet({tx:t});return}
@@ -1258,9 +1397,11 @@ document.addEventListener("click",function(e){
     if(ds.inc){incSheet(incById(ds.inc));return}
     if(ds.sum){summonSheet();return}
     if(ds.camp){campSheet();return}
+    if(ds.lord){lordSheet();return}
     if(ds.skip){if(skipsToday()<10){FN().skips={d:todayStr(),n:skipsToday()+1};finReward("ordinary","Impulse","Impulse buy");render()}return}
     if(ds.roster){rosterSheet();return}
-    if(ds.hero){S.summon.hero=ds.hero==="none"?null:ds.hero;save();render();toast(ds.hero==="none"?"Advisor dismissed":rwById(ds.hero).name+" is now your advisor");return}
+    if(ds.hero&&ds.hero!=="none"){var Lp=LD().party,ix=Lp.indexOf(ds.hero);if(ix>=0)Lp.splice(ix,1);else if(partyList().length<partySize())Lp.push(ds.hero);else{toast("Party full ("+partySize()+"). Rank up for more seats");return}save();render();toast(ix>=0?rwById(ds.hero).name+" left the party":rwById(ds.hero).name+" joined the party");return}
+    if(ds.hero){S.summon.hero=null;LD().party=[];save();render();toast(ds.hero==="none"?"Advisor dismissed":rwById(ds.hero).name+" is now your advisor");return}
     if(ds.skin){S.summon.skin=ds.skin;save();applySkin();render();toast("Skin: "+SKINS[ds.skin].name);return}
   }
   var t2=e.target;
