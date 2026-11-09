@@ -561,12 +561,22 @@ function goalSaved(g){return (n(g.start)||0)+sum(S.tx.filter(function(x){return 
 function monthTotals(y,m){
   var t=S.tx.filter(function(x){return inMonth(x,y,m)}),o={inc:0,out:0,debt:0,save:0,list:t};
   t.forEach(function(x){o[{in:"inc",out:"out",debt:"debt",save:"save"}[x.type]]+=x.amt});
-  o.lebihan=o.inc-o.out-o.debt;o.baki=o.lebihan-o.save;
+  o.lebihan=o.inc-o.out-o.debt;o.carry=carryIn(y,m);o.baki=o.lebihan-o.save+o.carry;
   var uc=S.commits.filter(function(c){return n(c.amt)&&!commitPaid(c,y,m)});
   var ud=S.debts.filter(function(d){return n(d.bal)>0&&n(d.min)&&debtPaidAmt(d,y,m)<d.min});
   o.pending=sum(uc,function(c){return c.amt})+sum(ud,function(d){return Math.min(d.min-debtPaidAmt(d,y,m),d.bal)});
   o.free=o.baki-o.pending;return o;
 }
+function txNet(x){return x.type==="in"?x.amt:-(n(x.amt)||0)}
+function carryIn(y,m){var ms=dateInMonth(y,m,1),me=dateInMonth(y,m,dim(y,m)),ob=S.settings.opening,c=0;
+  if(ob&&n(ob.amt)!=null&&ob.date){if(ob.date>me)return 0;c=n(ob.amt)||0;
+    S.tx.forEach(function(x){if(x.date>=ob.date&&x.date<ms)c+=txNet(x);if(x.date<ob.date&&x.date>=ms&&x.date<=me)c-=txNet(x)});return Math.round(c*100)/100}
+  S.tx.forEach(function(x){if(x.date<ms)c+=txNet(x)});return Math.round(c*100)/100}
+function openSheetBal(){var ob=S.settings.opening||{};
+  openSheet('<h3>Opening balance</h3><div class="hint">Money in your spending accounts (for example your salary account) on that date. Savings pots are set in Armies under "Already saved".</div><div class="amt"><span>RM</span><input id="obAmt" inputmode="decimal" placeholder="0.00" value="'+(ob.amt==null?"":ob.amt)+'"></div><div class="field" style="margin-top:12px"><label class="lbl" for="obDate">As of date</label><input id="obDate" type="date" value="'+(ob.date||todayStr())+'"></div><button class="btn" id="obSave" style="width:100%">Save</button>'+(ob.date?'<button class="btn g" id="obClr" style="width:100%;margin-top:8px">Clear opening balance</button>':''),function(){
+    $("obSave").onclick=function(){var a=numVal("obAmt"),d=val("obDate")||todayStr();S.settings.opening=a==null?null:{amt:a,date:d};save();closeSheet();render();toast("Treasury updated")};
+    if($("obClr"))$("obClr").onclick=function(){S.settings.opening=null;save();closeSheet();render();toast("Opening balance cleared")}})}
+document.addEventListener("click",function(e){if(e.target.closest("#openBal"))openSheetBal()});
 function nextPayday(){
   var t=new Date();t.setHours(0,0,0,0);var best=null;
   S.incomes.forEach(function(i){if(!n(i.day))return;
@@ -1201,7 +1211,7 @@ function vHome(){
     '<div class="lbl">Treasury · real balance</div>'+
     '<div class="big m">'+coin(T.baki,true)+'</div><div class="bigrm m">'+rm(T.baki,true)+'</div>'+
     '<div class="lines">'+
-      '<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
+      (T.carry?'<div><span>Carried in</span><span class="cn m">'+coin(T.carry,true)+'</span></div>':'')+'<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
       '<div><span>Spent</span><span class="cn m">−'+coin(T.out)+'</span></div>'+
       '<div><span>Moonvault strikes</span><span class="cn m">−'+coin(T.debt)+'</span></div>'+
       '<div><span>Sent to armies</span><span class="cn m">−'+coin(T.save)+'</span></div>'+
@@ -1320,7 +1330,7 @@ function vHarta(){
 }
 
 function vLagi(){
-  var h=H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
+  var ob=S.settings.opening,h=H("Treasury","Opening balance","gold")+'<div class="card"><div class="row"><div class="grow"><div class="t">'+(ob?'<span class="m">'+money(n(ob.amt))+'</span>':"Not set")+'</div><div class="d muted">'+(ob?"As of "+fmtDate(ob.date):"Cash in your spending accounts when you start")+'</div></div><button class="btn sm" id="openBal">'+(ob?"Edit":"Set")+'</button></div></div>'+H("Payroll","Fixed monthly commitments","gold")+'<div class="card">';
   if(!S.commits.length)h+='<div class="empty">Nothing yet. For example rent, electricity, internet, takaful, subscriptions.</div>';
   S.commits.slice().sort(function(a,b){return (n(a.day)||99)-(n(b.day)||99)}).forEach(function(c){
     h+='<div class="li" data-commit="'+c.id+'"><div class="ic">'+(CAT_AB[c.cat]||"OT")+'</div><div class="grow"><div class="t">'+esc(c.name)+'</div><div class="d">'+esc(c.cat)+' · '+(n(c.day)?"day "+c.day:"due —")+'</div></div><div class="a">'+money(n(c.amt))+'</div></div>'});
