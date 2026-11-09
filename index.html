@@ -506,13 +506,13 @@ function todayStr(){return ymd(new Date())}
 function fresh(){
   return {v:2,start:todayStr(),
     settings:{hide:false,method:"snowball",extra:null,soldier:10,tier:null},
-    incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:null}],
+    incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:15}],
     debts:DEBTS.map(function(n){return {id:uid(),name:n,bal:null,orig:null,min:null,day:null,rate:null}}),
     commits:[],
     goals:[{id:"saving",name:"Main Army (GX Bank)",target:null,start:null},{id:"ef",name:"Garrison (TnG)",target:null,start:null},{id:"reserve",name:"Reserve Unit (Ryt)",target:null,start:null}],
     quests:{},tx:[]};
 }
-function migrate(d){if(d&&d.goals)d.goals.forEach(function(g){if(g.id==="saving"&&g.name==="Main Army")g.name="Main Army (GX Bank)";if(g.id==="ef"&&g.name==="Garrison")g.name="Garrison (TnG)"});if(d&&d.goals&&!d.goals.some(function(g){return g.id==="reserve"})&&!(d.settings&&d.settings.noReserve))d.goals.push({id:"reserve",name:"Reserve Unit (Ryt)",target:null,start:null});
+function migrate(d){if(d&&d.incomes)d.incomes.forEach(function(i){if(i.id==="pm"&&!i.day)i.day=15;if(i.id==="perseni"&&!i.day)i.day=25});if(d&&d.goals)d.goals.forEach(function(g){if(g.id==="saving"&&g.name==="Main Army")g.name="Main Army (GX Bank)";if(g.id==="ef"&&g.name==="Garrison")g.name="Garrison (TnG)"});if(d&&d.goals&&!d.goals.some(function(g){return g.id==="reserve"})&&!(d.settings&&d.settings.noReserve))d.goals.push({id:"reserve",name:"Reserve Unit (Ryt)",target:null,start:null});
   if(!d.start)d.start=todayStr();
   d.settings=d.settings||{};if(d.settings.soldier==null)d.settings.soldier=10;
   d.quests=d.quests||{};
@@ -1400,7 +1400,13 @@ function vLagi(){
   return h;
 }
 
-function render(){
+function autoTribute(){var td=todayStr(),y=now.getFullYear(),m=now.getMonth(),key=y+"-"+m;S.settings.autoT=S.settings.autoT||{};
+  S.incomes.forEach(function(i){if(!n(i.day))return;var pd=dateInMonth(y,m,Math.min(i.day,dim(y,m)));if(td<pd)return;var k=i.id+":"+key;if(S.settings.autoT[k])return;
+    var got=S.tx.some(function(x){return x.type==="in"&&x.src===i.id&&inMonth(x,y,m)});S.settings.autoT[k]=1;if(got){save();return}
+    if(i.id==="pm"){save();setTimeout(function(){showPing("<b>PAYDAY</b>[PM salary day, my lord]<br>[Key in the real amount from your payslip]");txSheet({type:"in",src:"pm",date:pd})},600);return}
+    if(n(i.est)){var t={id:uid(),ts:Date.now(),type:"in",src:i.id,amt:n(i.est),date:pd,note:"Auto · pay day",auto:true};applyEffect(t);S.tx.push(t);save();setTimeout(function(){showPing("<b>TRIBUTE ARRIVES</b>["+esc(i.name)+" · "+coin(n(i.est))+" recorded]<br>[Edit it in Records if the amount differs]")},600)}})}
+var _autoTRan=false;
+function render(){if(!_autoTRan){_autoTRan=true;try{autoTribute()}catch(e){}}
   document.body.classList.toggle("hide",!!S.settings.hide);
   $("eye").innerHTML=S.settings.hide?ICO.eyeoff:ICO.eye;
   $("mLabel").textContent=MONTHS[cur.m]+" "+cur.y;
