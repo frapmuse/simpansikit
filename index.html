@@ -11,9 +11,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SimpanSikit">
-<meta name="theme-color" content="#02060d">
+<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans:wght@400;600&family=Rajdhani:wght@700&display=swap">
 <style>
 /* Layout: one night look (Moon Ledger). Moonlit bay header, system panels with thick cartoon outlines, Luna's speech bubble, coin amounts (g/s/c) with RM underneath, floating gold coin to log, bottom bar of five rooms */
 :root{
@@ -208,113 +208,136 @@ textarea.dump{width:100%;min-height:120px;font-family:var(--f-num);font-size:12p
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(40px);opacity:.5}}.ping{animation:drop .35s ease-out}@keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}}
 
 
-/* ===== Holo System HUD skin ===== */
+/* ===== Retro 2D RPG skin (original: blue menu windows, pixel type) ===== */
 :root{
-  --bg:#040a14; --bg2:#081426; --card:rgba(12,38,66,.55); --card2:rgba(18,52,88,.7); --ink:#e6f7ff; --silver:#bfe6ff; --muted:#7fb4d6; --line:rgba(95,212,255,.25);
-  --ol:#5fd4ff; --cy:#5fd4ff; --cyd:rgba(95,212,255,.6); --sys:#5fd4ff; --sys2:#1b6fa8; --glow:#5fd4ff;
-  --gold:#ffd166; --green:#3dffa8; --red:#ff4d6d; --purple:#b18cff; --teal:#3df0e0;
-  --f-display:"Rajdhani",system-ui,sans-serif; --f-body:"Rajdhani",system-ui,sans-serif; --f-num:"Share Tech Mono",ui-monospace,monospace;
-  --hglow:0 0 0 1px rgba(95,212,255,.55),0 0 18px rgba(95,212,255,.18),inset 0 0 24px rgba(95,212,255,.08);
+  --bg:#0d0b08; --bg2:#0d0b08; --card:#1c1610; --card2:#14100b; --ink:#e8d3a0; --silver:#e8d3a0; --muted:#b5a27a; --line:rgba(216,220,240,.3);
+  --ol:#000; --sys:#6b4f1d; --sys2:#10196a; --glow:#ffffff; --cy:#5fd4ff; --cyd:rgba(255,255,255,.7);
+  --gold:#e2b85a; --teal:#4fb3b8; --green:#5fbf7f; --red:#d9534a; --purple:#9b6fd6;
+  --f-display:"Press Start 2P",monospace; --f-body:"Pixelify Sans",system-ui,sans-serif; --f-num:"VT323",monospace;
+  --winbg:linear-gradient(180deg,#2a2117 0%,#1c1610 55%,#14100b 100%);
+  --winbd:2px solid #e8d3a0;
+  --winsh:0 0 0 2px #000,inset 0 0 0 1px #000;
 }
-html,body{font-family:var(--f-body);font-size:17px;font-weight:600}
-body{background-color:var(--bg);background-image:linear-gradient(rgba(95,212,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(95,212,255,.06) 1px,transparent 1px),radial-gradient(ellipse at 50% 0%,rgba(27,111,168,.35),transparent 60%);background-size:28px 28px,28px 28px,100% 700px;background-repeat:repeat,repeat,no-repeat}
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
-body::before{background:#02060d}
+html,body{font-family:var(--f-body);font-size:16px;font-weight:400;background:#0d0b08;color:#e8d3a0}
+body{background-image:none}
+body::before{background:#0d0b08}
 .num,.cn,.rmv{font-family:var(--f-num);font-weight:400;letter-spacing:0}
-.top{background:linear-gradient(180deg,#02060d,#061a30)}
-.stars{opacity:.5}
-.scene{display:none}
-.hring{position:absolute;right:18px;top:16px;width:96px;height:96px;z-index:1;border-radius:50%;border:2px solid var(--cyd);box-shadow:0 0 18px rgba(95,212,255,.35),inset 0 0 18px rgba(95,212,255,.2)}
-.hring::before{content:"";position:absolute;inset:12px;border-radius:50%;border:1px dashed rgba(95,212,255,.5)}
-.hring::after{content:"";position:absolute;left:30px;top:22px;width:44px;height:44px;border-radius:50%;box-shadow:-10px 4px 0 0 #bfe6ff;filter:drop-shadow(0 0 6px #5fd4ff)}
-@media (prefers-reduced-motion:no-preference){.hring::before{animation:spin 18s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}}
-.waves{display:none}
-.top .wrap{padding-block:16px 44px}
-.top{border-bottom:1px solid var(--cyd);box-shadow:0 1px 18px rgba(95,212,255,.25)}
-.brand{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:32px;letter-spacing:.06em;color:#e6f7ff;-webkit-text-stroke:0;text-shadow:0 0 12px rgba(95,212,255,.8)}
-.brand small{font-family:var(--f-num);font-size:11px;color:var(--cy);letter-spacing:.22em}
-.ibtn,.month button{border:1px solid var(--cyd);background:rgba(95,212,255,.08);color:var(--cy);box-shadow:0 0 10px rgba(95,212,255,.2);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
-.month b{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:16px;text-shadow:0 0 10px rgba(95,212,255,.6)}
-h2{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#e6f7ff;text-shadow:0 0 10px rgba(95,212,255,.45);margin-top:28px}
-h2 small{font-family:var(--f-num);font-weight:400;font-size:11px;letter-spacing:.2em}
+.cn{font-size:1.15em}
+.top{background:#0d0b08;border-bottom:2px solid #e8d3a0;box-shadow:0 2px 0 #000}
+.stars{opacity:.9}
+.scene,.waves{display:none}
+.hring{position:absolute;right:20px;top:20px;width:46px;height:46px;z-index:1;background:#fff6c8;border-radius:50%;box-shadow:inset -14px -4px 0 #d9cf8f}
+@media (max-width:540px){.hring{right:76px}}
+.top .wrap{padding-block:16px 40px}
+.brand{font-family:var(--f-display);font-size:20px;letter-spacing:0;color:#fff;-webkit-text-stroke:0;text-shadow:3px 3px 0 #5a4313}
+.brand small{font-family:var(--f-display);font-size:8px;color:var(--gold);letter-spacing:.08em;margin-top:8px}
+.ibtn,.month button{background:var(--winbg);border:var(--winbd);box-shadow:var(--winsh);border-radius:6px;color:#fff}
+.month b{font-family:var(--f-display);font-size:11px;letter-spacing:0;text-transform:uppercase}
+h2{font-family:var(--f-display);font-size:13px;letter-spacing:0;text-transform:uppercase;color:#fff;margin-top:28px;text-shadow:2px 2px 0 #5a4313}
+h2 small{font-family:var(--f-display);font-size:8px;letter-spacing:.04em;color:var(--gold)}
+.card,.tile,.foe,.bubble,.hero,.sheet,nav.bottom .in,.ping,.toast,.redpanel{background:var(--winbg);border:var(--winbd);border-radius:7px;box-shadow:var(--winsh);clip-path:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.card::before,.tile::before,.hero::before,.hero::after{display:none}
+.lbl{font-family:var(--f-display);font-weight:400;font-size:8px;letter-spacing:.04em;color:#e8d7ab;text-transform:uppercase}
+.hero{margin-top:-18px}
+.sys-h{font-family:var(--f-display);font-size:8px;color:#fff;border-bottom:2px solid rgba(255,255,255,.6);letter-spacing:0}
+.hero .big{font-family:var(--f-num);font-size:60px;line-height:.9;color:#fff;-webkit-text-stroke:0;text-shadow:3px 3px 0 #1c1610}
+.big,.tile .v,.jade,.cn{-webkit-text-stroke:0}
+.hero .bigrm{font-family:var(--f-num);font-size:20px;color:#e8d7ab}
+.lines{background:rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.5);border-radius:4px}
+.lines div{font-size:15px}
+.tile .v{font-family:var(--f-num);font-size:30px}
+.tile .v.t{font-family:var(--f-display);font-size:12px;color:var(--gold);margin-top:6px}
+.realm .tier{font-family:var(--f-display);font-size:13px;color:var(--gold)}
+.bar{background:#000;border:2px solid #fff;border-radius:0;height:12px}
+.bar i{border-radius:0;background:var(--green)}
+.bar.gold i{background:var(--gold)}
+.bar.teal i{background:var(--teal)}
+.check{border:2px solid #fff;border-radius:3px;background:#000;box-shadow:none}
+.check.on{background:var(--gold);color:#000}
+.q .t,.li .t{font-size:16px}
+.q .d,.li .d{font-size:13px;color:#e8d7ab}
+.li{border-bottom:2px dotted rgba(255,255,255,.3)}
+.ic{background:#000;border:2px solid #fff;border-radius:3px;color:#fff;font-family:var(--f-display);font-size:8px;box-shadow:none}
+.btn{font-family:var(--f-display);font-weight:400;font-size:10px;letter-spacing:0;text-transform:uppercase;background:var(--winbg);color:#fff;border:var(--winbd);border-radius:6px;box-shadow:var(--winsh);clip-path:none}
+.btn:active{transform:translateY(1px)}
+.btn.g{background:#0d0b08}
+.btn.r{background:linear-gradient(180deg,#d83a3a,#7a1010)}
+.btn:hover::before,.btn:focus-visible::before{content:"▶ "}
+.pill,.chipb{font-family:var(--f-body);font-weight:400;background:#0d0b08;border:2px solid #fff;border-radius:5px;box-shadow:none;clip-path:none;color:#fff}
+.pill.on,.chipb.on{background:#fff;color:#1c1610;box-shadow:none}
+.pill.on::before,.chipb.on::before{content:"▶";margin-right:4px}
+.bubble b{font-family:var(--f-display);font-size:9px;color:var(--gold)}
+.bubble.warn{background:linear-gradient(180deg,#b8263a,#5a0c18)}
+.foe .tag{font-family:var(--f-display);font-size:8px}
+.hpl{font-family:var(--f-num)}
+.hp{background:#000;border:2px solid #fff;border-radius:0}
+.hp i{border-radius:0}
+.seal{font-family:var(--f-display)}
+nav.bottom .in{padding:4px}
+nav.bottom button{font-family:var(--f-display);font-size:7px;letter-spacing:0;color:#e8d7ab;border-radius:4px;text-transform:uppercase}
+nav.bottom button.on{background:rgba(255,255,255,.12);color:#fff;box-shadow:none;text-shadow:none}
+nav.bottom button.on::before{content:"▶";position:absolute;margin:-2px 0 0 -40px;font-size:9px;color:#fff}
+nav.bottom button{position:relative}
+nav.bottom button.on svg{filter:none}
+.fab{background:radial-gradient(circle at 35% 30%,#fff4a8,#ffd84a 45%,#c9961a);border:3px solid #fff;box-shadow:0 0 0 2px #000;border-radius:50%;clip-path:none;filter:none;color:#000}
+.sheet{border-bottom:0;border-radius:10px 10px 0 0}
+.sheet h3{font-family:var(--f-display);font-size:15px;letter-spacing:0;text-transform:uppercase;color:#fff;text-shadow:2px 2px 0 #5a4313}
+.grab{background:#fff}
+.field input,.amt input,select,textarea.dump{background:#000;border:2px solid #fff;border-radius:4px;color:#fff;font-family:var(--f-body)}
+.amt input{font-family:var(--f-num);font-size:40px}
+.ping b{font-family:var(--f-display);font-size:16px;color:var(--gold)}
+.ping{color:#fff;font-family:var(--f-body)}
+.toast{font-family:var(--f-display);font-size:9px;color:#fff;line-height:1.5}
+.redpanel{background:linear-gradient(180deg,#b8263a,#5a0c18);color:#fff}
+.luna svg,.foe-top svg{image-rendering:pixelated}
 
-.lbl{font-family:var(--f-num);font-weight:400;font-size:11px;letter-spacing:.16em;color:var(--muted)}
-.card,.tile,.foe,.bubble,.hero{background:linear-gradient(180deg,rgba(18,56,94,.62),rgba(6,22,40,.72));border:0;box-shadow:var(--hglow);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.card::before,.tile::before,.hero::before{content:"";position:absolute;left:0;top:0;width:28px;height:2px;background:var(--cy);box-shadow:0 0 8px var(--cy)}
-.hero{margin-top:-18px;padding:14px 16px 16px;position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;left:0;right:0;height:40%;top:-40%;background:linear-gradient(180deg,transparent,rgba(95,212,255,.10),transparent);pointer-events:none}
-@media (prefers-reduced-motion:no-preference){.hero::after{animation:sweep 5s linear infinite}@keyframes sweep{to{top:110%}}}
-.sys-h{font-family:var(--f-num);font-weight:400;color:var(--cy);border-bottom:1px solid var(--cyd);letter-spacing:.14em}
-.sys-h span:first-child::before{content:"◈ SYSTEM  ";}
-.hero .lbl{color:var(--muted)}
-.hero .big{font-family:var(--f-num);font-weight:400;font-size:38px;color:var(--gold);-webkit-text-stroke:0;text-shadow:0 0 14px rgba(255,209,102,.6)}
-.hero .bigrm{color:var(--silver);font-family:var(--f-num);font-weight:400}
-.lines{background:rgba(2,10,20,.5);border:1px solid var(--line);font-family:var(--f-num);font-weight:400;font-size:14px;border-radius:0}
-.lines span:first-child{color:var(--silver)}
-.lines .tot{border-top:1px dashed var(--cyd)}
-.luna svg{width:56px;height:56px;filter:drop-shadow(0 0 8px rgba(95,212,255,.7))}
-.bubble{font-weight:600;font-size:16px}
-.bubble b{font-family:var(--f-num);font-weight:400;color:var(--purple);letter-spacing:.2em}
-.bubble.warn{background:linear-gradient(180deg,rgba(110,20,40,.6),rgba(40,6,16,.75));box-shadow:0 0 0 1px rgba(255,77,109,.7),0 0 18px rgba(255,77,109,.25)}
-.bubble .pl,.redpanel{font-family:var(--f-num);font-weight:400}
-.tile .v{font-family:var(--f-num);font-weight:400;font-size:20px}
-.tile .v.pos{color:var(--green);text-shadow:0 0 10px rgba(61,255,168,.4)}
-.tile .v.t{font-family:"Rajdhani",sans-serif;font-weight:700;color:var(--gold);text-shadow:0 0 10px rgba(255,209,102,.4)}
-.tile .s{font-weight:600}
-.realm svg{filter:drop-shadow(0 0 6px rgba(95,212,255,.5))}
-.realm .tier{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);text-shadow:0 0 12px rgba(255,209,102,.5)}
-.bar,.hp{height:10px;background:rgba(2,10,20,.8);border:1px solid var(--cyd);border-radius:0;background-image:repeating-linear-gradient(90deg,transparent 0 9px,rgba(95,212,255,.18) 9px 10px)}
-.bar i{background:var(--cy);box-shadow:0 0 10px var(--cy)}
-.bar.gold i{background:var(--gold);box-shadow:0 0 10px var(--gold)}
-.bar.green i{background:var(--green);box-shadow:0 0 10px var(--green)}
-.bar.teal i{background:var(--teal);box-shadow:0 0 10px var(--teal)}
-.hp{border-color:rgba(255,77,109,.7)}
-.hp i{background:var(--red);box-shadow:0 0 10px var(--red)}
-.hpl{font-family:var(--f-num);font-weight:400}
-.check{border:1px solid var(--cyd);background:rgba(2,10,20,.7);border-radius:0;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);color:#02060d}
-.check.on{background:var(--teal);box-shadow:0 0 12px var(--teal)}
-.li,.q{border-bottom:1px solid var(--line)}
-.q .t,.li .t{font-weight:700;font-size:17px}
-.ic{border:1px solid var(--cyd);background:rgba(95,212,255,.1);color:var(--cy);border-radius:0;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:var(--f-num);font-weight:400;font-size:13px}
-.ic.in{color:var(--green);border-color:var(--green);background:rgba(61,255,168,.1)}
-.ic.debt{color:var(--red);border-color:var(--red);background:rgba(255,77,109,.1)}
-.ic.save{color:var(--purple);border-color:var(--purple);background:rgba(177,140,255,.1)}
-.dayhead{font-family:var(--f-num);font-weight:400;letter-spacing:.14em}
-.foe{box-shadow:0 0 0 1px rgba(255,77,109,.55),0 0 16px rgba(255,77,109,.15),inset 0 0 22px rgba(255,77,109,.06)}
-.foe-top svg{filter:drop-shadow(0 0 6px rgba(255,77,109,.8))}
-.foe-n{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:19px;letter-spacing:.04em}
-.foe .tag{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:0;font-family:var(--f-num);font-weight:400;box-shadow:0 0 8px rgba(255,209,102,.3)}
-.foe.done{box-shadow:0 0 0 1px rgba(61,255,168,.6),0 0 16px rgba(61,255,168,.2)}
-.seal{background:transparent;color:var(--green);border:2px solid var(--green);border-radius:0;box-shadow:0 0 12px rgba(61,255,168,.5);font-family:var(--f-num);font-weight:400;letter-spacing:.12em}
-.army svg{filter:drop-shadow(0 0 6px rgba(177,140,255,.6))}
-.army .hc{font-family:var(--f-num);font-weight:400}
-.floor{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:0;font-family:var(--f-num);font-weight:400}
-.btn{border:1px solid var(--cyd);border-radius:0;background:rgba(95,212,255,.12);color:var(--cy);box-shadow:0 0 12px rgba(95,212,255,.18);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.btn.y{background:var(--gold);color:#02060d;border-color:var(--gold);box-shadow:0 0 14px rgba(255,209,102,.45)}
-.btn.g{background:rgba(95,212,255,.06);color:var(--ink)}
-.btn.r{background:rgba(255,77,109,.18);color:var(--red);border-color:var(--red)}
-.btn:active{transform:none;filter:brightness(1.3)}
-.pill,.chipb{border:1px solid var(--cyd);border-radius:0;background:rgba(95,212,255,.06);box-shadow:none;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em}
-.pill.on,.chipb.on{background:var(--cy);color:#02060d;box-shadow:0 0 12px rgba(95,212,255,.5)}
-nav.bottom .in{background:rgba(4,14,26,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:0;border-radius:0;box-shadow:0 0 0 1px var(--cyd),0 0 20px rgba(95,212,255,.2);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
-nav.bottom button{color:var(--muted);font-family:var(--f-num);font-weight:400;letter-spacing:.08em;font-size:10px;border-radius:0}
-nav.bottom button.on{background:rgba(95,212,255,.12);color:var(--cy);box-shadow:inset 0 -2px 0 var(--cy);text-shadow:0 0 8px var(--cy)}
-nav.bottom button.on svg{filter:drop-shadow(0 0 6px var(--cy))}
-.fab{border:0;border-radius:0;background:radial-gradient(circle,rgba(255,209,102,.95),#c99a1e);color:#02060d;box-shadow:none;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);filter:drop-shadow(0 0 12px rgba(255,209,102,.7))}
-.fab::after{display:none}
-.sheet{background:linear-gradient(180deg,#071a2e,#040a14);border:0;border-top:1px solid var(--cy);box-shadow:0 -6px 30px rgba(95,212,255,.2)}
-.grab{background:var(--cy);box-shadow:0 0 8px var(--cy)}
-.sheet h3{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e6f7ff;text-shadow:0 0 10px rgba(95,212,255,.5)}
-.amt,.field input,textarea.dump{border:1px solid var(--cyd);background:rgba(2,10,20,.8);border-radius:0;box-shadow:inset 0 0 12px rgba(95,212,255,.08)}
-.amt input{font-family:var(--f-num);font-weight:400;color:var(--gold)}
-.amt span{font-family:var(--f-num);color:var(--cy)}
-.coinprev{font-family:var(--f-num);font-weight:400}
-.redpanel{background:rgba(110,20,40,.5);border:1px solid var(--red);border-radius:0}
-.toast{background:rgba(4,14,26,.92);color:var(--cy);border:1px solid var(--cyd);border-radius:0;box-shadow:0 0 18px rgba(95,212,255,.35);font-family:var(--f-num);font-weight:400;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
-.ping{background:rgba(30,22,4,.92);color:var(--gold);border:1px solid var(--gold);border-radius:0;box-shadow:0 0 22px rgba(255,209,102,.45);font-family:var(--f-num);font-weight:400}
-.ping b{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.2em}
-.goldt{color:var(--gold)}
+.hand,nav.bottom button.on::before,.opt.on::before,.pill.on::before,.chipb.on::before,.btn:hover::before,.btn:focus-visible::before{content:"";display:inline-block;width:15px;height:10px;background:url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2011%207%22%20shape-rendering%3D%22crispEdges%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3C/svg%3E") no-repeat center/contain;image-rendering:pixelated;margin-right:6px;vertical-align:middle}
+nav.bottom button.on::before{position:absolute;left:4px;top:8px;margin:0}
+.opt.on::before{float:left;margin:5px 8px 0 0}
+#title{position:fixed;inset:0;z-index:99;background:linear-gradient(180deg,#05071a 0%,#0d0b08 55%,#1c1610 72%,#0d0b08 73%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;padding:24px}
+#title .moon{width:64px;height:64px;border-radius:50%;background:#f4efcf;box-shadow:inset -20px -6px 0 #0d0b08,0 0 24px rgba(244,239,207,.4);margin-bottom:26px}
+#title h1{font-family:"Press Start 2P",monospace;font-size:22px;line-height:1.5;color:#e8d3a0;margin:0;text-shadow:3px 3px 0 #5a4313}
+#title .sub{font-family:"Press Start 2P",monospace;font-size:9px;color:#e2b85a;margin-top:12px}
+#title .shore{position:absolute;left:0;right:0;bottom:22%;height:14px;background:repeating-linear-gradient(90deg,#4fb3b8 0 8px,transparent 8px 16px);opacity:.5}
+#title .go{font-family:"Press Start 2P",monospace;font-size:11px;color:#fff;margin-top:44px}
+@media (prefers-reduced-motion:no-preference){#title .go{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}}
+#title.out{opacity:0;transition:opacity .35s}
 
+.bscreen{margin:-14px 0 4px;position:relative;z-index:2}
+.bfield{background-size:cover;background-position:center bottom;image-rendering:pixelated;position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;min-height:168px;padding:14px 14px 12px;border:3px solid var(--ink);border-radius:6px;box-shadow:0 0 0 2px #000,4px 4px 0 2px #000;background:linear-gradient(180deg,#000 0%,var(--card) 60%,#3a3216 60%,#231d0c 100%);overflow:hidden}
+.bfield::before{display:none}
+.bfield{background-size:cover!important;background-repeat:no-repeat!important}
+.bfield .bmoon{position:absolute;right:18px;top:12px;width:22px;height:22px;border-radius:50%;box-shadow:-6px 3px 0 0 #f4e7b8}
+.bfoe{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:none;border:0;padding:0;color:var(--ink);text-align:left;cursor:pointer;z-index:1}
+.pxi{image-rendering:pixelated;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.6))}
+.bfoe .pxi{width:96px;height:96px}
+.bfoe.none{cursor:default;align-self:center}
+.bfn{font-family:var(--f-display);font-size:9px;line-height:1.5;text-shadow:2px 2px 0 #000;max-width:170px;background:rgba(0,0,0,.55);padding:3px 5px}
+.bfv{font-family:var(--f-num);font-size:17px;text-shadow:2px 2px 0 #000;background:rgba(0,0,0,.55);padding:0 5px}
+.bfhp{display:block;width:120px;height:8px;border:2px solid var(--ink);background:#300;box-shadow:2px 2px 0 #000}
+.bfhp i{display:block;height:100%;background:var(--red)}
+.bparty{display:flex;align-items:flex-end;gap:2px;z-index:1}
+.bp{display:flex;flex-direction:column;align-items:center;gap:3px}
+.bp .pxi{width:44px;height:58px}
+.bp.lead .pxi{width:64px;height:64px}
+.bp em{background:rgba(0,0,0,.55);padding:0 3px;font-style:normal;font-family:var(--f-num);font-size:13px;color:var(--ink);text-shadow:1px 1px 0 #000;white-space:nowrap;max-width:76px;overflow:hidden;text-overflow:ellipsis}
+.bmenu{display:grid;grid-template-columns:minmax(104px,34%) 1fr;gap:8px;margin-top:8px}
+.bmenu .card{padding:8px}
+.bcmd button{display:block;width:100%;background:none;border:0;color:var(--ink);font-family:var(--f-display);font-size:10px;text-align:left;padding:7px 4px 7px 22px;position:relative;cursor:pointer}
+.bcmd button::before{content:"";position:absolute;left:0;top:6px;width:15px;height:10px;background:url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2011%207%22%20shape-rendering%3D%22crispEdges%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23000%22/%3E%3C/svg%3E") no-repeat center/contain;image-rendering:pixelated;opacity:0}
+.bcmd button:hover::before,.bcmd button:focus-visible::before,.bcmd button:first-child::before{opacity:1}
+.bcmd:hover button:first-child:not(:hover)::before,.bcmd:focus-within button:first-child:not(:focus-visible)::before{opacity:0}
+.brow{display:grid;grid-template-columns:auto 26px 1fr;column-gap:6px;align-items:center;padding:3px 0 5px;color:var(--ink)}
+.bn{font-family:var(--f-display);font-size:8px}
+.bl{font-family:var(--f-display);font-size:8px;color:var(--gold);text-align:right}
+.bv{font-family:var(--f-num);font-size:18px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bb{grid-column:1/-1;display:block;height:7px;border:1px solid var(--ink);background:#000;margin-top:2px}
+.bb i{display:block;height:100%}
+.bb.hp i{background:var(--green)}.bb.mp i{background:var(--teal)}.bb.sp i{background:var(--gold)}.bb.xp i{background:var(--purple)}
+@media (prefers-reduced-motion:no-preference){.bfoe .pxi{animation:bob 1.2s steps(2) infinite}.bp .pxi{animation:bob 1s steps(2) infinite}.bp:nth-child(2) .pxi{animation-delay:.33s}.bp:nth-child(3) .pxi{animation-delay:.66s}@keyframes bob{50%{transform:translateY(-3px)}}}
+.luna{align-items:flex-start}
+.luna .bubble{position:relative;padding-top:20px}
+.luna .bubble b:first-child{position:absolute;left:10px;top:-10px;background:var(--card);border:2px solid var(--ink);padding:3px 7px;border-radius:4px;font-size:8px}
 /* ===== Summon Hall (card fragments → rewards) ===== */
 .sumbar{display:flex;gap:10px;align-items:center;margin-top:10px}
 .btn.sum{background:linear-gradient(90deg,rgba(177,140,255,.25),rgba(255,209,102,.25));color:#fff;border-color:var(--purple);box-shadow:0 0 16px rgba(177,140,255,.45)}
@@ -409,6 +432,28 @@ nav.bottom{background:linear-gradient(180deg,rgba(2,6,13,0),#02060d 16px);paddin
 .sheetline b{color:var(--gold);font-weight:400}
 .divine{margin-top:8px;font-size:13px;color:var(--purple)}
 .hcell .pty{font-family:var(--f-num);font-size:9px;color:var(--gold);letter-spacing:.1em}
+
+/* ===== Retro overrides for Summon Hall + AFK battle ===== */
+.scard .face,.hcell,.bdg,.afkbar,.afkbar .camp,.shop .it .btn{clip-path:none}
+.scard .face{border-radius:8px}
+.scard .back{background:var(--winbg);box-shadow:0 0 0 2px #000;border:3px solid #fff}
+.scard .front{border:3px solid var(--gc);box-shadow:0 0 0 2px #000}
+.scard .gr,.scard .ty,.scard .wheel,.scard .tap,.sumnote,.odds,.afkmini,.hcell .gd,.hcell .act{font-family:var(--f-display);font-size:8px;letter-spacing:0;text-shadow:none}
+.scard .rw{font-family:var(--f-display);font-size:14px;line-height:1.4;text-shadow:2px 2px 0 #000}
+.btn.sum{background:linear-gradient(180deg,#8a5bff,#3a1a9c);border-color:#fff;box-shadow:var(--winsh)}
+.hcell{background:#0d0b08;border:2px solid rgba(255,255,255,.5);border-radius:6px}
+.hcell.on{border-color:var(--gold);background:rgba(255,216,74,.12);box-shadow:none}
+.hcell .nm{font-size:12px}
+.bdg{border-width:2px;border-radius:4px;font-family:var(--f-body)}
+.advisor .bubble b{color:var(--gold)}
+.afkbar{background:#0d0b08;border:var(--winbd);border-radius:7px;box-shadow:var(--winsh)}
+.afkbar canvas{image-rendering:pixelated}
+.afkbar .camp{font-family:var(--f-display);font-size:8px;background:var(--gold);border:2px solid #fff;border-radius:4px;color:#000;box-shadow:none}
+.jade{font-family:var(--f-num);font-size:20px;color:#6dff8f;text-shadow:2px 2px 0 #000}
+.jade small{font-family:var(--f-display);font-size:7px}
+.shop .it .t{font-size:16px}
+.shop .it .btn{font-family:var(--f-num);font-size:18px}
+nav.bottom{background:linear-gradient(180deg,rgba(11,14,38,0),#0d0b08 16px)}
 html{padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0}
 [hidden]{display:none!important}
@@ -435,6 +480,7 @@ html,body{margin:0}
   <svg class="waves" viewBox="0 0 400 34" preserveAspectRatio="none"><path class="w1" d="M-10 12 Q20 2 50 12 T110 12 T170 12 T230 12 T290 12 T350 12 T410 12 V40 H-10Z"/><path class="w2" d="M-10 22 Q15 12 40 22 T90 22 T140 22 T190 22 T240 22 T290 22 T340 22 T390 22 T440 22 V40 H-10Z"/></svg>
 </header>
 
+<div id="title" role="button" aria-label="Open the Ledger"><div class="moon"></div><h1>THE MOON<br>LEDGER</h1><div class="sub">SIMPANSIKIT · WANGYUE BAY</div><div class="shore"></div><div class="go">▶ OPEN THE LEDGER</div></div>
 <main class="wrap" id="view"></main>
 
 <button class="fab" id="fab" aria-label="Log an entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -570,8 +616,8 @@ function fragments(){
   return Object.keys(days).filter(function(d){return questState(d).every(function(q){return q.on})}).length;
 }
 
-var LUNA='<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="rgba(95,212,255,.08)" stroke="#5fd4ff" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M36 10 A21 21 0 1 0 49 43 A17 17 0 1 1 36 10Z" fill="rgba(191,230,255,.25)" stroke="#bfe6ff" stroke-width="2"/><circle cx="24" cy="30" r="2.2" fill="#e6f7ff"/><circle cx="31" cy="31" r="2.2" fill="#e6f7ff"/><path d="M24 37 Q27.5 39.5 31 37" stroke="#e6f7ff" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M47 13 l1.4 3 3 1.4 -3 1.4 -1.4 3 -1.4-3 -3-1.4 3-1.4z" fill="#ffd166"/></svg>';
-var MON='<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 L42 14 V34 L24 44 L6 34 V14Z" fill="rgba(255,77,109,.12)" stroke="#ff4d6d" stroke-width="2"/><path d="M15 20 L21 23 M33 20 L27 23" stroke="#ff4d6d" stroke-width="2.4" stroke-linecap="round"/><circle cx="18" cy="25" r="2.4" fill="#ff8fa3"/><circle cx="30" cy="25" r="2.4" fill="#ff8fa3"/><path d="M17 33 L20 30 L24 33 L28 30 L31 33" stroke="#ff4d6d" stroke-width="2" fill="none"/></svg>';
+var LUNA='<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="4" y="0" width="1" height="1" fill="#000"/><rect x="5" y="0" width="1" height="1" fill="#000"/><rect x="6" y="0" width="1" height="1" fill="#000"/><rect x="7" y="0" width="1" height="1" fill="#000"/><rect x="8" y="0" width="1" height="1" fill="#000"/><rect x="2" y="1" width="1" height="1" fill="#000"/><rect x="3" y="1" width="1" height="1" fill="#000"/><rect x="4" y="1" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="1" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="1" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="1" width="1" height="1" fill="#f4f1ff"/><rect x="8" y="1" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="2" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="2" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="2" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="2" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="2" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#000"/><rect x="2" y="3" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="3" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="3" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="3" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="3" width="1" height="1" fill="#000"/><rect x="0" y="4" width="1" height="1" fill="#000"/><rect x="1" y="4" width="1" height="1" fill="#f4f1ff"/><rect x="2" y="4" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="4" width="1" height="1" fill="#1a2fa8"/><rect x="4" y="4" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="4" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="4" width="1" height="1" fill="#000"/><rect x="10" y="4" width="1" height="1" fill="#ffd84a"/><rect x="0" y="5" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#f4f1ff"/><rect x="2" y="5" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="5" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="5" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="5" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="5" width="1" height="1" fill="#000"/><rect x="9" y="5" width="1" height="1" fill="#ffd84a"/><rect x="10" y="5" width="1" height="1" fill="#ffd84a"/><rect x="11" y="5" width="1" height="1" fill="#ffd84a"/><rect x="0" y="6" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#f4f1ff"/><rect x="2" y="6" width="1" height="1" fill="#1a2fa8"/><rect x="3" y="6" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="6" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="6" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="6" width="1" height="1" fill="#000"/><rect x="10" y="6" width="1" height="1" fill="#ffd84a"/><rect x="0" y="7" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="2" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="7" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="7" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#000"/><rect x="2" y="8" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="8" width="1" height="1" fill="#ff8fb1"/><rect x="4" y="8" width="1" height="1" fill="#ff8fb1"/><rect x="5" y="8" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="8" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="8" width="1" height="1" fill="#f4f1ff"/><rect x="8" y="8" width="1" height="1" fill="#000"/><rect x="1" y="9" width="1" height="1" fill="#000"/><rect x="2" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="3" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="4" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="8" y="9" width="1" height="1" fill="#f4f1ff"/><rect x="9" y="9" width="1" height="1" fill="#000"/><rect x="10" y="9" width="1" height="1" fill="#000"/><rect x="2" y="10" width="1" height="1" fill="#000"/><rect x="3" y="10" width="1" height="1" fill="#000"/><rect x="4" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="5" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="6" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="7" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="8" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="9" y="10" width="1" height="1" fill="#f4f1ff"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="4" y="11" width="1" height="1" fill="#000"/><rect x="5" y="11" width="1" height="1" fill="#000"/><rect x="6" y="11" width="1" height="1" fill="#000"/><rect x="7" y="11" width="1" height="1" fill="#000"/><rect x="8" y="11" width="1" height="1" fill="#000"/><rect x="9" y="11" width="1" height="1" fill="#000"/></svg>';
+var MON='<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="0" width="1" height="1" fill="#000"/><rect x="9" y="0" width="1" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#000"/><rect x="2" y="1" width="1" height="1" fill="#ffd84a"/><rect x="3" y="1" width="1" height="1" fill="#000"/><rect x="8" y="1" width="1" height="1" fill="#000"/><rect x="9" y="1" width="1" height="1" fill="#ffd84a"/><rect x="10" y="1" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="2" width="1" height="1" fill="#000"/><rect x="4" y="2" width="1" height="1" fill="#000"/><rect x="5" y="2" width="1" height="1" fill="#000"/><rect x="6" y="2" width="1" height="1" fill="#000"/><rect x="7" y="2" width="1" height="1" fill="#000"/><rect x="8" y="2" width="1" height="1" fill="#000"/><rect x="9" y="2" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="2" width="1" height="1" fill="#000"/><rect x="0" y="3" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="4" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="9" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="3" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="3" width="1" height="1" fill="#000"/><rect x="0" y="4" width="1" height="1" fill="#000"/><rect x="1" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="4" width="1" height="1" fill="#fff"/><rect x="3" y="4" width="1" height="1" fill="#fff"/><rect x="4" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="4" width="1" height="1" fill="#fff"/><rect x="9" y="4" width="1" height="1" fill="#fff"/><rect x="10" y="4" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="4" width="1" height="1" fill="#000"/><rect x="0" y="5" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="5" width="1" height="1" fill="#fff"/><rect x="3" y="5" width="1" height="1" fill="#000"/><rect x="4" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="5" width="1" height="1" fill="#fff"/><rect x="9" y="5" width="1" height="1" fill="#000"/><rect x="10" y="5" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="5" width="1" height="1" fill="#000"/><rect x="0" y="6" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="4" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="9" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="6" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="6" width="1" height="1" fill="#000"/><rect x="0" y="7" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="4" y="7" width="1" height="1" fill="#000"/><rect x="5" y="7" width="1" height="1" fill="#000"/><rect x="6" y="7" width="1" height="1" fill="#000"/><rect x="7" y="7" width="1" height="1" fill="#000"/><rect x="8" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="9" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="7" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="7" width="1" height="1" fill="#000"/><rect x="0" y="8" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="8" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="8" width="1" height="1" fill="#000"/><rect x="4" y="8" width="1" height="1" fill="#fff"/><rect x="5" y="8" width="1" height="1" fill="#000"/><rect x="6" y="8" width="1" height="1" fill="#000"/><rect x="7" y="8" width="1" height="1" fill="#fff"/><rect x="8" y="8" width="1" height="1" fill="#000"/><rect x="9" y="8" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="8" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="8" width="1" height="1" fill="#000"/><rect x="0" y="9" width="1" height="1" fill="#000"/><rect x="1" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="2" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="4" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="9" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="9" width="1" height="1" fill="#8b6fe0"/><rect x="11" y="9" width="1" height="1" fill="#000"/><rect x="1" y="10" width="1" height="1" fill="#000"/><rect x="2" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="3" y="10" width="1" height="1" fill="#000"/><rect x="4" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="5" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="6" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="7" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="8" y="10" width="1" height="1" fill="#000"/><rect x="9" y="10" width="1" height="1" fill="#8b6fe0"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="2" y="11" width="1" height="1" fill="#000"/><rect x="4" y="11" width="1" height="1" fill="#000"/><rect x="5" y="11" width="1" height="1" fill="#000"/><rect x="6" y="11" width="1" height="1" fill="#000"/><rect x="7" y="11" width="1" height="1" fill="#000"/><rect x="9" y="11" width="1" height="1" fill="#000"/></svg>';
 function KEEP(i){var roofs=["#8a6a44","#8a6a44","#c9534a","#c9534a","#3d7dff","#3d7dff","#a77bff","#a77bff","#ffc83d","#ffc83d","#ffc83d"];var r=roofs[i]||"#8a6a44";
   return '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 58 H60" stroke="#070923" stroke-width="3" stroke-linecap="round"/><rect x="14" y="30" width="36" height="28" rx="3" fill="#cfd3ea" stroke="#070923" stroke-width="3"/><rect x="27" y="42" width="10" height="16" rx="5" fill="#2a3377" stroke="#070923" stroke-width="2.5"/><path d="M8 32 Q32 22 56 32 L50 20 Q32 12 14 20Z" fill="'+r+'" stroke="#070923" stroke-width="3" stroke-linejoin="round"/>'+(i>=2?'<path d="M24 18 L32 6 L40 18" fill="'+r+'" stroke="#070923" stroke-width="3" stroke-linejoin="round"/>':'')+'<path d="M32 6 V0" stroke="#070923" stroke-width="2"/><path d="M32 1 L42 4 L32 7Z" fill="#ffc83d" stroke="#070923" stroke-width="1.5"/></svg>'}
 function BANNER(p,col){var h=Math.round(44*Math.max(0,Math.min(1,p))),id="bc"+col.slice(1);
@@ -608,6 +654,34 @@ function txRow(x){
 }
 
 
+window.JRPG=true;
+var SPR_GEN=["..kkkkk...",".kpppppk..",".kkkkkkk..","..kssssk..","..kswswk..","..kssssk..",".kggggggk.","kggggggggk","kgggyggggk","ksggggggsk",".kggggggk.","..kk..kk..","..kk..kk.."];
+function PXS(rows,pal){var w=rows[0].length,h=rows.length,o='<svg viewBox="0 0 '+w+' '+h+'" shape-rendering="crispEdges" aria-hidden="true">';rows.forEach(function(r,y){for(var x=0;x<r.length;x++){var c=pal[r[x]];if(c)o+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+c+'"/>'}});return o+'</svg>'}
+var GCOL=["#2b9e6a","#c9534a","#3a6fc9","#a77bff","#d8962a","#2ab0b0","#8a8a9a"];
+function genSpr(id){var hsh=0;for(var i=0;i<id.length;i++)hsh=(hsh*31+id.charCodeAt(i))>>>0;return PXS(SPR_GEN,{k:"#000",w:"#fff",y:"#e2b85a",s:"#f2c9a0",p:GCOL[(hsh>>3)%GCOL.length],g:GCOL[hsh%GCOL.length]})}
+function topFoe(){var a=S.debts.filter(function(d){return n(d.bal)>0});if(!a.length)return null;var sim=simulate(),first=sim.order&&sim.order[0],f=first?a.find(function(d){return d.name===first}):null;return f||a.sort(function(x,y){return n(y.bal)-n(x.bal)})[0]}
+function bParty(){var ids=(S.lord&&S.lord.party||[]).slice();if(!ids.length&&S.summon&&S.summon.owned)ids=Object.keys(S.summon.owned);return ids.map(function(id){return HEROES.find(function(h){return h.id===id})}).filter(Boolean).slice(0,2)}
+function jrpgTop(T){
+  var foe=topFoe(),ef=goalById("ef"),efS=ef?goalSaved(ef):0,efT=ef?(n(ef.target)||0):0,hpMax=Math.max(T.inc,T.baki,1),mpMax=Math.max(T.inc,T.free,1);
+  var lv=lordLevel(),m0=220*Math.pow(lv-1,2),m1=220*Math.pow(lv,2),mer=(FN().merit||0);
+  function pct(a,b){return Math.max(0,Math.min(100,b?a/b*100:0))}
+  var h='<div class="bscreen"><div class="bfield" style="background-image:url('+pxBGimg()+')">';
+  if(foe){var fo=n(foe.orig)||n(foe.bal),fp=pct(n(foe.bal),fo);
+    h+='<button class="bfoe" data-debt="'+foe.id+'" aria-label="Moonvault foe '+esc(bossName(foe))+'"><img class="pxi" alt="" src="'+pxImg("boss",0,null,true)+'"><span class="bfn">'+esc(bossName(foe))+'</span><span class="bfhp"><i style="width:'+fp+'%"></i></span><span class="bfv m">HP '+coin(n(foe.bal))+'</span></button>';
+  } else h+='<div class="bfoe none"><span class="bfn">No foes in the Moonvault</span><span class="bfv">The field is clear, my lord.</span></div>';
+  h+='<div class="bparty">'+bParty().map(function(hr){return '<span class="bp"><img class="pxi" alt="" src="'+pxImg("gen",0,pxGenMap(hr))+'"><em>'+esc(hr.name.split(" ").slice(-1)[0])+'</em></span>'}).join("")+'<span class="bp lead"><img class="pxi" alt="" src="'+pxImg("yf",0)+'"><em>Ye Feng</em></span></div></div>';
+  h+='<div class="bmenu"><div class="card bcmd" role="menu">'+[["log","LOG"],["strike","STRIKE"],["guard","GUARD"],["summon","SUMMON"],["camp","CAMP"]].map(function(c){return '<button data-cmd="'+c[0]+'" role="menuitem">'+c[1]+'</button>'}).join("")+'</div>';
+  function row(nm,lab,v,mx,cls,txt){return '<div class="brow"><span class="bn">'+nm+'</span><span class="bl">'+lab+'</span><span class="bv'+(txt?'':' m')+'">'+(txt||coin(v))+'</span><span class="bb '+cls+'"><i style="width:'+pct(v,mx)+'%"></i></span></div>'}
+  h+='<div class="card bstat">'+row("YE FENG","HP",T.baki,hpMax,"hp")+row("FREE","MP",T.free,mpMax,"mp")+row("GARRISON","SP",efS,efT||Math.max(efS,1),"sp")+row("LORD","LV",mer-m0,m1-m0,"xp",String(lv))+'</div></div></div>';
+  return h}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-cmd]");if(!b)return;var cm=b.dataset.cmd,dt=(cur.y===now.getFullYear()&&cur.m===now.getMonth())?todayStr():dateInMonth(cur.y,cur.m,1);
+  if(cm==="log")txSheet({type:"out",date:dt});
+  else if(cm==="strike"){var tf=topFoe();if(tf)txSheet({type:"debt",debtId:tf.id,amt:n(tf.min),date:dt});else toast("No foe to strike, my lord")}
+  else if(cm==="guard"){if(goalById("ef"))txSheet({type:"save",goalId:"ef",dir:1,date:dt});else{tab="harta";render();window.scrollTo(0,0)}}
+  else if(cm==="summon"){if(cardsLeft())summonSheet();else toast("No Summon card yet · clear daily quests")}
+  else if(cm==="camp")campSheet()});
+window.PIXEL_AFK=true;
+(function(){var tt=document.getElementById("title");if(!tt)return;var seen=false;try{seen=sessionStorage.getItem("ml.title")}catch(e){}if(seen){tt.remove();return}tt.onclick=function(){try{sessionStorage.setItem("ml.title","1")}catch(e){}tt.classList.add("out");setTimeout(function(){tt.remove()},380)}})();
 /* ===== Summon Hall ===== */
 var GRADES=[["Common","#9aa7b8",39],["Fine","#3dffa8",27],["Rare","#4da3ff",17],["Epic","#b18cff",10],["Legendary","#ff9a3d",4],["Mythical","#ff5fa2",1.5],["Celestial","#ffd166",0.5],["Anomaly","#ff4d6d",1]];
 function gradeCol(g){for(var i=0;i<GRADES.length;i++)if(GRADES[i][0]===g)return GRADES[i][1];return "#9aa7b8"}
@@ -813,6 +887,35 @@ function campSheet(){
       campSheet()}});
   });
 }
+var PXPAL={"h":"#1c1824","H":"#3b3550","s":"#f2c69c","S":"#c98f62","e":"#1a1420","a":"#5b74b8","A":"#3a4f8a","d":"#26335e","y":"#ecc45e","Y":"#a07424","c":"#4a4f6a","C":"#2e3248","b":"#5a4030","B":"#33241a","m":"#eef2f8","M":"#9aa4ba","w":"#a8743e","W":"#66441f","r":"#d23a40","R":"#842029","x":"#ffffff","k":"#7a4a2a","K":"#4e2e18","f":"#2a1a10","F":"#120c08","n":"#d8c8a8","p":"#d23a40","P":"#842029","g":"#6fae3c","G":"#3f6e22","l":"#8a5a32","L":"#5a3a1e","v":"#6a4f9a","V":"#3e2c66","u":"#b04a9a","t":"#9fe8ff","T":"#5fb8d8","z":"#2a2840","Z":"#16141f","i":"#3a3f9a","I":"#262a6e","q":"#e0e0e0","o":"#14101a"};
+var PXSPR={"spear":[["...........m........","..........mmm.......",".....MMMM.mMm.......","....MmmmmM.r........","...Mmmmmmmrwr.......","..MMMMMMMMMw........","...hhhhssssw........","...hhhsssesw........","...hhhsssssw........","...hhhSssssw........","....hhSSsssw........",".....hSSSS.w........","....rrrrrr.w........","...rRryyrrrw........","...rRrrryrrw........","...rRrrrryrwr.......","...sRrrrrrrw........","...SRYyyyyYw........","....CccccC.w........","....CccccC.w........","....Cc..cC.w........","....bb...bbw........","....bb...bb.........","...bbb...bbb........","...BBB...BBB........","....................","...................."],["...........m........","..........mmm.......",".....MMMM.mMm.......","....MmmmmM.r........","...Mmmmmmmrwr.......","..MMMMMMMMMw........","...hhhhssssw........","...hhhsssesw........","...hhhsssssw........","...hhhSssssw........","....hhSSsssw........",".....hSSSS.w........","....rrrrrr.w........","...rRryyrrrw........","...rRrrryrrw........","...rRrrrryrwr.......","...sRrrrrrrw........","...SRYyyyyYw........","....CccccC.w........","....CccccC.w........",".....CccC..w........",".....bbbb..w........","....bb.bb...........","....bb.bbb..........","....BB.BBB..........","....................","...................."]],"cav":[["..............................","..............................","..........MMMM.....m..........",".........MmmmmM...mM..........","........MmmmmmmM.r............",".......MMMMMMMMMw.............","........hhhhsssw..............","........hhhssswss.............","........hhhsswsss.............","........hhhSsssss.............",".........hhSSsss..............","..........hSSSS...............",".........rrrrrr.......ff......","........rRryyrrr.....ffkf.....","........rRrrryrrr...fkkkk.....","........rRrrrryrsr.fkkkkek....","........sRbbrrrr..fkkkkkkkk...","........SRbbyyyY.fkkkkkKkkkn..","..........bb.....kkkkk...kk...","..ff...cccBBccc.kkkkk.........",".fff.kkyyyyyyyykkkkkk.........","fff.kkkcCcCcCcCkkkkkk.........","ff.kkkkkkkkkkkkkkkkkk.........","f..kkkkkkkkkkkkkkkkkK.........","...KkkkkkkkkkkkkkkkKK.........","....KKk.kK.....Kk.kK..........","....kk..kk.....kk..kk.........","....kk..kk.....kk..kk.........","....KK..KK.....KK..KK.........","....FF..FF.....FF..FF........."],["..............................","..............................","..........MMMM.....m..........",".........MmmmmM...mM..........","........MmmmmmmM.r............",".......MMMMMMMMMw.............","........hhhhsssw..............","........hhhssswss.............","........hhhsswsss.............","........hhhSsssss.............",".........hhSSsss..............","..........hSSSS...............",".........rrrrrr.......ff......","........rRryyrrr.....ffkf.....","........rRrrryrrr...fkkkk.....","........rRrrrryrsr.fkkkkek....","........sRbbrrrr..fkkkkkkkk...","........SRbbyyyY.fkkkkkKkkkn..","..........bb.....kkkkk...kk...","..ff...cccBBccc.kkkkk.........",".fff.kkyyyyyyyykkkkkk.........","fff.kkkcCcCcCcCkkkkkk.........","ff.kkkkkkkkkkkkkkkkkk.........","f..kkkkkkkkkkkkkkkkkK.........","...KkkkkkkkkkkkkkkkKK.........","...KKk..kK....Kk...kK.........","..kk.....kk..kk.....kk........",".kk.......kk.kk......kk.......",".KK........KKKK.......KK......",".FF........FF.FF......FF......"]],"yf":[["..............................","..............................","..............................","..............................","...hh....hyhhh.......t........","...hhh..hhhhhhh.....tx........","...hhh..hhhhssss...tx.........","...Hhh..hhhsssess.tt..........","...hhh..hhhssssss..t..........","...hh...hhhSsssss.t...........","....hh...hhSSsss.y............","....h.....hSSSS.yY............",".....ii..zzzzzz.......FF......",".....ii.zZzyyzzz.....FFzF.....","....iiI.zZzzzyzzz...Fzzzz.....","....iiI.zZzzzzyzsz.Fzzzzez....","...iiII.sZbbzzzz..Fzzzzzzzz...","...iII..SZbbyyyY.FzzzzzZzzzn..","...II.....bb.....zzzzz...zz...","..FF...iiiBBiii.zzzzz.........",".FFF.zzyyyyyyyyzzzzzz.........","FFF.zzziIiIiIiIzzzzzz.........","FF.zzzzzzzzzzzzzzzzzz.........","F..zzzzzzzzzzzzzzzzzZ.........","...ZzzzzzzzzzzzzzzzZZ.........","....ZZz.zZ.....Zz.zZ..........","....zz..zz.....zz..zz.........","....zz..zz.....zz..zz.........","....ZZ..ZZ.....ZZ..ZZ.........","....FF..FF.....FF..FF........."],["..............................","..............................","..............................","..............................","...hh....hyhhh.......t........","...hhh..hhhhhhh.....tx........","...hhh..hhhhssss...tx.........","...Hhh..hhhsssess.tt..........","...hhh..hhhssssss..t..........","...hh...hhhSsssss.t...........","....hh...hhSSsss.y............","....h.....hSSSS.yY............",".....ii..zzzzzz.......FF......",".....ii.zZzyyzzz.....FFzF.....","....iiI.zZzzzyzzz...Fzzzz.....","....iiI.zZzzzzyzsz.Fzzzzez....","...iiII.sZbbzzzz..Fzzzzzzzz...","...iII..SZbbyyyY.FzzzzzZzzzn..","...II.....bb.....zzzzz...zz...","..FF...iiiBBiii.zzzzz.........",".FFF.zzyyyyyyyyzzzzzz.........","FFF.zzziIiIiIiIzzzzzz.........","FF.zzzzzzzzzzzzzzzzzz.........","F..zzzzzzzzzzzzzzzzzZ.........","...ZzzzzzzzzzzzzzzzZZ.........","...ZZz..zZ....Zz...zZ.........","..zz.....zz..zz.....zz........",".zz.......zz.zz......zz.......",".ZZ........ZZZZ.......ZZ......",".FF........FF.FF......FF......"]],"gen":[[".......pp...........","......pPp...........","......yyy...........",".....YyyyY..........","....YyyyyyY.........","....yYYYYYyy........","....hhhhssss........","....hhhsssess.......","....hhhssssss.......","....hhhSsssss..m....",".....hhSSsss..mM....","......hSSSS..mM.....",".....aaaaaa.mM......","..ppaAayyaaay.......","..ppaAaaayaaa.......",".ppPaAaaaayasa......",".ppPsAaaaaaa........","ppPPSAYyyyyY........","pPP..CccccC.........","PP...CccccC.........",".....Cc..cC.........",".....bb...bb........",".....bb...bb........","....bbb...bbb.......","....BBB...BBB.......","....................","...................."],[".......pp...........","......pPp...........","......yyy...........",".....YyyyY..........","....YyyyyyY.........","....yYYYYYyy........","....hhhhssss........","....hhhsssess.......","....hhhssssss.......","....hhhSsssss..m....",".....hhSSsss..mM....","......hSSSS..mM.....",".....aaaaaa.mM......","..ppaAayyaaay.......","..ppaAaaayaaa.......",".ppPaAaaaayasa......",".ppPsAaaaaaa........","ppPPSAYyyyyY........","pPP..CccccC.........","PP...CccccC.........","......CccC..........","......bbbb..........",".....bb.bb..........",".....bb.bbb.........",".....BB.BBB.........","....................","...................."]],"gob":[["..................","..................","..................","........gg........","...g...gggg...WW..","...gg.gggggg.Www..","....ggggegggeww...",".....gggggggw.....","......gGGGGgw.....","......llllllw.....",".....gllLllll.....","....gglllLlllg....","....g.lllLlll.g...","......LLLLLL......","......ll..ll......","......ll..ll......",".....LLL..LLL.....",".................."],["..................","..................","..................","........gg........","...g...gggg...WW..","...gg.gggggg.Www..","....ggggegggeww...",".....gggggggw.....","......gGGGGgw.....","......llllllw.....",".....gllLllll.....","....gglllLlllg....","....g.lllLlll.g...","......LLLLLL......","......ll..ll......","......ll.lll......",".....LLL.LLLL.....",".................."]],"brute":[["........................","........................","........................","...................MMM..","........YYYY......MmmM..",".......YMMMMY....MmmM...","......gggggggg...MmM....",".....gggeggegg.....w....",".....gggggggggg....w....",".....ggGxGGxGgg....w....","......gGGGGGGg.....w....","....ggMMMMMMMMgg........","...gggMmmmmmmMggg.......","...ggGMmMMMMmMGgg.......","...gg.MmmmmmmM.gg.......","....g.MMMMMMMM.g........","......llllllll..........","......lllLLlll..........","......lll..lll..........","......ggg..ggg..........","......ggg..ggg..........",".....LLLL..LLLL.........","........................","........................"],["........................","........................","........................","...................MMM..","........YYYY......MmmM..",".......YMMMMY....MmmM...","......gggggggg...MmM....",".....gggeggegg.....w....",".....gggggggggg....w....",".....ggGxGGxGgg....w....","......gGGGGGGg.....w....","....ggMMMMMMMMgg........","...gggMmmmmmmMggg.......","...ggGMmMMMMmMGgg.......","...gg.MmmmmmmM.gg.......","....g.MMMMMMMM.g........","......llllllll..........","......lllLLlll..........","......lll..lll..........","......ggg..ggg..........","......ggg.gggg..........",".....LLLL.LLLLL.........","........................","........................"]],"boss":[["..............................","..............................","..............................",".....................mm.......","....................mmM.......","...................mmM........",".....Y........Y...mM..........",".....YY......YY....r..........","......YY.vv.YY.....w..........",".......vvvvvv......w..........","......vZZZZZZv....w...........","......ZxrZZxrZ....w...........","......ZZZZZZZZ...w............","..uu...ZZYYZZ....w............","..uu.VvvvvvvvvV...............",".uuVVvvYvvvvYvvV..............",".uuVVvvvYvvYvvvV..............","uuVVVZvvvYYvvvZV..............","uVVVVZ.vvvvvv.ZV..............","VVV..Z.zzzzzz.Z...............","VV.....zzzzzz.................","V......zzz.zzz................",".......zz...zz................",".......zz...zz................","......ZZZ...ZZZ...............","..............................","..............................","..............................","..............................",".............................."],["..............................","..............................","..............................",".....................mm.......","....................mmM.......","...................mmM........",".....Y........Y...mM..........",".....YY......YY....r..........","......YY.vv.YY.....w..........",".......vvvvvv......w..........","......vZZZZZZv....w...........","......ZxrZZxrZ....w...........","......ZZZZZZZZ...w............","..uu...ZZYYZZ....w............","..uu.VvvvvvvvvV...............",".uuVVvvYvvvvYvvV..............",".uuVVvvvYvvYvvvV..............","uuVVVZvvvYYvvvZV..............","uVVVVZ.vvvvvv.ZV..............","VVV..Z.zzzzzz.Z...............","VV.....zzzzzz.................","V......zzz.zzz................",".......zz...zz................",".......zz.zzzz................","......ZZZ.ZZZZZ...............","..............................","..............................","..............................","..............................",".............................."]],"wolf":[["........................","..................CC....",".................CccC...","...............Cccccc...","..............Cccccxcc..","..CCC.........ccccccccn.",".CcccCCCCCCCCcccccc.....","Ccccccccccccccccccc.....","Cc.cccccccccccccccc.....","...ccccccccccccccc......","....ccc.......ccc.......","....cc.........cc.......","...cc.........cc........","........................"],["........................","..................CC....",".................CccC...","...............Cccccc...","..............Cccccxcc..","..CCC.........ccccccccn.",".CcccCCCCCCCCcccccc.....","Ccccccccccccccccccc.....","Cc.cccccccccccccccc.....","...ccccccccccccccc......","....ccc.......ccc.......","..ZZcc.........ZZ.......","..Zcc.........ccZ.......","........................"]]};
+var PXC={};
+function pxSprite(name,fr,map,flip){var key=name+fr+(map?JSON.stringify(map):"")+(flip?"f":"");if(PXC[key])return PXC[key];
+  var rs=PXSPR[name][fr],h=rs.length,w=0;rs.forEach(function(r){w=Math.max(w,r.length)});
+  var cv=document.createElement("canvas");cv.width=w+2;cv.height=h+2;var x=cv.getContext("2d");
+  function at(i,j){if(j<0||j>=h||i<0)return null;var ch=rs[j][i];return ch&&ch!=="."?ch:null}
+  for(var j=-1;j<=h;j++)for(var i=-1;i<=w;i++){var ch=at(i,j),X=flip?w-i:i+1;
+    if(ch){x.fillStyle=(map&&map[ch])||PXPAL[ch];x.fillRect(X,j+1,1,1)}
+    else if(at(i+1,j)||at(i-1,j)||at(i,j+1)||at(i,j-1)){x.fillStyle="#120e18";x.fillRect(X,j+1,1,1)}}
+  return PXC[key]=cv}
+function pxImg(name,fr,map,flip){var k="i"+name+fr+(map?JSON.stringify(map):"")+(flip?"f":"");if(PXC[k])return PXC[k];return PXC[k]=pxSprite(name,fr,map,flip).toDataURL()}
+var PX_ARM=[["#5b74b8","#3a4f8a"],["#c0404a","#7e2630"],["#3f9a6a","#246044"],["#8a5ac8","#55348a"],["#d08a2a","#8a5614"],["#3a8fb0","#22607a"],["#9a4a7a","#66284e"],["#6a7488","#444c5c"]];
+function pxGenMap(r){var hs=0;for(var q=0;q<r.id.length;q++)hs=(hs*31+r.id.charCodeAt(q))%997;var a=PX_ARM[hs%8],g=gradeCol(r.g);return {a:a[0],A:a[1],p:g,P:"#2a1a30"}}
+function pxBG(c,W,Hh,gy,t){
+  var bands=["#1b2a5c","#24386e","#2f4a82","#3d5e94","#55739e","#7a86a0","#b08a6a","#d79a5a"],bh=Math.ceil((gy-8)/bands.length);
+  bands.forEach(function(col,i){c.fillStyle=col;c.fillRect(0,i*bh,W,bh+1)});
+  c.fillStyle="#fff6c8";var mx=Math.round(W*0.84),my=12;[[3,0,6],[1,1,10],[0,2,12],[0,3,12],[0,4,12],[0,5,12],[0,6,12],[0,7,12],[1,8,10],[3,9,6]].forEach(function(r){c.fillRect(mx+r[0],my+r[1],r[2],1)});
+  c.fillStyle="#3d5e94";[[6,1,5],[7,2,5],[8,3,4],[8,4,4],[8,5,4],[8,6,4],[7,7,5],[6,8,5]].forEach(function(r){c.fillRect(mx+r[0],my-2+r[1],r[2],1)});
+  var cl=(t*3)%(W+80);c.fillStyle="#c9d2e6";[[0,0,18],[ -4,2,28],[-8,4,36],[-2,6,24]].forEach(function(r){c.fillRect(Math.round(W-cl+r[0]),18+r[1],r[2],2)});
+  var cl2=(t*2+W/2)%(W+80);[[0,0,12],[-3,2,20],[-6,4,26]].forEach(function(r){c.fillRect(Math.round(W-cl2+r[0]),30+r[1],r[2],2)});
+  function ridge(col,base,amp,per,sp,step){c.fillStyle=col;var o=(t*sp)%per;for(var x=0;x<W;x+=step){var xx=x+o,h=Math.abs(((xx%per)/per)*2-1);var y=Math.round(base-amp*(1-h)-((Math.floor(xx/per)%2)?amp*0.35:0));c.fillRect(x,y,step,gy-y)}}
+  ridge("#2a3a5e",gy-14,30,90,3,2);ridge("#33503e",gy-10,14,46,8,2);
+  var o3=(t*14)%22;for(var tx=-o3;tx<W+22;tx+=22){var X=Math.round(tx);c.fillStyle="#1f3a24";c.fillRect(X+3,gy-20,6,2);c.fillRect(X+1,gy-18,10,4);c.fillRect(X,gy-14,12,4);c.fillStyle="#2c5230";c.fillRect(X+3,gy-18,4,2);c.fillRect(X+2,gy-14,4,2);c.fillStyle="#3a2414";c.fillRect(X+5,gy-10,2,3)}
+  c.fillStyle="#4f8a3a";c.fillRect(0,gy-8,W,Hh-gy+8);c.fillStyle="#5f9e44";c.fillRect(0,gy-8,W,3);c.fillStyle="#3f7430";c.fillRect(0,gy+6,W,Hh-gy-6);
+  var o4=(t*22)%60;for(var dx=-o4;dx<W+60;dx+=60){var D=Math.round(dx);c.fillStyle="#a8865a";c.fillRect(D+8,gy+1,22,3);c.fillRect(D+12,gy,14,1);c.fillStyle="#8a6a44";c.fillRect(D+10,gy+4,18,1)}
+  var o5=(t*22)%13;c.fillStyle="#76b856";for(var gx=-o5;gx<W;gx+=13){var G=Math.round(gx);c.fillRect(G,gy-5,1,2);c.fillRect(G+2,gy-6,1,3);c.fillRect(G+6,gy+9,1,2);c.fillRect(G+8,gy+8,1,3)}
+}
+function pxBGimg(){if(PXC.bg)return PXC.bg;var cv=document.createElement("canvas");cv.width=180;cv.height=100;pxBG(cv.getContext("2d"),180,100,80,0);return PXC.bg=cv.toDataURL()}
 var AFKV={en:null,fx:[],pops:[],t0:0,lastF:0,shot:0,lastSave:0,killGain:0,n:0};
 function afkLoop(ts){
   requestAnimationFrame(afkLoop);
@@ -825,25 +928,19 @@ function afkLoop(ts){
   var dpr=window.devicePixelRatio||1,W=cv.clientWidth,Hh=cv.clientHeight;if(!W)return;
   if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(Hh*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr)}
   var c0=cv.getContext("2d"),K=Hh/120,c;W=W/K;Hh=120;
-  if(window.PIXEL_AFK){var off=AFKV.off||(AFKV.off=document.createElement("canvas")),lw=Math.round(W*2);if(off.width!==lw){off.width=lw;off.height=240}c=off.getContext("2d");c.setTransform(2,0,0,2,0,0)}
+  if(window.PIXEL_AFK){var off=AFKV.off||(AFKV.off=document.createElement("canvas")),pxS=Math.max(2,Math.round(dpr*K)),lw=Math.round(W*pxS);if(off.width!==lw||off.height!==120*pxS){off.width=lw;off.height=120*pxS}c=off.getContext("2d");c.setTransform(pxS,0,0,pxS,0,0);c.imageSmoothingEnabled=false;var pxSS=Math.max(1,Math.round(pxS*1.4))/pxS}
   else{c=c0;c.setTransform(dpr*K,0,0,dpr*K,0,0)}
   var t=ts/1000,gy=Hh-17,OL="#0d0f1a";
   function P2(f,s){c.fillStyle=f;c.fill();if(s!==0){c.strokeStyle=OL;c.lineWidth=s||1.1;c.stroke()}}
   function el(x,y,rx,ry,f,rot){c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,7);P2(f)}
   function poly(pts,f,s){c.beginPath();c.moveTo(pts[0],pts[1]);for(var i=2;i<pts.length;i+=2)c.lineTo(pts[i],pts[i+1]);c.closePath();P2(f,s)}
   function ln(x1,y1,x2,y2,col,w){c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.strokeStyle=col;c.lineWidth=w;c.lineCap="round";c.stroke()}
-  // ---- backdrop: dusk sky, moon, mountains, trees, grass
-  var sk=c.createLinearGradient(0,0,0,gy);sk.addColorStop(0,"#0a0f2c");sk.addColorStop(1,"#22355a");c.fillStyle=sk;c.fillRect(0,0,W,gy);
-  c.save();c.shadowColor="#fff6c8";c.shadowBlur=14;el(W*0.82,22,10,10,"#f6f1cf");c.restore();el(W*0.82+4,19,8,8,"#1a2546");
-  var sc1=(t*4)%160;c.fillStyle="#18234a";c.beginPath();c.moveTo(0,gy-18);for(var mx=-sc1;mx<W+160;mx+=80){c.lineTo(mx+40,gy-46-((mx/80|0)%2)*10);c.lineTo(mx+80,gy-18)}c.lineTo(W,gy);c.lineTo(0,gy);c.fill();
-  var sc2=(t*10)%36;c.fillStyle="#123026";for(var tx2=-sc2;tx2<W+36;tx2+=36){c.beginPath();c.moveTo(tx2,gy-6);c.lineTo(tx2+9,gy-26);c.lineTo(tx2+18,gy-6);c.fill();c.beginPath();c.moveTo(tx2+16,gy-6);c.lineTo(tx2+23,gy-19);c.lineTo(tx2+30,gy-6);c.fill()}
-  var gr=c.createLinearGradient(0,gy-8,0,Hh);gr.addColorStop(0,"#2f5a2c");gr.addColorStop(1,"#18301a");c.fillStyle=gr;c.fillRect(0,gy-8,W,Hh-gy+8);
-  c.strokeStyle="#4f8a3e";c.lineWidth=1;var sc3=(t*22)%14;for(var gx=-sc3;gx<W;gx+=14){c.beginPath();c.moveTo(gx,gy+4);c.lineTo(gx+2,gy);c.moveTo(gx+4,gy+4);c.lineTo(gx+4,gy+1);c.stroke()}
-  var TIc=towerInfo(AF().stage);c.font="700 7px Rajdhani,sans-serif";c.textAlign="left";c.fillStyle="rgba(0,0,0,.45)";var stl="STAGE "+AF().stage+" · "+TIc.name.toUpperCase()+"  "+Math.min(12,AF().wave)+"/12";c.fillRect(3,3,c.measureText(stl).width+6,10);c.fillStyle="#ffd166";c.fillText(stl,6,10.5);
+  pxBG(c,W,Hh,gy,t);
+  var TIc=towerInfo(AF().stage);c.font="10px VT323,monospace";c.textAlign="left";c.fillStyle="rgba(0,0,0,.45)";var stl="STAGE "+AF().stage+" · "+TIc.name.toUpperCase()+"  "+Math.min(12,AF().wave)+"/12";c.fillRect(3,3,c.measureText(stl).width+6,10);c.fillStyle="#ffd166";c.fillText(stl,6,10.5);
   // ---- party
   var pl0=partyList().map(rwById),heroes=pl0.length?pl0:partyHeroes(),groups=Math.max(1,Math.ceil(heroes.length/4)),gi=Math.floor(t/25)%groups,field=heroes.slice(gi*4,gi*4+4),sq=troopSprites();
   var frontX=Math.min(W*0.52,190),U=[];
-  for(var i=0;i<sq;i++){var cav=i%3===2;U.push({id:"s"+i,k:cav?"c":"s",x:frontX-26-i*((frontX-34)/Math.max(1,sq)),y:gy-24,s:0.75})}
+  for(var i=0;i<sq;i++){var cav=i%3===2;U.push({id:"s"+i,k:cav?"c":"s",x:frontX-26-i*((frontX-34)/Math.max(1,sq)),y:gy-5,s:0.75})}
   field.forEach(function(r,j){U.push({id:r.id,k:"h",r:r,x:frontX-30-j*30,y:gy,s:1})});
   U.push({id:"yf",k:"y",x:frontX,y:gy,s:1});
   AFKV.hp=AFKV.hp||{};U.forEach(function(m){if(AFKV.hp[m.id]==null)AFKV.hp[m.id]=1;AFKV.hp[m.id]=Math.min(1,AFKV.hp[m.id]+0.04*dt)});
@@ -907,14 +1004,26 @@ function afkLoop(ts){
     var sw=Math.sin(t*6+E.x)*0.5;c.save();c.translate(6,-16);c.rotate(-0.6+sw);ln(0,4,0,-12,"#5b3a1e",2.4);el(0,-13,3,4,"#4a3020");c.restore();
     c.restore();
     var hy=gy-(E.ty==="boss"?62:E.ty==="brute"?48:40);c.fillStyle="rgba(0,0,0,.55)";c.fillRect(E.x-13,hy,26,3.2);c.fillStyle=E.ty==="boss"?"#ffd166":"#ff4d6d";c.fillRect(E.x-13,hy,26*Math.max(0,E.hp/E.max),3.2);
-    if(E.ty==="boss"){c.font="700 7px Rajdhani,sans-serif";c.textAlign="center";var bl=(E.crown?"CROWN · ":"BOSS · ")+(E.nm||""),bw=c.measureText(bl).width,bx=Math.min(W-bw/2-2,E.x);c.fillStyle="rgba(0,0,0,.6)";c.fillRect(bx-bw/2-2,hy-10,bw+4,8);c.fillStyle="#ffd166";c.fillText(bl,bx,hy-3.5)}}
+    if(E.ty==="boss"){c.font="10px VT323,monospace";c.textAlign="center";var bl=(E.crown?"CROWN · ":"BOSS · ")+(E.nm||""),bw=c.measureText(bl).width,bx=Math.min(W-bw/2-2,E.x);c.fillStyle="rgba(0,0,0,.6)";c.fillRect(bx-bw/2-2,hy-10,bw+4,8);c.fillStyle="#ffd166";c.fillText(bl,bx,hy-3.5)}}
+  if(window.PIXEL_AFK){
+    var pxF=function(ph){return Math.floor(ph/2.2)%2},pxL=function(ph,atk){return atk&&Math.sin(ph*1.6)>0.5?2:0};
+    var pxDraw=function(s,dx){c.scale(pxSS,pxSS);c.drawImage(s,-Math.round(s.width/2)+(dx||0),-s.height+1)};
+    spearman=function(ph,atk){c.scale(1/0.75,1/0.75);pxDraw(pxSprite("spear",pxF(ph)),pxL(ph,atk))};
+    horseman=function(ph,atk){c.scale(1/0.75,1/0.75);pxDraw(pxSprite("cav",Math.floor(t*6+ph)%2),pxL(ph,atk))};
+    general=function(r,ph,atk){pxDraw(pxSprite("gen",pxF(ph),pxGenMap(r)),pxL(ph,atk))};
+    yefeng=function(ph,atk){pxDraw(pxSprite("yf",Math.floor(t*6)%2),atk&&Math.sin(t*12)>0.3?3:0)};
+    enemy=function(E){if(E.v==null)E.v=Math.random()<0.4;var nm=E.ty==="boss"?"boss":E.ty==="brute"?"brute":(E.v?"wolf":"gob"),s=pxSprite(nm,Math.floor(t*5+E.x*0.05)%2,null,true);
+      c.save();c.translate(E.x,gy);c.scale(pxSS,pxSS);c.drawImage(s,-Math.round(s.width/2),-s.height+1);c.restore();
+      var hy=gy-s.height*pxSS-4;c.fillStyle="rgba(0,0,0,.6)";c.fillRect(E.x-13,hy,26,3);c.fillStyle=E.ty==="boss"?"#ffd166":"#ff4d6d";c.fillRect(E.x-13,hy,26*Math.max(0,E.hp/E.max),3);
+      if(E.ty==="boss"){c.font="9px VT323,monospace";c.textAlign="center";var bl=(E.crown?"CROWN · ":"BOSS · ")+(E.nm||""),bw=c.measureText(bl).width,bx=Math.min(W-bw/2-2,Math.max(bw/2+2,E.x));c.fillStyle="rgba(0,0,0,.65)";c.fillRect(bx-bw/2-2,hy-10,bw+4,8);c.fillStyle="#ffd166";c.fillText(bl,bx,hy-3.5)}};
+  }
   var LB=[];
   U.forEach(function(m,ix){var bob=Math.sin(t*7+ix*1.7)*0.8;c.save();c.translate(m.x,m.y+bob);c.scale(m.s,m.s);var ph=t*7+ix;
     if(m.k==="s")spearman(ph,engaged);else if(m.k==="c")horseman(ph,engaged);else if(m.k==="h")general(m.r,ph,engaged);else yefeng(ph,engaged);
     c.restore();
-    var top=m.k==="y"?60:m.k==="h"?54:m.k==="c"?40*m.s:36*m.s;hpbar(m.x,m.y-top,AFKV.hp[m.id],"#3dffa8");if(m.k==="h")LB.push(m);
-    if(m.k==="y"){c.fillStyle="#bfe6ff";c.font="700 7px Rajdhani,sans-serif";c.textAlign="center";c.fillText("YE FENG",m.x,m.y-top-3)}});
-  c.font="700 7px Rajdhani,sans-serif";c.textAlign="center";
+    var top=(m.k==="y"?34:m.k==="h"?31:m.k==="c"?33:30)*(window.PIXEL_AFK?pxSS:1)+3;hpbar(m.x,m.y-top,AFKV.hp[m.id],"#3dffa8");if(m.k==="h")LB.push(m);
+    if(m.k==="y"){c.fillStyle="#bfe6ff";c.font="10px VT323,monospace";c.textAlign="center";c.fillText("YE FENG",m.x,m.y-top-3)}});
+  c.font="10px VT323,monospace";c.textAlign="center";
   LB.forEach(function(m){var nm=m.r.name,sp=nm.indexOf(" "),ls=nm.length>=10&&sp>0?[nm.slice(0,sp),nm.slice(sp+1)]:[nm];
     ls.forEach(function(t2,li){var tw=c.measureText(t2).width,yy=gy+8+li*6.5;c.fillStyle="rgba(2,6,13,.75)";c.fillRect(m.x-tw/2-1.5,yy-5.5,tw+3,7);c.fillStyle=gradeCol(m.r.g);c.fillText(t2,m.x,yy)})});
   AFKV.ens.slice().reverse().forEach(function(E){c.globalAlpha=E.die>0?Math.max(0,E.die*2):1;enemy(E);c.globalAlpha=1});
@@ -947,7 +1056,7 @@ var PQ=[],pbusy=false;
 function showPing(html){PQ.push(html);if(!pbusy)nextPing()}
 function nextPing(){var h=PQ.shift();if(!h){pbusy=false;return}pbusy=true;var b=document.createElement("div");b.className="ping";b.innerHTML=h;document.body.appendChild(b);setTimeout(function(){b.remove();nextPing()},4400)}
 function addSouls(v){var f=FN(),before=bladeGrade().i;f.souls=(f.souls||0)+v;var after=bladeGrade();if(after.i>before)showPing('<b>PING!</b>[Moonripple Blade evolved → '+after.name.toUpperCase()+']<br>[Jade earned ×'+bladeMult()+']')}
-function addMerit(v){var f=FN(),before=lordRank().i;f.merit=(f.merit||0)+v;var after=lordRank();if(after.i>before)showPing('<b>PING!</b>[SERVER ANNOUNCEMENT]<br>[Lord rank risen → '+after.name.toUpperCase()+']')}
+function addMerit(v){var f=FN(),before=lordRank().i,lv0=S.lord?lordLevel():1;f.merit=(f.merit||0)+v;if(S.lord&&lordLevel()>lv0)showPing('<b>LEVEL UP!</b>[Ye Feng · Lv '+lv0+' → Lv '+lordLevel()+']'+(Math.floor(lordLevel()/5)>Math.floor(lv0/5)?'<br>[Lord\'s Grace: jade ×'+graceMult().toFixed(2)+']':''));var after=lordRank();if(after.i>before)showPing('<b>PING!</b>[SERVER ANNOUNCEMENT]<br>[Lord rank risen → '+after.name.toUpperCase()+']')}
 var DROPS={ordinary:{souls:1,merit:1,frag:0},elite:{souls:10,merit:100,frag:1},boss:{souls:50,merit:2000,frag:3,card:"Epic"},crown:{souls:500,merit:5000,frag:5,card:"Legendary"}};
 function finReward(kind,foe,what){
   var D=DROPS[kind],f=FN(),sm=SM();
@@ -1086,7 +1195,7 @@ function lunaLine(T,isNow){
 function vHome(){
   var T=monthTotals(cur.y,cur.m),pd=nextPayday(),isNow=cur.y===now.getFullYear()&&cur.m===now.getMonth();
   var ef=goalById("ef"),efS=ef?goalSaved(ef):0;
-  var h='<div class="hero"><div class="sys-h"><span>[Day '+dayNo()+' · Dawn]</span><span>'+MON3[cur.m].toUpperCase()+' '+cur.y+'</span></div>'+
+  var h=(window.JRPG?jrpgTop(T):'')+'<div class="hero"><div class="sys-h"><span>[Day '+dayNo()+' · Dawn]</span><span>'+MON3[cur.m].toUpperCase()+' '+cur.y+'</span></div>'+
     '<div class="lbl">Treasury · real balance</div>'+
     '<div class="big m">'+coin(T.baki,true)+'</div><div class="bigrm m">'+rm(T.baki,true)+'</div>'+
     '<div class="lines">'+
