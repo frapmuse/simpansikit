@@ -314,6 +314,67 @@ nav.bottom button.on svg{filter:drop-shadow(0 0 6px var(--cy))}
 .ping{background:rgba(30,22,4,.92);color:var(--gold);border:1px solid var(--gold);border-radius:0;box-shadow:0 0 22px rgba(255,209,102,.45);font-family:var(--f-num);font-weight:400}
 .ping b{font-family:"Rajdhani",sans-serif;font-weight:700;letter-spacing:.2em}
 .goldt{color:var(--gold)}
+
+/* ===== Summon Hall (card fragments → rewards) ===== */
+.sumbar{display:flex;gap:10px;align-items:center;margin-top:10px}
+.btn.sum{background:linear-gradient(90deg,rgba(177,140,255,.25),rgba(255,209,102,.25));color:#fff;border-color:var(--purple);box-shadow:0 0 16px rgba(177,140,255,.45)}
+@media (prefers-reduced-motion:no-preference){.btn.sum.ready{animation:sumpulse 1.8s ease-in-out infinite}@keyframes sumpulse{50%{box-shadow:0 0 26px rgba(255,209,102,.7)}}}
+.stage{perspective:900px;display:flex;justify-content:center;margin:8px 0 14px}
+.scard{width:210px;height:300px;position:relative;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1);cursor:pointer;border:0;background:none;padding:0}
+.scard.flip{transform:rotateY(180deg)}
+.scard .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.scard .back{background:radial-gradient(circle at 50% 40%,rgba(95,212,255,.25),transparent 60%),linear-gradient(180deg,#0b2440,#040a14);box-shadow:inset 0 0 0 1px var(--cyd),inset 0 0 40px rgba(95,212,255,.2)}
+.scard .back svg{width:110px;height:110px;filter:drop-shadow(0 0 10px rgba(95,212,255,.8))}
+.scard .wheel{font-family:var(--f-num);font-size:13px;letter-spacing:.2em;margin-top:14px;min-height:20px;text-transform:uppercase}
+.scard .tap{font-family:var(--f-num);font-size:11px;letter-spacing:.18em;color:var(--muted);margin-top:8px}
+.scard .front{transform:rotateY(180deg);background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--gc) 35%,transparent),transparent 65%),linear-gradient(180deg,#0c1d33,#040a14);box-shadow:inset 0 0 0 2px var(--gc),inset 0 0 40px color-mix(in srgb,var(--gc) 30%,transparent)}
+.scard .gr{font-family:var(--f-num);font-size:12px;letter-spacing:.24em;color:var(--gc);text-shadow:0 0 10px var(--gc);text-transform:uppercase}
+.scard .rw{font-family:"Rajdhani",sans-serif;font-weight:700;font-size:24px;line-height:1.05;margin:8px 0 4px;color:#fff;text-shadow:0 0 12px var(--gc)}
+.scard .ty{font-family:var(--f-num);font-size:11px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.scard .ln{font-size:14px;color:var(--silver);margin-top:10px;line-height:1.25}
+.scard .ic2 svg{width:74px;height:74px}
+.sumnote{text-align:center;font-family:var(--f-num);font-size:12px;letter-spacing:.08em;color:var(--gold);min-height:18px;margin-bottom:10px}
+.odds{font-family:var(--f-num);font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px}
+.odds b{font-weight:400}
+.hgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.hcell{border:1px solid var(--line);background:rgba(95,212,255,.04);padding:8px 4px;text-align:center;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.hcell svg{width:44px;height:44px}
+.hcell .nm{font-size:12px;line-height:1.05;font-weight:700}
+.hcell .gd{font-family:var(--f-num);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.hcell.lock{opacity:.45}
+.hcell.on{border-color:var(--purple);box-shadow:0 0 14px rgba(177,140,255,.5);background:rgba(177,140,255,.12)}
+.hcell .act{font-family:var(--f-num);font-size:9px;color:var(--purple);letter-spacing:.1em}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.bdg{font-size:13px;padding:5px 9px;border:1px solid var(--bc);color:var(--bc);font-weight:700;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+.bdg.lock{opacity:.4;border-style:dashed}
+.advisor{display:flex;gap:10px;align-items:flex-start;margin-top:10px}
+.advisor svg{width:46px;height:46px;flex:none}
+.advisor .bubble{flex:1}
+.advisor .bubble b{color:var(--purple)}
+.skinrow{display:flex;flex-wrap:wrap;gap:8px}
+.skinrow .chipb{display:flex;align-items:center;gap:6px}
+.skinrow .dot{width:12px;height:12px;border-radius:50%;background:var(--sc);box-shadow:0 0 8px var(--sc)}
+
+/* ===== AFK battle strip (fixed, above the bottom menu) ===== */
+.wrap{padding-block:0 270px}
+nav.bottom{background:linear-gradient(180deg,rgba(2,6,13,0),#02060d 16px);padding-top:6px}
+.fab{bottom:calc(222px + env(safe-area-inset-bottom,0px))}
+.toast{bottom:calc(310px + env(safe-area-inset-bottom,0px))}
+.afkbar{position:relative;max-width:520px;margin:0 auto 6px;height:124px;pointer-events:auto;cursor:pointer;background:linear-gradient(180deg,#030a15,#071d33);box-shadow:0 0 0 1px var(--cyd),0 0 18px rgba(95,212,255,.18);clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);overflow:hidden}
+.afkbar canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.afkov{position:absolute;left:10px;top:6px;pointer-events:none}
+.afkbar .camp{position:absolute;right:8px;top:6px;font-family:var(--f-num);font-size:10px;letter-spacing:.12em;color:#02060d;background:var(--gold);border:0;padding:5px 8px;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);box-shadow:0 0 10px rgba(255,209,102,.6)}
+.jade{font-family:var(--f-num);font-size:16px;color:#7dffcf;text-shadow:0 0 10px rgba(61,255,168,.6)}
+.jade small{font-size:10px;color:var(--muted);letter-spacing:.12em;margin-left:4px}
+.afkmini{font-family:var(--f-num);font-size:9.5px;color:var(--muted);letter-spacing:.06em}
+.sheet .jade{font-size:22px}
+.shop .it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.shop .it:last-child{border-bottom:0}
+.shop .it svg{width:40px;height:40px;flex:none}
+.shop .it .t{font-weight:700;font-size:16px}
+.shop .it .d{font-size:13px;color:var(--muted)}
+.shop .it .btn{min-width:96px;font-family:var(--f-num);font-size:14px}
+.shop .it .btn[disabled]{opacity:.4}
 html{padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0}
 [hidden]{display:none!important}
@@ -343,7 +404,7 @@ html,body{margin:0}
 <main class="wrap" id="view"></main>
 
 <button class="fab" id="fab" aria-label="Log an entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-<nav class="bottom"><div class="in" id="nav"></div></nav>
+<nav class="bottom"><div class="afkbar" data-camp="1" aria-label="AFK battle. Tap for War Camp"><canvas id="afkc"></canvas><div class="afkov"><div class="jade" id="jadeV">◆ 0</div><div class="afkmini" id="afkInfo"></div></div><span class="camp">WAR CAMP</span></div><div class="in" id="nav"></div></nav>
 <div id="layer"></div>
 
 <script>
@@ -379,10 +440,12 @@ function migrate(d){
   (d.goals||[]).forEach(function(g){if(g.id==="saving"&&g.name==="Saving")g.name="Main Army";if(g.id==="ef"&&g.name==="Emergency Fund")g.name="Garrison"});
   (d.tx||[]).forEach(function(t){if(t.cat&&OLDCAT[t.cat])t.cat=OLDCAT[t.cat]});
   (d.commits||[]).forEach(function(c){if(c.cat&&OLDCAT[c.cat])c.cat=OLDCAT[c.cat]});
+  var sm=d.summon=d.summon||{};sm.opened=sm.opened||0;sm.bonus=sm.bonus||0;sm.owned=sm.owned||{};sm.log=sm.log||[];if(sm.hero===undefined)sm.hero=null;sm.skin=sm.skin||"holo";sm.luck=!!sm.luck;if(!sm.starter){sm.starter=true;sm.bonus+=10}
+  var af=d.afk=d.afk||{};af.jade=af.jade||0;af.last=af.last||Date.now();af.kills=af.kills||0;af.gear=af.gear||{};af.fragBought=af.fragBought||0;af.buys=af.buys||{};
   d.v=2;return d;
 }
 var storageOK=true,S;
-try{var raw=localStorage.getItem(KEY);S=raw?migrate(JSON.parse(raw)):fresh()}catch(e){storageOK=false;S=fresh()}
+try{var raw=localStorage.getItem(KEY);S=raw?migrate(JSON.parse(raw)):migrate(fresh())}catch(e){storageOK=false;S=migrate(fresh())}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));storageOK=true}catch(e){storageOK=false}}
 
 var now=new Date(),cur={y:now.getFullYear(),m:now.getMonth()},tab="home",recFilter="all";
@@ -508,6 +571,270 @@ function txRow(x){
   return '<div class="li" data-tx="'+x.id+'">'+txIcon(x)+'<div class="grow"><div class="t">'+esc(txLabel(x))+'</div><div class="d">'+fmtDate(x.date)+(sub?" · "+sub:"")+'</div></div><div class="a">'+money(Math.abs(x.amt),{cls:cls,pre:pre})+'</div></div>';
 }
 
+
+/* ===== Summon Hall ===== */
+var GRADES=[["Common","#9aa7b8",39],["Fine","#3dffa8",27],["Rare","#4da3ff",17],["Epic","#b18cff",10],["Legendary","#ff9a3d",4],["Mythical","#ff5fa2",1.5],["Celestial","#ffd166",0.5],["Anomaly","#ff4d6d",1]];
+function gradeCol(g){for(var i=0;i<GRADES.length;i++)if(GRADES[i][0]===g)return GRADES[i][1];return "#9aa7b8"}
+var SKINS={holo:{name:"Holo System",rgb:"95,212,255",hex:"#5fd4ff"},eaves:{name:"Tiled Eaves",rgb:"255,170,90",hex:"#ffaa5a"},bay:{name:"Wangyue Bay",rgb:"61,240,190",hex:"#3df0be"},mooncity:{name:"Moon City",rgb:"190,170,255",hex:"#beaaff"},moonripple:{name:"Moonripple",rgb:"255,120,200",hex:"#ff78c8"},celestial:{name:"Celestial Moon",rgb:"255,214,102",hex:"#ffd666"}};
+var REWARDS=[
+ {id:"b_keeper",g:"Common",t:"badge",name:"Ledger Keeper",line:"A lord who writes things down is a lord who keeps them."},
+ {id:"b_quiet",g:"Common",t:"badge",name:"Quiet Purse",line:"No coin left the treasury without a reason."},
+ {id:"b_counter",g:"Common",t:"badge",name:"Coin Counter",line:"Gold, silver, copper. Every one accounted for."},
+ {id:"b_dawn",g:"Common",t:"badge",name:"Dawn Patrol",line:"The first entry of the day, before the market opens."},
+ {id:"s_eaves",g:"Fine",t:"skin",skin:"eaves",name:"Tiled Eaves",line:"Panels glow in warm lantern amber."},
+ {id:"b_tin",g:"Fine",t:"badge",name:"Mak Yah's Biscuit Tin",line:"Every coin in an old biscuit tin still counts."},
+ {id:"b_baydawn",g:"Fine",t:"badge",name:"Wangyue Bay Dawn",line:"The first morning on the beach. The realm begins here."},
+ {id:"h_xiaohe",g:"Rare",t:"hero",name:"Xiao He",role:"Treasury & payroll",ab:"XH",line:"The careful steward. He watches every payroll you owe."},
+ {id:"h_waner",g:"Rare",t:"hero",name:"Shangguan Wan'er",role:"Records & council",ab:"SW",line:"She records every decision of the council."},
+ {id:"s_bay",g:"Rare",t:"skin",skin:"bay",name:"Wangyue Bay",line:"Panels shine in sea-glass green."},
+ {id:"h_fanli",g:"Epic",t:"hero",name:"Fan Li",role:"Commerce & tribute",ab:"FL",line:"The merchant. He compares every tribute to its estimate."},
+ {id:"h_guanzhong",g:"Epic",t:"hero",name:"Guan Zhong",role:"Tax & market rules",ab:"GZ",line:"He keeps your records ready for tax season."},
+ {id:"h_zhenghe",g:"Epic",t:"hero",name:"Zheng He",role:"Voyages, travel & Hajj",ab:"ZH",line:"The admiral. Every voyage needs its own fund."},
+ {id:"s_mooncity",g:"Epic",t:"skin",skin:"mooncity",name:"Moon City",line:"Silver-violet panels of the moon capital."},
+ {id:"h_hanxin",g:"Legendary",t:"hero",name:"Han Xin",role:"Strategy & debt war",ab:"HX",line:"The general. He plans the fall of the Moonvault."},
+ {id:"h_hangtuah",g:"Legendary",t:"hero",name:"Hang Tuah",role:"Guardian of the Garrison",ab:"HT",line:"The loyal warrior who guards your treasury floor."},
+ {id:"b_eyes",g:"Mythical",t:"badge",name:"Divine Eyes",line:"You see the true numbers behind every price."},
+ {id:"s_moonripple",g:"Mythical",t:"skin",skin:"moonripple",name:"Moonripple",line:"Panels ripple in rose moonlight, like the blade."},
+ {id:"s_celestial",g:"Celestial",t:"skin",skin:"celestial",name:"Celestial Moon",line:"Golden panels. Few lords ever see them."},
+ {id:"b_lord",g:"Celestial",t:"badge",name:"Lord of Wangyue Bay",line:"The bay bows to its lord."},
+ {id:"x_luck",g:"Anomaly",t:"blessing",name:"Supreme Luck",line:"The wheel spun past every grade. Your next summon is Legendary or higher."}
+];
+function rwById(id){return REWARDS.find(function(r){return r.id===id})}
+function SM(){return S.summon}
+function totalFrag(){return fragments()+(n(SM().bonus)||0)}
+function cardsLeft(){return Math.max(0,Math.floor(totalFrag()/10)-(n(SM().opened)||0))}
+function HERO(ab,col,locked){col=col||"#b18cff";
+  return '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 L42 13.5 V34.5 L24 45 L6 34.5 V13.5Z" fill="'+(locked?"rgba(127,180,214,.06)":"rgba(177,140,255,.14)")+'" stroke="'+col+'" stroke-width="2"/>'+(locked?'<text x="24" y="30" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="16" fill="'+col+'">?</text>':'<path d="M15 14 L24 9 L33 14" stroke="#ffd166" stroke-width="2" fill="none"/><text x="24" y="31" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="15" fill="#fff">'+ab+'</text>')+'</svg>'}
+function rwIcon(r){
+  if(r.t==="hero")return HERO(r.ab,gradeCol(r.g));
+  if(r.t==="skin"){var k=SKINS[r.skin];return '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 6 H40 L44 10 V42 H12 L8 38Z" fill="rgba('+k.rgb+',.15)" stroke="'+k.hex+'" stroke-width="2"/><path d="M14 16 H38 M14 24 H32 M14 32 H36" stroke="'+k.hex+'" stroke-width="2"/></svg>'}
+  if(r.t==="blessing")return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18" fill="none" stroke="#ff4d6d" stroke-width="2" stroke-dasharray="3 3"/><path d="M24 8 L28 20 L40 24 L28 28 L24 40 L20 28 L8 24 L20 20Z" fill="rgba(255,209,102,.3)" stroke="#ffd166" stroke-width="2"/></svg>';
+  var c=gradeCol(r.g);return '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 L40 10 V24 C40 34 32 41 24 44 C16 41 8 34 8 24 V10Z" fill="rgba(255,255,255,.05)" stroke="'+c+'" stroke-width="2"/><path d="M17 24 L22 29 L32 18" stroke="'+c+'" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>'}
+function rollGrade(){
+  var pool=GRADES;
+  if(SM().luck)pool=GRADES.filter(function(g){return g[0]==="Legendary"||g[0]==="Mythical"||g[0]==="Celestial"});
+  var tot=sum(pool,function(g){return g[2]}),r=Math.random()*tot;
+  for(var i=0;i<pool.length;i++){r-=pool[i][2];if(r<0)return pool[i][0]}
+  return pool[0][0];
+}
+function drawCard(){
+  var sm=SM(),wasLucky=!!sm.luck,first=!(n(sm.opened)>0),g=first?(Math.random()<0.15?"Legendary":Math.random()<0.45?"Epic":"Rare"):rollGrade();sm.luck=false;
+  var inG=REWARDS.filter(function(r){return r.g===g&&(!first||r.t==="hero")}),fresh=inG.filter(function(r){return !sm.owned[r.id]});
+  var r=(fresh.length?fresh:inG)[Math.floor(Math.random()*(fresh.length?fresh.length:inG.length))];
+  var dupe=r.t!=="blessing"&&!!sm.owned[r.id];
+  if(r.t==="blessing"){sm.luck=true;sm.owned[r.id]=(sm.owned[r.id]||0)+1}
+  else if(dupe){sm.owned[r.id]++;sm.bonus=(n(sm.bonus)||0)+3}
+  else sm.owned[r.id]=1;
+  sm.opened=(n(sm.opened)||0)+1;
+  sm.log.push({date:todayStr(),id:r.id,dupe:dupe});
+  if(r.t==="hero"&&!dupe&&!sm.hero)sm.hero=r.id;
+  save();return {r:r,dupe:dupe,lucky:wasLucky};
+}
+var BASECSS=null;
+function applySkin(){
+  var st=document.querySelector("style");if(!st)return;if(BASECSS===null)BASECSS=st.textContent;
+  var k=SKINS[SM().skin]||SKINS.holo;
+  st.textContent=k===SKINS.holo?BASECSS:BASECSS.split("95,212,255").join(k.rgb).split("#5fd4ff").join(k.hex);
+  var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#02060d");
+}
+function heroLine(T){
+  var h=SM().hero,r=h&&rwById(h);if(!r||!SM().owned[h])return "";
+  var say="",y=cur.y,m=cur.m;
+  if(h==="h_xiaohe")say=T.pending>0?"Payroll still unpaid this month: <span class=\"cn m goldt\">"+coin(T.pending)+"</span>. Shall we settle it before the armies march, my lord?":"Every payroll item this month is settled, my lord.";
+  else if(h==="h_waner"){var k=T.list.length;say=k?"This month's ledger holds "+k+" entr"+(k===1?"y":"ies")+", my lord. All are recorded.":"The record book for this month is still blank, my lord."}
+  else if(h==="h_fanli"){var pm=incById("pm"),got=sum(T.list.filter(function(x){return x.type==="in"&&x.src==="pm"}),function(x){return x.amt});
+    if(!got)say="No PM tribute logged this month yet, my lord. When the payslip arrives, key in the real amount and I will compare it.";
+    else if(pm&&n(pm.est)){var df=got-pm.est;say="PM tribute this month: <span class=\"cn m\">"+coin(got)+"</span>, "+(Math.abs(df)<0.005?"exactly the estimate.":(df>0?"<span class=\"cn m\">"+coin(df)+"</span> above":"<span class=\"cn m\">"+coin(-df)+"</span> below")+" your estimate.")}
+    else say="PM tribute this month: <span class=\"cn m\">"+coin(got)+"</span>. Set an estimate in the Council and I will compare."}
+  else if(h==="h_guanzhong")say="Keep every payslip and receipt filed, my lord. When tax season comes, good records are your shield.";
+  else if(h==="h_zhenghe")say="When you are ready to name a voyage, travel, Hajj or umrah, give it its own fund and I will chart the course.";
+  else if(h==="h_hanxin"){var sim=simulate();
+    if(!S.debts.some(function(d){return n(d.bal)}))say="Give every Moonvault foe its HP and monthly strike, my lord, and I will draw the battle plan.";
+    else if(sim.total<=0.005)say="The Moonvault has fallen, my lord. Every foe is cleared.";
+    else if(sim.months)say="Following the "+S.settings.method+" plan, the Moonvault falls around "+addMonths(sim.months)+", my lord."+(sim.missing.length?" Some foes still lack a monthly strike.":"");
+    else say="Some foes still lack a monthly strike, my lord. Fill them in and I will plan the war."}
+  else if(h==="h_hangtuah"){var ef=goalById("ef"),v=ef?goalSaved(ef):0;say=v>0?"The Garrison holds <span class=\"cn m goldt\">"+coin(v)+"</span>, my lord. I stand guard. No withdrawal without a council.":"The Garrison is empty, my lord. Even a few soldiers make the floor stronger."}
+  return '<div class="advisor">'+HERO(r.ab,gradeCol(r.g))+'<div class="bubble"><b>'+esc(r.name)+'</b> · <span class="lbl" style="color:var(--purple)">'+esc(r.role)+'</span><div style="margin-top:4px">'+say+'</div></div></div>';
+}
+function summonSheet(){
+  var left=cardsLeft(),fr=totalFrag()%10;
+  var h='<h3>Summon Hall</h3><div class="lbl" style="color:var(--purple)">[Summon cards: '+left+'] · [Fragments '+fr+'/10]</div>'+
+    (SM().luck?'<div class="lbl" style="color:var(--gold);margin-top:6px">[Supreme Luck active: next summon is Legendary or higher]</div>':'')+(!(n(SM().opened)>0)?'<div class="lbl" style="color:var(--gold);margin-top:6px">[Welcome gift, my lord: your first summon always brings a hero]</div>':'')+
+    '<div class="stage"><button class="scard" id="scard" aria-label="Summon card">'+
+      '<div class="face back"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="none" stroke="#5fd4ff" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M36 10 A21 21 0 1 0 49 43 A17 17 0 1 1 36 10Z" fill="rgba(191,230,255,.2)" stroke="#bfe6ff" stroke-width="2"/></svg><div class="wheel" id="wheel">'+(left?"Summon card":"No card yet")+'</div><div class="tap" id="tapmsg">'+(left?"Tap the card":"Finish daily quests for fragments")+'</div></div>'+
+      '<div class="face front" id="sfront"></div></button></div>'+
+    '<div class="sumnote" id="snote"></div>'+
+    '<div class="row"><button class="btn g grow" id="sDone">Close</button><button class="btn sum grow" id="sAgain" style="display:none">Summon again</button></div>'+
+    '<div class="odds">[Odds] '+GRADES.map(function(g){return '<b style="color:'+g[1]+'">'+g[0]+'</b> '+g[2]+'%'}).join(" · ")+'<br>Duplicates turn into 3 card fragments. 10 fragments = 1 summon card.</div>';
+  openSheet(h,function(){
+    var busy=false,done=false;
+    $("sDone").onclick=function(){closeSheet();render()};
+    $("sAgain").onclick=function(){summonSheet()};
+    $("scard").onclick=function(){
+      if(busy||done||cardsLeft()<1)return;busy=true;
+      var res=drawCard(),gi=GRADES.findIndex(function(g){return g[0]===res.r.g}),w=$("wheel"),i=res.lucky?4:0;
+      $("tapmsg").textContent="The wheel is turning...";
+      var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var r=res.r,c=gradeCol(r.g);
+      $("sfront").style.setProperty("--gc",c);
+      $("sfront").innerHTML='<div class="gr">'+(r.g==="Anomaly"?"! Anomaly !":r.g)+'</div><div class="ic2">'+rwIcon(r)+'</div><div class="rw">'+esc(r.name)+'</div><div class="ty">'+(r.t==="hero"?"Hero advisor · "+esc(r.role):r.t==="skin"?"Panel skin":r.t==="blessing"?"Blessing":"Badge")+'</div><div class="ln">'+esc(r.line)+'</div>';
+      function finish(){
+        $("scard").classList.add("flip");done=true;busy=false;
+        var note=res.dupe?"[Duplicate: turned into 3 card fragments]":r.t==="hero"?(SM().hero===r.id?"[Hero joined · now your advisor on the Ledger]":"[Hero joined · set as advisor in the Council]"):r.t==="skin"?"[Skin unlocked · apply it in the Council]":r.t==="blessing"?"[PING! The wheel spun past every grade]":"[Badge added to your collection]";
+        setTimeout(function(){$("snote").textContent=note;if(cardsLeft()>0)$("sAgain").style.display=""},reduce?0:650);
+      }
+      if(reduce){w.textContent=r.g;finish();return}
+      var steps=gi-i,tick=function(){w.textContent=GRADES[i][0];w.style.color=GRADES[i][1];if(i>=gi){setTimeout(finish,380);return}i++;setTimeout(tick,steps>5?150:240)};
+      tick();
+    };
+  });
+}
+function hallSection(){
+  var sm=SM(),left=cardsLeft();
+  var h=H("Hall of Heroes","Summon rewards","purple")+'<div class="card">';
+  h+='<div class="row" style="align-items:center"><div class="grow"><div class="lbl" style="color:var(--purple)">Summon cards '+left+' · Fragments '+(totalFrag()%10)+'/10</div><div class="hint" style="margin:4px 0 0">All 3 daily quests = 1 fragment. 10 fragments = 1 card.</div></div><button class="btn sum'+(left?" ready":"")+'" data-sum="1">Summon</button></div>';
+  h+='<div class="lbl" style="margin:14px 0 8px">Hero advisors · tap to set</div><div class="hgrid">';
+  REWARDS.filter(function(r){return r.t==="hero"}).forEach(function(r){var own=!!sm.owned[r.id],on=sm.hero===r.id,c=gradeCol(r.g);
+    h+='<button class="hcell'+(own?"":" lock")+(on?" on":"")+'" '+(own?'data-hero="'+r.id+'"':'aria-disabled="true"')+'>'+HERO(r.ab,own?c:"#7fb4d6",!own)+'<div class="nm">'+(own?esc(r.name):"Locked")+'</div><div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">ADVISOR</div>':'')+'</button>'});
+  h+='</div><div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="skinrow">';
+  var sk=[{id:"holo",g:"Common"}].concat(REWARDS.filter(function(r){return r.t==="skin"}).map(function(r){return {id:r.skin,g:r.g,rid:r.id}}));
+  sk.forEach(function(x){var own=x.id==="holo"||!!sm.owned[x.rid],k=SKINS[x.id],secret=x.g==="Celestial"&&!own;
+    h+='<button class="chipb'+(sm.skin===x.id?" on":"")+'" '+(own?'data-skin="'+x.id+'"':'aria-disabled="true" style="opacity:.45"')+'><span class="dot" style="--sc:'+(own?k.hex:"#7fb4d6")+'"></span>'+(secret?"???":esc(k.name))+(own?"":" 🔒")+'</button>'});
+  h+='</div><div class="lbl" style="margin:14px 0 8px">Badges</div><div class="badges">';
+  REWARDS.filter(function(r){return r.t==="badge"}).forEach(function(r){var own=!!sm.owned[r.id],secret=r.g==="Celestial"&&!own;
+    h+='<span class="bdg'+(own?"":" lock")+'" style="--bc:'+gradeCol(r.g)+'">'+(secret?"???":esc(r.name))+'</span>'});
+  h+='</div>';
+  if(sm.hero&&rwById(sm.hero))h+='<button class="btn g sm" data-hero="none" style="margin-top:12px">Dismiss advisor</button>';
+  h+='</div>';
+  return h;
+}
+
+
+/* ===== AFK battle: Ye Feng, soldiers and summoned heroes earn Moon Jade (game currency only) ===== */
+var GEAR={
+ blade:{name:"Moonripple Blade",d:"Ye Feng strikes harder. +15% jade per level.",base:150,max:10},
+ drum:{name:"War Drum",d:"The whole army fights faster. +10% jade per level.",base:250,max:10},
+ banner:{name:"Iron Banner",d:"Each soldier earns +0.3 jade/min per level.",base:200,max:10},
+ seal:{name:"Jade Seal",d:"Away earnings cap +2 hours per level (base 8h).",base:400,max:4}
+};
+function AF(){return S.afk}
+function gearCost(k){return Math.round(GEAR[k].base*Math.pow(1.6,AF().gear[k]||0))}
+function fragCost(){return 600+150*(n(AF().fragBought)||0)}
+function fragBuysToday(){var b=AF().buys||{};return b.date===todayStr()?b.n:0}
+function armyTroops(){var sv=sum(S.goals,function(g){return Math.max(0,goalSaved(g))}),per=n(S.settings.soldier)||10;return Math.floor(sv/per)}
+function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor(Math.log(t+1)/Math.log(2.2)))}
+function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
+function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3};
+  var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))}
+function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
+function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;return off?gain:0}
+function jfmt(v){return Math.floor(v).toLocaleString("en-US")}
+function afkInfo(){var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var hs=partyHeroes().length,sq=troopSprites();
+  jv.innerHTML="◆ "+jfmt(AF().jade)+"<small>MOON JADE</small>";
+  ai.textContent="+"+jadeRate().toFixed(1)+"/min · "+sq+" squad"+(sq>1?"s":"")+(hs?" · "+hs+" hero"+(hs>1?"es":""):"")+" · "+jfmt(AF().kills||0)+" kills"}
+function campSheet(){
+  accrue();var a=AF();
+  function ico(c,glyph){return '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 2 H32 L38 8 V32 L32 38 H8 L2 32 V8Z" fill="rgba(255,255,255,.04)" stroke="'+c+'" stroke-width="1.6"/><text x="20" y="26" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="15" fill="'+c+'">'+glyph+'</text></svg>'}
+  var h='<h3>War Camp</h3><div class="jade">◆ '+jfmt(a.jade)+'<small>MOON JADE</small></div><div class="card shop" style="margin-top:12px">';
+  var fc=fragCost(),left=2-fragBuysToday();
+  h+='<div class="it">'+ico("#3df0e0","✦")+'<div class="grow"><div class="t">Card fragment</div><div class="d">+1 fragment toward a Summon card. '+left+' of 2 left today.</div></div><button class="btn" data-buy="frag"'+(a.jade<fc||left<1?" disabled":"")+'>◆ '+jfmt(fc)+'</button></div>';
+  var gl={blade:["#5fd4ff","⚔"],drum:["#ffd166","◎"],banner:["#3dffa8","⚑"],seal:["#b18cff","◈"]};
+  Object.keys(GEAR).forEach(function(k){var G=GEAR[k],lv=a.gear[k]||0,mx=lv>=G.max,c=gearCost(k);
+    h+='<div class="it">'+ico(gl[k][0],gl[k][1])+'<div class="grow"><div class="t">'+G.name+' <span class="lbl">Lv '+lv+'/'+G.max+'</span></div><div class="d">'+G.d+'</div></div><button class="btn" data-buy="'+k+'"'+(mx||a.jade<c?" disabled":"")+'>'+(mx?"MAX":"◆ "+jfmt(c))+'</button></div>'});
+  h+='</div><div class="hint" style="margin:10px 0 0">Earning now: +'+jadeRate().toFixed(1)+' jade/min. While you are away the army keeps fighting for up to '+(capMs()/3600000)+' hours.</div><button class="btn g" id="campX" style="width:100%;margin-top:12px">Close</button>';
+  openSheet(h,function(sh){
+    $("campX").onclick=function(){closeSheet();render()};
+    sh.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){
+      accrue();var k=b.dataset.buy,a=AF();
+      if(k==="frag"){var c=fragCost();if(a.jade<c||fragBuysToday()>=2)return;a.jade-=c;a.fragBought=(a.fragBought||0)+1;a.buys={date:todayStr(),n:fragBuysToday()+1};SM().bonus=(n(SM().bonus)||0)+1;save();toast(cardsLeft()&&totalFrag()%10===0?"Fragment bought · a Summon card is ready!":"+1 card fragment")}
+      else{var c2=gearCost(k);if(a.jade<c2||(a.gear[k]||0)>=GEAR[k].max)return;a.jade-=c2;a.gear[k]=(a.gear[k]||0)+1;save();toast(GEAR[k].name+" Lv "+a.gear[k])}
+      campSheet()}});
+  });
+}
+var AFKV={en:null,fx:[],pops:[],t0:0,lastF:0,shot:0,lastSave:0,killGain:0,n:0};
+function afkLoop(ts){
+  requestAnimationFrame(afkLoop);
+  if(document.hidden)return;
+  if(ts-AFKV.lastF<33)return;var dt=Math.min(0.1,(ts-(AFKV.lastF||ts))/1000);AFKV.lastF=ts;
+  var before=AF().jade||0;accrue();AFKV.killGain+=(AF().jade||0)-before;
+  if(ts-AFKV.lastSave>15000){AFKV.lastSave=ts;save()}
+  if(ts-(AFKV.lastInfo||0)>1000){AFKV.lastInfo=ts;afkInfo()}
+  var cv=$("afkc");if(!cv)return;
+  var dpr=window.devicePixelRatio||1,W=cv.clientWidth,Hh=cv.clientHeight;if(!W)return;
+  if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(Hh*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr)}
+  var c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,Hh);var K=Hh/96;c.setTransform(dpr*K,0,0,dpr*K,0,0);W=W/K;Hh=96;
+  var CY=(getComputedStyle(document.documentElement).getPropertyValue("--cy")||"#5fd4ff").trim(),gy=Hh-8,t=ts/1000;
+  // backdrop: moon, distant towers, ground
+  c.globalAlpha=.22;c.strokeStyle=CY;c.lineWidth=1;c.beginPath();c.arc(W*0.62,22,11,0,7);c.stroke();
+  for(var bx=-((t*8)%60);bx<W;bx+=60){c.strokeRect(bx+8,gy-34,10,34);c.strokeRect(bx+30,gy-24,14,24)}
+  c.globalAlpha=.6;c.beginPath();c.moveTo(0,gy);c.lineTo(W,gy);c.stroke();
+  c.globalAlpha=.15;for(var gx=-((t*30)%22);gx<W;gx+=22){c.beginPath();c.moveTo(gx,gy);c.lineTo(gx-8,Hh);c.stroke()}
+  c.globalAlpha=1;
+  // party
+  var heroes=partyHeroes(),sq=troopSprites(),frontX=Math.min(W*0.44,150),P=[];
+  for(var i=0;i<sq;i++)P.push({id:"s"+i,k:"s",x:frontX-62-heroes.length*7-(i%4)*13-(i>=4?6:0),y:gy-(i>=4?5:0)});
+  heroes.forEach(function(r,j){P.push({id:r.id,k:"h",r:r,x:frontX-26-(j%4)*20,y:gy-(j>=4?8:0)})});
+  P.push({id:"yf",k:"y",x:frontX,y:gy});
+  AFKV.hp=AFKV.hp||{};P.forEach(function(m){if(AFKV.hp[m.id]==null)AFKV.hp[m.id]=1;AFKV.hp[m.id]=Math.min(1,AFKV.hp[m.id]+0.04*dt)});
+  var hitX=frontX+34;
+  if(!AFKV.en){AFKV.n++;var boss=AFKV.n%10===0;AFKV.en={x:W+24,hp:boss?260:100,max:boss?260:100,boss:boss,die:0,atk:1}}
+  var E=AFKV.en;
+  if(E.die>0){E.die-=dt;if(E.die<=0)AFKV.en=null}
+  else{
+    if(E.x>hitX)E.x-=48*dt;
+    else{var dps=24+jadeRate()*3;E.hp-=dps*dt;
+      AFKV.shot-=dt;if(AFKV.shot<=0){AFKV.shot=0.3;var a=P[Math.floor(Math.random()*P.length)];AFKV.fx.push({x:a.x+6,y:a.y-18,k:a.k,col:a.k==="h"?gradeCol(a.r.g):CY,life:a.k==="y"?0.25:0.3,dmg:Math.round((a.k==="y"?18:a.k==="h"?12:5)*(1+0.15*(AF().gear.blade||0))+Math.random()*6)})}
+      E.atk-=dt;if(E.atk<=0){E.atk=E.boss?0.9:1.4;var tg=Math.random()<0.6?P[P.length-1]:P[Math.floor(Math.random()*P.length)],dm=E.boss?0.22:0.12;AFKV.hp[tg.id]=Math.max(0.15,AFKV.hp[tg.id]-dm);AFKV.pops.push({x:tg.x,y:tg.y-40,txt:"-"+Math.round(dm*100*(E.boss?3:2))+" hp",col:"#ff6b81",life:0.8})}
+      if(E.hp<=0){E.die=0.5;AF().kills=(AF().kills||0)+1;var g=Math.max(1,Math.round(AFKV.killGain));AFKV.killGain=0;AFKV.pops.push({x:E.x,y:gy-46,txt:"+"+g+" ◆",col:"#7dffcf",life:1.3,big:true})}}
+  }
+  function hpbar(x,y,v,col){c.fillStyle="rgba(255,255,255,.12)";c.fillRect(x-11,y,22,3);c.fillStyle=col;c.fillRect(x-11,y,22*v,3)}
+  P.forEach(function(m,ix){var bob=Math.sin(t*7+ix*1.7)*1.2,x=m.x,y=m.y+bob,atk=E&&!E.die&&E.x<=hitX;
+    c.save();c.translate(x,y);
+    if(m.k==="s"){ // spear soldier
+      c.strokeStyle="#bfe6ff";c.fillStyle="rgba(191,230,255,.15)";c.lineWidth=1.6;
+      c.beginPath();c.arc(0,-19,4,0,7);c.fill();c.stroke();
+      c.beginPath();c.moveTo(-5,-14);c.lineTo(5,-14);c.lineTo(4,-5);c.lineTo(-4,-5);c.closePath();c.fill();c.stroke();
+      var st=Math.sin(t*10+ix)*2;c.beginPath();c.moveTo(-2,-5);c.lineTo(-4+st,0);c.moveTo(2,-5);c.lineTo(4-st,0);c.stroke();
+      var th=atk?Math.max(0,Math.sin(t*9+ix))*4:0;c.strokeStyle=CY;c.beginPath();c.moveTo(-2+th,-12);c.lineTo(12+th,-16);c.stroke();c.fillStyle=CY;c.beginPath();c.moveTo(15+th,-17);c.lineTo(11+th,-19);c.lineTo(11+th,-14);c.fill();
+      c.restore();hpbar(x,y-30,AFKV.hp[m.id],"#3dffa8");return}
+    if(m.k==="h"){ // general / hero
+      var col=gradeCol(m.r.g);c.shadowColor=col;c.shadowBlur=8;c.strokeStyle=col;c.lineWidth=1.8;c.fillStyle="rgba(10,20,40,.9)";
+      c.beginPath();c.moveTo(-8,-14);c.lineTo(8,-14);c.lineTo(10,0);c.lineTo(-10,0);c.closePath();c.fill();c.stroke();
+      c.beginPath();for(var q=0;q<6;q++){var an=Math.PI/3*q-Math.PI/2;c[q?"lineTo":"moveTo"](10*Math.cos(an),-24+10*Math.sin(an))}c.closePath();c.fill();c.stroke();c.shadowBlur=0;
+      c.fillStyle="#fff";c.font="700 9px Rajdhani,sans-serif";c.textAlign="center";c.fillText(m.r.ab,0,-21);
+      c.strokeStyle="#ffd166";c.beginPath();c.moveTo(-6,-33);c.lineTo(0,-37);c.lineTo(6,-33);c.stroke();
+      c.restore();hpbar(x,y-44,AFKV.hp[m.id],"#3dffa8");return}
+    // Ye Feng: the lord, cloak + Moonripple Blade
+    c.shadowColor=CY;c.shadowBlur=12;c.strokeStyle=CY;c.lineWidth=2;c.fillStyle="rgba(95,212,255,.18)";
+    var fl=Math.sin(t*5)*2;c.beginPath();c.moveTo(-3,-26);c.lineTo(-14-fl,0);c.lineTo(10,0);c.lineTo(5,-26);c.closePath();c.fill();c.stroke();
+    c.shadowBlur=0;c.fillStyle="#e6f7ff";c.beginPath();c.arc(1,-31,6.5,0,7);c.fill();
+    c.fillStyle="#0b1a2c";c.beginPath();c.moveTo(-6,-32);c.quadraticCurveTo(1,-43,8,-32);c.lineTo(6,-35);c.lineTo(1,-33);c.lineTo(-4,-35);c.closePath();c.fill();
+    c.fillStyle="#0b1a2c";c.fillRect(2,-32,2,2);
+    var sw=atk?Math.sin(t*12)*0.9:0;c.translate(7,-18);c.rotate(-1.0+sw);c.shadowColor="#bfe6ff";c.shadowBlur=10;c.strokeStyle="#e6f7ff";c.lineWidth=2.6;c.beginPath();c.moveTo(0,0);c.lineTo(0,-26);c.stroke();c.strokeStyle="#ffd166";c.lineWidth=2;c.beginPath();c.moveTo(-4,-2);c.lineTo(4,-2);c.stroke();
+    c.restore();hpbar(x,y-48,AFKV.hp[m.id],"#3dffa8");
+    c.fillStyle=CY;c.font="8px 'Share Tech Mono',monospace";c.textAlign="center";c.fillText("YE FENG",x,y-52);
+  });
+  // attacks
+  AFKV.fx=AFKV.fx.filter(function(f){f.life-=dt;var ex=E?E.x:hitX,ey=gy-16;
+    if(f.life<=0){if(E&&!E.die)AFKV.pops.push({x:ex+(Math.random()*16-8),y:ey-22,txt:"-"+f.dmg,col:"#fff",life:0.6});return false}
+    if(f.k==="y"){c.strokeStyle="#e6f7ff";c.globalAlpha=Math.min(1,f.life*4);c.lineWidth=3;c.beginPath();c.arc(ex,ey,18,-1.3,1.3);c.stroke();c.globalAlpha=1}
+    else{var pr=1-f.life/0.3,px=f.x+(ex-f.x)*pr,py=f.y+(ey-f.y)*pr-Math.sin(pr*Math.PI)*14;c.fillStyle=f.col;c.shadowColor=f.col;c.shadowBlur=6;c.beginPath();c.arc(px,py,f.k==="h"?3.2:1.8,0,7);c.fill();c.shadowBlur=0}
+    return true});
+  // enemy (Moonvault monster)
+  if(E){var r=E.boss?19:14,ex2=E.x,ey2=gy-r-2+Math.sin(t*5)*1.5,wk=Math.sin(t*9)*3;c.globalAlpha=E.die>0?E.die*2:1;var ec=E.boss?"#ffd166":"#ff4d6d";
+    c.strokeStyle=ec;c.lineWidth=2;c.beginPath();c.moveTo(ex2-5,ey2+r-2);c.lineTo(ex2-7+wk,gy);c.moveTo(ex2+5,ey2+r-2);c.lineTo(ex2+7-wk,gy);c.stroke();
+    c.save();c.shadowColor="#ff4d6d";c.shadowBlur=10;c.fillStyle="rgba(60,10,24,.85)";c.beginPath();for(var q2=0;q2<6;q2++){var an2=Math.PI/3*q2-Math.PI/2;c[q2?"lineTo":"moveTo"](ex2+r*Math.cos(an2),ey2+r*Math.sin(an2))}c.closePath();c.fill();c.stroke();c.restore();
+    c.strokeStyle=ec;c.lineWidth=2;c.beginPath();c.moveTo(ex2-r*.6,ey2-r*.45);c.lineTo(ex2-r*.15,ey2-r*.2);c.moveTo(ex2+r*.6,ey2-r*.45);c.lineTo(ex2+r*.15,ey2-r*.2);c.stroke();
+    c.fillStyle="#ff8fa3";c.beginPath();c.arc(ex2-r*.35,ey2,2.4,0,7);c.arc(ex2+r*.35,ey2,2.4,0,7);c.fill();
+    c.strokeStyle=ec;c.beginPath();c.moveTo(ex2-r*.4,ey2+r*.4);c.lineTo(ex2-r*.15,ey2+r*.25);c.lineTo(ex2,ey2+r*.4);c.lineTo(ex2+r*.15,ey2+r*.25);c.lineTo(ex2+r*.4,ey2+r*.4);c.stroke();
+    c.fillStyle="rgba(255,255,255,.12)";c.fillRect(ex2-16,ey2-r-8,32,3);c.fillStyle=ec;c.fillRect(ex2-16,ey2-r-8,32*Math.max(0,E.hp/E.max),3);
+    if(E.boss){c.fillStyle="#ffd166";c.font="8px 'Share Tech Mono',monospace";c.textAlign="center";c.fillText("STAGE BOSS",ex2,ey2-r-11)}
+    c.globalAlpha=1}
+  // floating numbers
+  AFKV.pops=AFKV.pops.filter(function(p){p.life-=dt;if(p.life<=0)return false;p.y-=20*dt;c.globalAlpha=Math.min(1,p.life*1.6);c.fillStyle=p.col;c.font=(p.big?"13px":"10px")+" 'Share Tech Mono',monospace";c.textAlign="center";c.fillText(p.txt,p.x,p.y);c.globalAlpha=1;return true});
+}
+
 function lunaLine(T,isNow){
   var today=todayStr(),anyToday=S.tx.some(function(x){return x.date===today});
   if(T.free<0)return '<div class="luna">'+LUNA+'<div class="bubble warn"><b>Luna</b><div class="pl">[Warning: unpaid payroll is bigger than the treasury by '+coin(-T.free)+']</div>Shall we slow spending until the next tribute, my lord? Or I can show which payroll to move.</div></div>';
@@ -529,6 +856,7 @@ function vHome(){
       '<div class="tot"><span>Surplus before armies</span><span class="cn m">'+coin(T.lebihan,true)+'</span></div>'+
     '</div></div>';
   h+=lunaLine(T,isNow);
+  if(isNow)h+=heroLine(T);
   h+='<div class="tiles"><div class="tile"><div class="lbl">Free for armies</div><div class="v m '+(T.free<0?"neg":"pos")+'">'+coin(T.free,true)+'</div><div class="s">After unpaid payroll &amp; debts (<span class="m">'+rm(T.pending)+'</span>)</div></div>';
   if(pd&&isNow){var perDay=pd.days>0?T.free/pd.days:null;
     h+='<div class="tile"><div class="lbl">Next tribute</div><div class="v t">'+(pd.days===0?"Today!":"In "+pd.days+" days")+'</div><div class="s">'+esc(pd.inc.name)+', '+pd.date.getDate()+' '+MON3[pd.date.getMonth()]+(perDay!==null?' · <span class="m">'+coin(perDay,true)+'</span>/day':'')+'</div></div>';
@@ -539,10 +867,10 @@ function vHome(){
   h+=H("Your realm","Realm tier","purple")+'<div class="card"><div class="realm">'+KEEP(R.i)+'<div class="grow"><div class="tier">'+R.name+'</div><div class="muted" style="font-size:13px;font-weight:800;margin-top:3px">Net worth <span class="cn m">'+coin(nw,true)+'</span> <span class="m">('+rm(nw,true)+')</span></div></div></div>'+
     '<div class="bar gold" style="margin:12px 0 6px"><i style="width:'+(R.p*100)+'%"></i></div><div class="hint" style="margin:0">'+(!hasData?'Fill your armies and Moonvault debts to see the true tier.':nw<0?'Debts still outweigh the armies. Every strike lifts the realm.':(R.next?'<span class="m">'+coin(R.need)+'</span> more to '+R.next+'.':'The highest tier.'))+' Net worth here = armies minus debts in this ledger.</div></div>';
 
-  if(isNow){var qs=questState(todayStr()),fr=fragments();
+  if(isNow){var qs=questState(todayStr()),fr=totalFrag(),cl=cardsLeft();
     h+=H("Daily quests","Today","teal")+'<div class="card">';
     qs.forEach(function(q){h+='<div class="q"><button class="check'+(q.on?" on":"")+(q.auto?" auto":"")+'" '+(q.auto?'aria-disabled="true"':'data-quest="'+q.k+'"')+' aria-label="'+esc(q.t)+'">'+(q.on?"✓":"")+'</button><div class="grow"><div class="t">'+q.t+'</div><div class="d">'+q.d+'</div></div></div>'});
-    h+='<div style="margin-top:8px"><div class="lbl" style="color:var(--teal)">Card fragments '+(fr%10)+'/10 · Summon cards '+Math.floor(fr/10)+'</div><div class="bar teal" style="margin-top:6px"><i style="width:'+((fr%10)*10)+'%"></i></div></div></div>';
+    h+='<div style="margin-top:8px"><div class="lbl" style="color:var(--teal)">Card fragments '+(fr%10)+'/10 · Summon cards '+cl+'</div><div class="bar teal" style="margin-top:6px"><i style="width:'+((fr%10)*10)+'%"></i></div></div>'+(cl?'<button class="btn sum ready" data-sum="1" style="width:100%;margin-top:10px">Open Summon card ('+cl+')</button>':'')+'</div>';
   }
 
   h+=H("Payroll this month","Bills &amp; debts due","gold")+'<div class="card">';
@@ -647,6 +975,7 @@ function vLagi(){
   h+=H("Tribute sources","Income","green")+'<div class="card">';
   S.incomes.forEach(function(i){h+='<div class="li" data-inc="'+i.id+'"><div class="ic in">TR</div><div class="grow"><div class="t">'+esc(i.name)+'</div><div class="d">'+(n(i.day)?"Lands on day "+i.day:"Landing day not set")+'</div></div><div class="a">'+money(n(i.est))+'</div></div>'});
   h+='</div>';
+  h+=hallSection();
   h+=H("Ledger settings","System")+'<div class="card stack"><div class="hint" style="margin:0">Coins: 1g = RM100 · 1s = RM1 · 1c = RM0.01. Inputs are always in RM.</div>'+
     '<div class="field" style="margin:0"><label class="lbl" for="soldier">Value of 1 soldier (RM)</label><input id="soldier" inputmode="decimal" value="'+esc(S.settings.soldier)+'"></div></div>';
   h+=H("Ledger copy","Backup")+'<div class="card stack">'+
@@ -666,7 +995,7 @@ function render(){
   $("mLabel").textContent=MONTHS[cur.m]+" "+cur.y;
   $("nav").innerHTML=NAV.map(function(x){return '<button data-tab="'+x.id+'" class="'+(tab===x.id?"on":"")+'">'+x.i+x.t+'</button>'}).join("");
   $("view").innerHTML={home:vHome,rekod:vRekod,hutang:vHutang,harta:vHarta,lagi:vLagi}[tab]();
-  checkTier();
+  checkTier();afkInfo();
 }
 function checkTier(){
   var R=realm(netWorth()),last=S.settings.tier;
@@ -797,17 +1126,17 @@ function exportData(){
 }
 function importText(txt){
   try{var d=JSON.parse(txt);if(!d||!Array.isArray(d.tx)||!Array.isArray(d.debts))throw 0;
-    confirmSheet("Replace the current ledger?","This copy has "+d.tx.length+" entries and "+d.debts.length+" debts. The ledger on this phone will be replaced.","Replace",function(){S=migrate(d);save();closeSheet();render();toast("Ledger copy loaded")});
+    confirmSheet("Replace the current ledger?","This copy has "+d.tx.length+" entries and "+d.debts.length+" debts. The ledger on this phone will be replaced.","Replace",function(){S=migrate(d);save();closeSheet();applySkin();render();toast("Ledger copy loaded")});
   }catch(e){toast("That ledger copy is not valid")}
 }
 
 document.addEventListener("click",function(e){
   if(e.target.closest("#layer"))return;
-  var b=e.target.closest("[data-tab],[data-tx],[data-pay],[data-gaji],[data-filter],[data-method],[data-debt],[data-gin],[data-gout],[data-gedit],[data-commit],[data-inc],[data-quest]");
+  var b=e.target.closest("[data-tab],[data-tx],[data-pay],[data-gaji],[data-filter],[data-method],[data-debt],[data-gin],[data-gout],[data-gedit],[data-commit],[data-inc],[data-quest],[data-sum],[data-hero],[data-skin],[data-camp]");
   if(b){var ds=b.dataset;
     if(ds.tab){tab=ds.tab;render();window.scrollTo(0,0);return}
     if(ds.tx){var t=S.tx.find(function(x){return x.id===ds.tx});if(t)txSheet({tx:t});return}
-    if(ds.quest){var td=todayStr();S.quests[td]=S.quests[td]||{};S.quests[td][ds.quest]=!S.quests[td][ds.quest];save();render();if(questState(td).every(function(q){return q.on}))toast("All quests done · +1 card fragment");return}
+    if(ds.quest){var td=todayStr();S.quests[td]=S.quests[td]||{};S.quests[td][ds.quest]=!S.quests[td][ds.quest];save();render();if(questState(td).every(function(q){return q.on}))toast(totalFrag()%10===0&&totalFrag()>0?"All quests done · a Summon card is ready!":"All quests done · +1 card fragment");return}
     if(ds.pay){var p=ds.pay.split(":");
       if(p[0]==="c"){var c=S.commits.find(function(x){return x.id===p[1]});
         if(commitPaid(c,cur.y,cur.m))txSheet({tx:S.tx.find(function(x){return x.commitId===c.id&&inMonth(x,cur.y,cur.m)})});
@@ -823,13 +1152,17 @@ document.addEventListener("click",function(e){
     if(ds.gedit){goalSheet(goalById(ds.gedit));return}
     if(ds.commit){commitSheet(S.commits.find(function(x){return x.id===ds.commit}));return}
     if(ds.inc){incSheet(incById(ds.inc));return}
+    if(ds.sum){summonSheet();return}
+    if(ds.camp){campSheet();return}
+    if(ds.hero){S.summon.hero=ds.hero==="none"?null:ds.hero;save();render();toast(ds.hero==="none"?"Advisor dismissed":rwById(ds.hero).name+" is now your advisor");return}
+    if(ds.skin){S.summon.skin=ds.skin;save();applySkin();render();toast("Skin: "+SKINS[ds.skin].name);return}
   }
   var t2=e.target;
   if(t2.closest("#addDebt"))debtSheet(null);
   else if(t2.closest("#addCommit"))commitSheet(null);
   else if(t2.closest("#exp"))exportData();
   else if(t2.closest("#impPaste")){$("dumpBox").innerHTML='<textarea class="dump" id="pasteIn" placeholder="Paste the ledger copy here"></textarea><button class="btn sm" id="doPaste" style="margin-top:8px">Import</button>';$("doPaste").onclick=function(){importText($("pasteIn").value)}}
-  else if(t2.closest("#reset"))confirmSheet("Erase all data?","Every entry, debt and payroll item on this phone will be gone. Export a ledger copy first.","Erase all",function(){S=fresh();save();closeSheet();tab="home";render();toast("Ledger erased")});
+  else if(t2.closest("#reset"))confirmSheet("Erase all data?","Every entry, debt and payroll item on this phone will be gone. Export a ledger copy first.","Erase all",function(){S=migrate(fresh());save();closeSheet();tab="home";applySkin();render();toast("Ledger erased")});
 });
 document.addEventListener("change",function(e){
   if(e.target.id==="impFile"&&e.target.files[0]){var r=new FileReader();r.onload=function(){importText(r.result)};r.readAsText(e.target.files[0]);e.target.value=""}
@@ -841,7 +1174,10 @@ $("eye").onclick=function(){S.settings.hide=!S.settings.hide;save();render()};
 $("mPrev").onclick=function(){cur.m--;if(cur.m<0){cur.m=11;cur.y--}render()};
 $("mNext").onclick=function(){cur.m++;if(cur.m>11){cur.m=0;cur.y++}render()};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
-render();
+applySkin();
+(function(){var g=accrue();save();render();if(g>=1)setTimeout(function(){toast("While you were away, Ye Feng's army earned ◆ "+jfmt(g))},600)})();
+document.addEventListener("visibilitychange",function(){if(document.hidden){accrue();save()}else{var g=accrue();save();if(g>=1){render();toast("While you were away, Ye Feng's army earned ◆ "+jfmt(g))}}});
+requestAnimationFrame(afkLoop);
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
 })();
