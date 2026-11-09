@@ -1027,6 +1027,10 @@ function afkLoop(ts){
   LB.forEach(function(m){var nm=m.r.name,sp=nm.indexOf(" "),ls=nm.length>=10&&sp>0?[nm.slice(0,sp),nm.slice(sp+1)]:[nm];
     ls.forEach(function(t2,li){var tw=c.measureText(t2).width,yy=gy+8+li*6.5;c.fillStyle="rgba(2,6,13,.75)";c.fillRect(m.x-tw/2-1.5,yy-5.5,tw+3,7);c.fillStyle=gradeCol(m.r.g);c.fillText(t2,m.x,yy)})});
   AFKV.ens.slice().reverse().forEach(function(E){c.globalAlpha=E.die>0?Math.max(0,E.die*2):1;enemy(E);c.globalAlpha=1});
+  var xg=null;U.forEach(function(m){if(m.id==="h_xing")xg=m});
+  if(xg){AFKV.heal=(AFKV.heal==null?3:AFKV.heal)-dt;
+    if(AFKV.heal<=0){AFKV.heal=6;U.forEach(function(m){AFKV.hp[m.id]=Math.min(1,AFKV.hp[m.id]+0.35)});AFKV.pops.push({x:xg.x,y:xg.y-46,txt:"+ Starlight Mend",col:"#8dffb8",life:1.5,big:true});AFKV.hl=0.9}
+    if(AFKV.hl>0){AFKV.hl-=dt;c.globalAlpha=Math.max(0,Math.min(1,AFKV.hl*1.6));c.fillStyle="#b8ffd0";U.forEach(function(m,ix){for(var k=0;k<5;k++){var a=t*5+k*1.3+ix;c.fillRect(Math.round(m.x+Math.cos(a)*10),Math.round(m.y-6-((t*34+k*9+ix*5)%32)),2,2)}});c.fillStyle="#fff6c8";c.fillRect(Math.round(xg.x)-1,Math.round(xg.y)-46,2,6);c.fillRect(Math.round(xg.x)-3,Math.round(xg.y)-44,6,2);c.globalAlpha=1}}
   // ---- attacks
   AFKV.fx=AFKV.fx.filter(function(f){f.life-=dt;var ex=front?front.x:hitX,ey=gy-18;
     if(f.life<=0){if(front&&!front.die)AFKV.pops.push({x:ex+(Math.random()*16-8),y:ey-24,txt:"-"+f.dmg,col:"#fff",life:0.6});return false}
