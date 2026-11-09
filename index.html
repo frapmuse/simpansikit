@@ -561,13 +561,14 @@ function goalSaved(g){return (n(g.start)||0)+sum(S.tx.filter(function(x){return 
 function monthTotals(y,m){
   var t=S.tx.filter(function(x){return inMonth(x,y,m)}),o={inc:0,out:0,debt:0,save:0,list:t};
   t.forEach(function(x){o[{in:"inc",out:"out",debt:"debt",save:"save"}[x.type]]+=x.amt});
-  o.lebihan=o.inc-o.out-o.debt;o.carry=carryIn(y,m);o.baki=o.lebihan-o.save+o.carry;
+  o.lebihan=o.inc-o.out-o.debt;o.carry=carryIn(y,m);o.fromArmy=sum(t.filter(function(x){return x.acct&&(x.type==="out"||x.type==="debt")}),function(x){return x.amt});o.baki=o.lebihan-o.save+o.fromArmy+o.carry;
   var uc=S.commits.filter(function(c){return n(c.amt)&&!commitPaid(c,y,m)});
   var ud=S.debts.filter(function(d){return n(d.bal)>0&&n(d.min)&&debtPaidAmt(d,y,m)<d.min});
   o.pending=sum(uc,function(c){return c.amt})+sum(ud,function(d){return Math.min(d.min-debtPaidAmt(d,y,m),d.bal)});
   o.free=o.baki-o.pending;return o;
 }
-function txNet(x){return x.type==="in"?x.amt:-(n(x.amt)||0)}
+function txNet(x){if(x.acct&&(x.type==="out"||x.type==="debt"))return 0;return x.type==="in"?x.amt:-(n(x.amt)||0)}
+var _gsBase=goalSaved;goalSaved=function(g){return _gsBase(g)-sum(S.tx.filter(function(x){return x.acct===g.id&&(x.type==="out"||x.type==="debt")}),function(x){return n(x.amt)||0})};
 function carryIn(y,m){var ms=dateInMonth(y,m,1),me=dateInMonth(y,m,dim(y,m)),ob=S.settings.opening,c=0;
   if(ob&&n(ob.amt)!=null&&ob.date){if(ob.date>me)return 0;c=n(ob.amt)||0;
     S.tx.forEach(function(x){if(x.date>=ob.date&&x.date<ms)c+=txNet(x);if(x.date<ob.date&&x.date>=ms&&x.date<=me)c-=txNet(x)});return Math.round(c*100)/100}
@@ -1257,7 +1258,7 @@ function vHome(){
     '<div class="lbl">Treasury · real balance</div>'+
     '<div class="big m">'+coin(T.baki,true)+'</div><div class="bigrm m">'+rm(T.baki,true)+'</div>'+
     '<div class="lines">'+
-      (T.carry?'<div><span>Carried in</span><span class="cn m">'+coin(T.carry,true)+'</span></div>':'')+'<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
+      (T.fromArmy?'<div><span>Paid from armies</span><span class="cn m">+'+coin(T.fromArmy)+'</span></div>':'')+(T.carry?'<div><span>Carried in</span><span class="cn m">'+coin(T.carry,true)+'</span></div>':'')+'<div><span>Tribute in</span><span class="cn m">+'+coin(T.inc)+'</span></div>'+
       '<div><span>Spent</span><span class="cn m">−'+coin(T.out)+'</span></div>'+
       '<div><span>Moonvault strikes</span><span class="cn m">−'+coin(T.debt)+'</span></div>'+
       '<div><span>Sent to armies</span><span class="cn m">−'+coin(T.save)+'</span></div>'+
@@ -1430,7 +1431,7 @@ function confirmSheet(title,body,yes,onYes,onNo){
 
 function txSheet(opts){
   opts=opts||{};
-  var ex=opts.tx,st={type:ex?ex.type:(opts.type||"out"),cat:ex?ex.cat:(opts.cat||null),src:ex?ex.src:(opts.src||"perseni"),debtId:ex?ex.debtId:(opts.debtId||null),goalId:ex?ex.goalId:(opts.goalId||"saving"),dir:ex&&ex.type==="save"&&ex.amt<0?-1:(opts.dir||1)};
+  var ex=opts.tx,st={type:ex?ex.type:(opts.type||"out"),cat:ex?ex.cat:(opts.cat||null),src:ex?ex.src:(opts.src||"perseni"),debtId:ex?ex.debtId:(opts.debtId||null),goalId:ex?ex.goalId:(opts.goalId||"saving"),acct:ex?(ex.acct||null):(opts.acct||null),dir:ex&&ex.type==="save"&&ex.amt<0?-1:(opts.dir||1)};
   var keep={amt:ex?String(Math.abs(ex.amt)):(opts.amt!=null?String(opts.amt):""),date:ex?ex.date:(opts.date||todayStr()),note:ex?(ex.note||""):(opts.note||"")};
   function body(){
     var h='<h3>'+(ex?"Edit entry":"New entry")+'</h3>';
@@ -1443,6 +1444,8 @@ function txSheet(opts){
       var dd=debtById(st.debtId);if(dd)h+='<div class="hint">HP now: '+rm(n(dd.bal))+(n(dd.min)?' · monthly '+rm(dd.min):'')+'. The strike lowers HP automatically.</div>'}
     if(st.type==="save"){h+='<div class="chips">'+S.goals.map(function(g){return '<button class="chipb'+(st.goalId===g.id?" on":"")+'" data-goal="'+g.id+'">'+esc(g.name)+'</button>'}).join("")+'</div><div class="pills">'+[[1,"Recruit"],[-1,"Withdraw"]].map(function(p){return '<button class="pill'+(st.dir===p[0]?" on":"")+'" data-dir="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
       if(st.goalId==="ef"&&st.dir<0)h+='<div class="redpanel">[Warning: the Garrison is your Treasury floor]<br>Withdraw only after a council decision, my lord.</div>'}
+    if(st.type==="out"||st.type==="debt"){h+='<div class="lbl" style="margin-bottom:6px">Paid from</div><div class="chips">'+[["","Treasury"]].concat(S.goals.map(function(g){return [g.id,g.name]})).map(function(p){return '<button class="chipb'+((st.acct||"")===p[0]?" on":"")+'" data-acct="'+p[0]+'">'+esc(p[1])+'</button>'}).join("")+'</div>';
+      if(st.acct==="ef")h+='<div class="redpanel">[Paying from the Garrison, your Treasury floor]<br>The Garrison loses soldiers, my lord.</div>'}
     h+='<div class="grid2"><div class="field"><label class="lbl" for="fDate">Date</label><input id="fDate" type="date" value="'+esc(keep.date)+'"></div><div class="field"><label class="lbl" for="fNote">Note</label><input id="fNote" placeholder="e.g. Nasi lemak" value="'+esc(keep.note)+'"></div></div>';
     h+='<div class="row"><button class="btn grow" id="fSave">Save</button>'+(ex?'<button class="btn r" id="fDel">Delete</button>':'')+'</div>';
     return h;
@@ -1459,6 +1462,7 @@ function txSheet(opts){
         else if(b.dataset.debtc){st.debtId=b.dataset.debtc;var d=debtById(st.debtId);if(!keep.amt&&d&&n(d.min))keep.amt=String(d.min);mount()}
         else if(b.dataset.goal){st.goalId=b.dataset.goal;mount()}
         else if(b.dataset.dir){st.dir=Number(b.dataset.dir);mount()}
+        else if("acct" in b.dataset){st.acct=b.dataset.acct||null;mount()}
         else if(b.id==="fSave")doSave();
         else if(b.id==="fDel")confirmSheet("Delete this entry?",esc(txLabel(ex))+" · "+rm(Math.abs(ex.amt))+" · "+fmtDate(ex.date),"Delete",function(){undoEffect(ex);S.tx=S.tx.filter(function(x){return x.id!==ex.id});save();closeSheet();render();toast("Entry deleted")},mount);
       };
@@ -1471,7 +1475,7 @@ function txSheet(opts){
     if(ex)undoEffect(ex);
     var t=ex||{id:uid(),ts:Date.now()};
     t.type=st.type;t.amt=st.type==="save"?amt*st.dir:amt;t.date=val("fDate")||todayStr();t.note=val("fNote");
-    t.cat=st.type==="out"?st.cat:null;t.src=st.type==="in"?st.src:null;t.debtId=st.type==="debt"?st.debtId:null;t.goalId=st.type==="save"?st.goalId:null;
+    t.cat=st.type==="out"?st.cat:null;t.src=st.type==="in"?st.src:null;t.debtId=st.type==="debt"?st.debtId:null;t.goalId=st.type==="save"?st.goalId:null;if((st.type==="out"||st.type==="debt")&&st.acct)t.acct=st.acct;else delete t.acct;
     if(opts.commitId&&!ex)t.commitId=opts.commitId;if(t.type!=="out")delete t.commitId;
     applyEffect(t);if(!ex)S.tx.push(t);
     save();closeSheet();render();
