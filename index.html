@@ -1042,11 +1042,11 @@ function eliteP(st){return Math.min(0.2,0.08+st/2000)}
 function ST2(){var a=AF();a.st2=a.st2||{el:0,tg:0,boss:0,raid:0};return a.st2}
 function eDeco(E,ty,st,hord){if(hord){E.max=Math.round(E.max*0.8);E.hp=E.max}if(ty==="boss")return;
   if(Math.random()<eliteP(st)){E.el=1;E.max*=3;E.hp=E.max}
-  if(st>=5){var r=Math.random();if(r<0.12&&ty==="gob")E.ab="shaman";else if(r<0.24&&ty==="gob")E.ab="archer";else if(r<0.36)E.ab="shield"}
+  if(st>=5){var r=Math.random();if(r<0.12&&ty==="gob"&&AFKV.ens.filter(function(q){return q.ab==="shaman"}).length<2)E.ab="shaman";else if(r<0.24&&ty==="gob")E.ab="archer";else if(r<0.36)E.ab="shield"}
   if(E.ab==="shield"){var sh=Math.round(E.max*0.5);E.max+=sh;E.hp=E.max;E.sh0=sh}}
 function mkGoblin(st,W){var h=Math.round(360*(1+0.12*Math.max(0,st-1)));return {ty:"gob",tg:1,x:W+10,hp:h,max:h,die:0,atk:99,sk:"goblin",v:0}}
 function eTick(E,dt,pop,gy){
-  if(E.ab==="shaman"){E.hc=(E.hc==null?3:E.hc)-dt;if(E.hc<=0){E.hc=4;var lo=null;AFKV.ens.forEach(function(q){if(q.die<=0&&q.hp>0&&q.hp<q.max&&!q.tg&&(!lo||q.hp/q.max<lo.hp/lo.max))lo=q});if(lo){var h=Math.round(lo.max*0.12);lo.hp=Math.min(lo.max,lo.hp+h);pop(lo.x,gy-46,"+"+h,"#7dff8a",false)}}}
+  if(E.ab==="shaman"){E.hc=(E.hc==null?3:E.hc)-dt;if(E.hc<=0){E.hc=4;var lo=null;AFKV.ens.forEach(function(q){if(q.die<=0&&q.hp>0&&q.hp<q.max&&!q.tg&&(!lo||q.hp/q.max<lo.hp/lo.max))lo=q});var stl=AFKV.lk&&Date.now()-AFKV.lk>25000;if(lo&&!stl){var h=Math.round(Math.min(lo.max*0.08,(24+jadeRate()*3)*powerMul()*1.2));lo.hp=Math.min(lo.max,lo.hp+h);pop(lo.x,gy-46,"+"+h,"#7dff8a",false)}}}
   if(E.ty==="boss"&&!E.enr&&E.hp>0&&E.hp<E.max*0.3){E.enr=1;pop(E.x,gy-72,"ENRAGED!","#ff4d4d",true);SND.sfx("raid");var st=AF().stage||1,B=bandOf(st),hs=1+0.12*Math.max(0,st-1);
     for(var i=0;i<2;i++){var mh=Math.round(60*hs);AFKV.ens.push({ty:"gob",x:E.x+18+i*14,hp:mh,max:mh,die:0,atk:1.5,sk:B.s[i%B.s.length],v:0,add:1})}}}
 function eliteKill(E,pop,gy){var j=Math.max(5,Math.round(jadeRate()));AF().jade=(AF().jade||0)+j;addSouls(20);addExp(killExp(E.ty,AF().stage)*3);ST2().el++;pop(E.x,gy-62,"ELITE +"+j+" ◆","#ffd166",true)}
@@ -1241,8 +1241,8 @@ function afkLoop(ts){
   var blade=(1+0.15*(AF().gear.blade||0))*powerMul(),mul=AFKV.buffT>0?AFKV.buffM:1;
   function live(){return AFKV.ens.filter(function(q){return q.die<=0&&q.hp>0})}
   function pop(x,y,txt,col,big){AFKV.pops.push({x:x,y:y,txt:txt,col:col,life:big?1.5:0.8,big:big})}
-  function killE(E){if(E.tg){E.die=0.45;AF().kills=(AF().kills||0)+1;treasureKill(E,pop,gy);return}E.die=0.45;AF().kills=(AF().kills||0)+1;addExp(killExp(E.ty,AF().stage));heroExp(killExp(E.ty,AF().stage)*(E.el?4:1));addSouls(E.ty==="boss"?50:E.ty==="brute"?10:1);if(E.el)eliteKill(E,pop,gy);if(E.ty==="boss")ST2().boss++;
-    if(live().filter(function(q){return !q.tg}).length===0){var A2=AF();if(AFKV.ens.some(function(q){return q.ty==="boss"})){var TI2=towerInfo(A2.stage);dropGear(TI2.crown);bossCard(TI2.crown);if(TI2.crown&&A2.crownDay!==todayStr()){A2.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;showPing("<b>PING!</b>[CROWN TAKEN · "+esc(TI2.name)+"]<br>[Reward: +1 card fragment]")}else toast("Stage "+A2.stage+" cleared · "+TI2.name);A2.stage++;A2.wave=0}else A2.wave++;save()}
+  function killE(E){AFKV.lk=Date.now();if(E.tg){E.die=0.45;AF().kills=(AF().kills||0)+1;treasureKill(E,pop,gy);return}E.die=0.45;AF().kills=(AF().kills||0)+1;addExp(killExp(E.ty,AF().stage));heroExp(killExp(E.ty,AF().stage)*(E.el?4:1));addSouls(E.ty==="boss"?50:E.ty==="brute"?10:1);if(E.el)eliteKill(E,pop,gy);if(E.ty==="boss")ST2().boss++;
+    if(live().filter(function(q){return !q.tg}).length===0){var A2=AF();if((A2.wave||0)>=12){var TI2=towerInfo(A2.stage);dropGear(TI2.crown);bossCard(TI2.crown);if(TI2.crown&&A2.crownDay!==todayStr()){A2.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;showPing("<b>PING!</b>[CROWN TAKEN · "+esc(TI2.name)+"]<br>[Reward: +1 card fragment]")}else toast("Stage "+A2.stage+" cleared · "+TI2.name);A2.stage++;A2.wave=0}else A2.wave++;save()}
     var g=Math.max(1,Math.round(AFKV.killGain));AFKV.killGain=0;pop(E.x,gy-50,"+"+g+" ◆","#7dffcf",true)}
   function cast(m,sk,col){var L=live();
     SND.sfx("skill");pop(m.x,m.y-50,sk.n,col,true);AFKV.vfx.push({k:sk.k,x:m.x,y:m.y,life:0.9,col:col});
@@ -1263,7 +1263,7 @@ function afkLoop(ts){
     if(AFKV.cd[m.id]<=0&&(engaged||(sk.k==="heal"&&hurt))){AFKV.cd[m.id]=sk.cd;cast(m,sk,gradeCol(m.r.g))}});
   AFKV.yfCd-=dt;if(AFKV.yfCd<=0&&engaged){AFKV.yfCd=12;AFKV.buffT=5;AFKV.buffM=Math.max(AFKV.buffM,1.4);AFKV.shT=Math.max(AFKV.shT,5);AFKV.shV=Math.max(AFKV.shV,0.15);pop(yfx,gy-58,"MOONRISE · ALL +40%","#ffe27a",true);AFKV.vfx.push({k:"moon",x:yfx,y:gy,life:1.2,col:"#ffe27a"})}
   mul=AFKV.buffT>0?AFKV.buffM:1;
-  if(engaged){front.hp-=(24+jadeRate()*3)*powerMul()*dt*mul*(front.ty==="boss"&&LD().cls==="strategist"?1.2:1)*(front.ty==="boss"?SYNV().boss:1);
+  if(!AFKV.lk)AFKV.lk=Date.now();var stallM=1+Math.max(0,(Date.now()-AFKV.lk)/1000-25)*0.15;if(engaged){front.hp-=(24+jadeRate()*3)*powerMul()*dt*mul*stallM*(front.ty==="boss"&&LD().cls==="strategist"?1.2:1)*(front.ty==="boss"?SYNV().boss:1);
     AFKV.shot-=dt;if(AFKV.shot<=0){AFKV.shot=0.3;var a=U[Math.floor(Math.random()*U.length)];AFKV.fx.push({x:a.x+8,y:a.y-20,k:a.arch?"a":a.k,col:a.k==="h"?gradeCol(a.r.g):"#e8d9a8",life:a.k==="y"?0.25:0.32,dmg:Math.round((a.k==="y"?18:a.k==="h"?12:a.k==="c"?8:5)*blade*mul+Math.random()*6)})}
     if(AFKV.slowT<=0)AFKV.ens.forEach(function(E){if(E.die>0||E.tg||(E.x>hitX+70&&E.ab!=="archer"))return;E.atk-=dt;if(E.atk<=0){E.atk=E.ty==="boss"?(E.enr?0.6:0.9):E.ty==="brute"?1.4:1.6;E.af=0.28;
       var sol=U.filter(function(u){return u.sol}),tg=sol.length&&Math.random()<0.75?sol[sol.length-1-Math.floor(Math.random()*Math.min(3,sol.length))]:U[Math.floor(Math.random()*U.length)];
