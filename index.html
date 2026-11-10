@@ -701,7 +701,7 @@ window.PIXEL_AFK=true;
 /* ===== Summon Hall ===== */
 var GRADES=[["Common","#9aa7b8",39],["Fine","#3dffa8",27],["Rare","#4da3ff",17],["Epic","#b18cff",10],["Legendary","#ff9a3d",4],["Mythical","#ff5fa2",1.5],["Celestial","#ffd166",0.5],["Anomaly","#ff4d6d",1]];
 function gradeCol(g){for(var i=0;i<GRADES.length;i++)if(GRADES[i][0]===g)return GRADES[i][1];return "#9aa7b8"}
-var SKINS={holo:{name:"Holo System",rgb:"95,212,255",hex:"#5fd4ff"},eaves:{name:"Tiled Eaves",rgb:"255,170,90",hex:"#ffaa5a"},bay:{name:"Wangyue Bay",rgb:"61,240,190",hex:"#3df0be"},mooncity:{name:"Moon City",rgb:"190,170,255",hex:"#beaaff"},moonripple:{name:"Moonripple",rgb:"255,120,200",hex:"#ff78c8"},celestial:{name:"Celestial Moon",rgb:"255,214,102",hex:"#ffd666"}};
+var SKINS={holo:{name:"Black & Gold",rgb:"95,212,255",hex:"#5fd4ff"},eaves:{name:"Tiled Eaves",rgb:"255,170,90",hex:"#ffaa5a"},bay:{name:"Wangyue Bay",rgb:"61,240,190",hex:"#3df0be"},mooncity:{name:"Moon City",rgb:"190,170,255",hex:"#beaaff"},moonripple:{name:"Moonripple",rgb:"255,120,200",hex:"#ff78c8"},celestial:{name:"Celestial Moon",rgb:"255,214,102",hex:"#ffd666"}};
 var REWARDS=[
  {id:"b_keeper",g:"Common",t:"badge",name:"Ledger Keeper",line:"A lord who writes things down is a lord who keeps them."},
  {id:"b_quiet",g:"Common",t:"badge",name:"Quiet Purse",line:"No coin left the treasury without a reason."},
@@ -758,6 +758,8 @@ function applySkin(){
   var st=document.querySelector("style");if(!st)return;if(BASECSS===null)BASECSS=st.textContent;
   var k=SKINS[SM().skin]||SKINS.holo;
   st.textContent=k===SKINS.holo?BASECSS:BASECSS.split("95,212,255").join(k.rgb).split("#5fd4ff").join(k.hex);
+  var x=document.getElementById("skinx");if(!x){x=document.createElement("style");x.id="skinx";document.head.appendChild(x)}
+  x.textContent=k===SKINS.holo?"":":root{--gold:"+k.hex+";--winbd:2px solid "+k.hex+";--winbg:linear-gradient(180deg,color-mix(in srgb,"+k.hex+" 22%,#1c1610) 0%,#1c1610 55%,#14100b 100%)}h2{text-shadow:2px 2px 0 color-mix(in srgb,"+k.hex+" 45%,#000)}.bfield,.afkbar{border-color:"+k.hex+"!important}nav.bottom button.on{background:color-mix(in srgb,"+k.hex+" 25%,transparent)}";
   var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#02060d");
 }
 function heroLine(T){
@@ -843,7 +845,7 @@ function hallSection(){
   own.forEach(function(r){var on=LD().party.indexOf(r.id)>=0,c=gradeCol(r.g);
     h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div><div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">PARTY</div>':'')+'</button>'});
   h+='</div><button class="btn g sm" data-roster="1" style="width:100%;margin-top:10px">Hero roster · all '+allH.length+'</button>';
-  h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="skinrow">';
+  h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="hint" style="margin:-4px 0 8px">Changes the colour of every window frame, gold text and battle borders.</div><div class="skinrow">';
   var sk=[{id:"holo",g:"Common"}].concat(REWARDS.filter(function(r){return r.t==="skin"}).map(function(r){return {id:r.skin,g:r.g,rid:r.id}}));
   sk.forEach(function(x){var own=x.id==="holo"||!!sm.owned[x.rid],k=SKINS[x.id],secret=x.g==="Celestial"&&!own;
     h+='<button class="chipb'+(sm.skin===x.id?" on":"")+'" '+(own?'data-skin="'+x.id+'"':'aria-disabled="true" style="opacity:.45"')+'><span class="dot" style="--sc:'+(own?k.hex:"#7fb4d6")+'"></span>'+(secret?"???":esc(k.name))+(own?"":" 🔒")+'</button>'});
