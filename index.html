@@ -755,12 +755,29 @@ function drawCard(){
   save();return {r:r,dupe:dupe,lucky:wasLucky};
 }
 var BASECSS=null;
+var SKINB={holo:[0,0],eaves:[0.02,0],bay:[0.04,0],mooncity:[0.06,0.03],moonripple:[0.08,0.05],celestial:[0.12,0.08]};
+function skinB(){return SKINB[(S.summon&&S.summon.skin)||"holo"]||[0,0]}
+function skinBTxt(id){var b=SKINB[id]||[0,0];return b[0]||b[1]?"+"+Math.round(b[0]*100)+"% jade"+(b[1]?" · +"+Math.round(b[1]*100)+"% dmg":""):"no buff"}
+var SKINPAL={eaves:["#140804","#4a2210","#24100a","#ffe2c2"],bay:["#03110f","#12403a","#082320","#d9fff4"],mooncity:["#0a0818","#352c5c","#1a1530","#ece6ff"],moonripple:["#14050f","#4a1740","#220a1d","#ffe0f2"],celestial:["#0b0918","#2c2347","#120f22","#fff3cf"]};
+var SKINFX={
+  eaves:".card,.tile,.hero,.bubble,.foe,.afkbar,nav.bottom .in{border:3px double #ffaa5a!important;border-radius:2px!important;box-shadow:0 0 0 2px #000,0 0 16px rgba(255,140,40,.35),inset 0 10px 0 -6px rgba(255,170,90,.35)!important;background-image:radial-gradient(circle at 50% 0,rgba(255,170,90,.55) 0 5px,transparent 6px),var(--winbg)!important;background-size:14px 8px,auto!important;background-repeat:repeat-x,no-repeat!important}.bfield{border:4px double #ffaa5a!important;box-shadow:0 0 0 2px #000,0 0 22px rgba(255,140,40,.5)!important}h2::before{content:'🏮 ';font-size:14px}.btn{border-style:double!important;border-width:3px!important}",bay:".card,.tile,.hero,.bubble,.foe,.afkbar,nav.bottom .in{border-radius:16px!important;border-width:2px!important;box-shadow:0 0 0 2px #000,0 0 14px rgba(61,240,190,.3)!important;background-image:radial-gradient(14px 8px at 50% 100%,rgba(61,240,190,.35) 60%,transparent 62%),var(--winbg)!important;background-size:22px 10px,auto!important;background-repeat:repeat-x,no-repeat!important;background-position:0 100%,0 0!important}.bfield{border-radius:18px!important}.btn,.pill,.chipb{border-radius:999px!important}h2::before{content:'🌊 ';font-size:14px}",
+ mooncity:".card,.tile,.hero,.bubble,.foe,.afkbar,nav.bottom .in,.bfield{clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}.card,.tile,.hero,.bubble,.foe{outline:1px solid rgba(236,230,255,.5);outline-offset:-6px}.btn{clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%)}h2::before{content:'✧ ';font-size:14px}@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}.card,.tile,.hero,.sheet,nav.bottom .in,.bubble,.foe,.bfield,.afkbar{border:2px solid transparent!important;background:var(--winbg) padding-box,linear-gradient(135deg,#f0ecff,#beaaff 40%,#6c5ab8 70%,#f0ecff) border-box!important}.bfield{background:url(sprites/battlefield.webp) center 78%/cover no-repeat padding-box,linear-gradient(135deg,#f0ecff,#beaaff,#6c5ab8) border-box!important}",
+ moonripple:".card,.tile,.hero,.bubble,.foe,.afkbar,nav.bottom .in{border-radius:22px 4px 22px 4px!important}.card,.tile,.hero,.foe{background-image:repeating-radial-gradient(circle at 100% 0,rgba(255,120,200,.12) 0 2px,transparent 3px 14px),var(--winbg)!important}h2::before{content:'❀ ';font-size:14px}.btn{border-radius:14px 3px 14px 3px!important}@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}.card,.tile,.hero,.sheet,nav.bottom .in,.bubble,.foe,.afkbar{border:2px solid transparent!important;background:var(--winbg) padding-box,conic-gradient(from var(--ang),#ff78c8,#ffd0ec,#b06cff,#ff78c8,#ffd0ec,#ff78c8) border-box!important;animation:skspin 9s linear infinite}@keyframes skspin{to{--ang:360deg}}",
+ celestial:"@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}"+
+  ":root{--ink:#fff3cf;--winbg:linear-gradient(160deg,#2c2347 0%,#1a1630 45%,#120f22 100%)}"+
+  "body{background:radial-gradient(1px 1px at 20% 30%,#fff8 50%,transparent 51%) 0 0/90px 90px,radial-gradient(1.5px 1.5px at 70% 60%,#ffe7a8aa 50%,transparent 51%) 0 0/130px 130px,#0b0918!important}"+
+  ".card,.tile,.hero,.sheet,nav.bottom .in,.bubble,.foe,.afkbar,.ibtn,.month button{border:2px solid transparent!important;background:radial-gradient(circle at 0 0,#fff6c8 0 3px,transparent 4px) padding-box,radial-gradient(circle at 100% 0,#fff6c8 0 3px,transparent 4px) padding-box,radial-gradient(circle at 0 100%,#fff6c8 0 3px,transparent 4px) padding-box,radial-gradient(circle at 100% 100%,#fff6c8 0 3px,transparent 4px) padding-box,var(--winbg) padding-box,conic-gradient(from var(--ang),#fff6c8,#ffd666,#ff9f6b,#c9a6ff,#7fd8ff,#fff6c8,#ffd666,#c9a6ff,#fff6c8) border-box!important;box-shadow:0 0 0 2px #000,0 0 14px rgba(255,214,102,.35),inset 0 0 0 1px rgba(255,236,170,.35)!important;animation:skspin 6s linear infinite}"+
+  ".bfield{border:3px solid transparent!important;background:url(sprites/battlefield.webp) center 78%/cover no-repeat padding-box,conic-gradient(from var(--ang),#fff6c8,#ffd666,#ff9f6b,#c9a6ff,#7fd8ff,#fff6c8) border-box!important;animation:skspin 6s linear infinite;box-shadow:0 0 0 2px #000,0 0 22px rgba(255,214,102,.45)!important}"+
+  "@keyframes skspin{to{--ang:360deg}}"+
+  "h2,.sheet h3,.brand{background:linear-gradient(90deg,#fff6c8,#ffd666,#c9a6ff,#7fd8ff,#fff6c8);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;animation:skshine 4s linear infinite}@keyframes skshine{to{background-position:-200% 0}}"+
+  ".btn{border-color:#ffe7a8!important;box-shadow:0 0 0 2px #000,0 0 8px rgba(255,214,102,.4)!important}.fab{box-shadow:0 0 0 2px #000,0 0 18px rgba(255,230,140,.8)!important}"+
+  ".card,.tile,.hero,.bubble,.foe{border-radius:3px!important}h2::before{content:'✦ ';-webkit-text-fill-color:#ffd666}h2::after{content:' ✦';-webkit-text-fill-color:#c9a6ff}.card::after,.tile::after,.hero::after{content:'✦';position:absolute;right:6px;top:2px;font-size:11px;color:#fff6c8;text-shadow:0 0 6px #ffd666;display:block!important;pointer-events:none}@media (prefers-reduced-motion:reduce){*{animation:none!important}}"};
 function applySkin(){
   var st=document.querySelector("style");if(!st)return;if(BASECSS===null)BASECSS=st.textContent;
   var k=SKINS[SM().skin]||SKINS.holo;
   st.textContent=k===SKINS.holo?BASECSS:BASECSS.split("95,212,255").join(k.rgb).split("#5fd4ff").join(k.hex);
   var x=document.getElementById("skinx");if(!x){x=document.createElement("style");x.id="skinx";document.head.appendChild(x)}
-  x.textContent=k===SKINS.holo?"":":root{--gold:"+k.hex+";--winbd:2px solid "+k.hex+";--winbg:linear-gradient(180deg,color-mix(in srgb,"+k.hex+" 22%,#1c1610) 0%,#1c1610 55%,#14100b 100%)}h2{text-shadow:2px 2px 0 color-mix(in srgb,"+k.hex+" 45%,#000)}.bfield,.afkbar{border-color:"+k.hex+"!important}nav.bottom button.on{background:color-mix(in srgb,"+k.hex+" 25%,transparent)}";
+  x.textContent=(k===SKINS.holo?"":(function(){var P=SKINPAL[SM().skin]||["#0d0b08","#2a2117","#14100b","#e8d3a0"];return ":root{--gold:"+k.hex+";--ink:"+P[3]+";--bg:"+P[0]+";--winbd:2px solid "+k.hex+";--winbg:linear-gradient(180deg,"+P[1]+" 0%,"+P[2]+" 100%)}html,body,.top,body::before{background-color:"+P[0]+"!important}.top{border-bottom-color:"+k.hex+"!important}"})()+"h2{text-shadow:2px 2px 0 color-mix(in srgb,"+k.hex+" 45%,#000)}.bfield,.afkbar{border-color:"+k.hex+"!important}nav.bottom button.on{background:color-mix(in srgb,"+k.hex+" 25%,transparent)}")+(SKINFX[SM().skin]||"");
   var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#02060d");
 }
 function heroLine(T){
@@ -846,10 +863,10 @@ function hallSection(){
   own.forEach(function(r){var on=LD().party.indexOf(r.id)>=0,c=gradeCol(r.g);
     h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div>'+(r.t==="hero"&&SM().owned[r.id]?'<div class="gd" style="color:var(--gold)">'+starTxt(r.id)+'</div>':'')+'<div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">PARTY</div>':'')+'</button>'});
   h+='</div><button class="btn g sm" data-roster="1" style="width:100%;margin-top:10px">Hero roster · all '+allH.length+'</button>';
-  h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="hint" style="margin:-4px 0 8px">Changes the colour of every window frame, gold text and battle borders.</div><div class="skinrow">';
+  h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="hint" style="margin:-4px 0 8px">Changes every window frame and border. Rarer skins have special frames and give a buff while worn.</div><div class="skinrow">';
   var sk=[{id:"holo",g:"Common"}].concat(REWARDS.filter(function(r){return r.t==="skin"}).map(function(r){return {id:r.skin,g:r.g,rid:r.id}}));
   sk.forEach(function(x){var own=x.id==="holo"||!!sm.owned[x.rid],k=SKINS[x.id],secret=x.g==="Celestial"&&!own;
-    h+='<button class="chipb'+(sm.skin===x.id?" on":"")+'" '+(own?'data-skin="'+x.id+'"':'aria-disabled="true" style="opacity:.45"')+'><span class="dot" style="--sc:'+(own?k.hex:"#7fb4d6")+'"></span>'+(secret?"???":esc(k.name))+(own?"":" 🔒")+'</button>'});
+    h+='<button class="chipb'+(sm.skin===x.id?" on":"")+'" '+(own?'data-skin="'+x.id+'"':'aria-disabled="true" style="opacity:.45"')+'><span class="dot" style="--sc:'+(own?k.hex:"#7fb4d6")+'"></span>'+(secret?"???":esc(k.name))+(own?"":" 🔒")+'<small style="display:block;width:100%;font-size:11px;opacity:.8;margin-left:18px">'+(secret?"???":skinBTxt(x.id))+'</small></button>'});
   h+='</div><div class="lbl" style="margin:14px 0 8px">Badges</div><div class="badges">';
   REWARDS.filter(function(r){return r.t==="badge"}).forEach(function(r){var own=!!sm.owned[r.id],secret=r.g==="Celestial"&&!own;
     h+='<span class="bdg'+(own?"":" lock")+'" style="--bc:'+gradeCol(r.g)+'">'+(secret?"???":esc(r.name))+'</span>'});
@@ -880,7 +897,7 @@ function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor
 function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
 function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3,Celestial:5};
   var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
-  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()}
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()*(1+skinB()[0])}
 var OFFW=null;
 /* while the app is closed the army keeps climbing the tower at half the live pace; harder stages take longer */
 function offlineWar(sec){var a=AF();a.stage=a.stage||1;a.wave=a.wave||0;var lv=S.lord?lordLevel():1,P=(24+jadeRate()*3)*powerMul()*1.6,bud=sec*0.5,st0=a.stage,k=0,cr=0,it=0,xp=0,gd=0;
@@ -922,7 +939,7 @@ function rollGearG(crown){var r=Math.random()*100,g=r<60?0:r<87?1:r<97?2:r<99.7?
 function dropGear(crown,quiet){if(!crown&&Math.random()>0.15)return 0;var sl=["w","a","c"][Math.floor(Math.random()*3)],g=rollGearG(crown),E=EQ();
   if(g>E[sl]){E[sl]=g;if(!quiet)showPing('<b>GEAR DROP</b>['+GEARG[g].toUpperCase()+' · '+GEARS[sl].name+' equipped]<br>[+'+Math.round(GEARS[sl].fx[g]*100)+'% '+GEARS[sl].d+']');return 1}
   var j=Math.round((g+1)*Math.max(20,jadeRate()*5)*SYNV().salv);AF().jade=(AF().jade||0)+j;if(!quiet)toast("Gear drop · "+GEARG[g]+" "+GEARS[sl].name+" salvaged · +"+jfmt(j)+" ◆");return 0}
-function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()}
+function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()*(1+skinB()[1])}
 /* missions */
 function wk7(){return wkStr()}
 function MS(){var a=AF(),m=a.ms=a.ms||{};var sm=SM(),td=todayStr(),wk=wk7();
@@ -1748,7 +1765,7 @@ document.addEventListener("click",function(e){
     if(ds.roster){rosterSheet();return}
     if(ds.hero&&ds.hero!=="none"){var Lp=LD().party,ix=Lp.indexOf(ds.hero);if(ix>=0)Lp.splice(ix,1);else if(partyList().length<partySize())Lp.push(ds.hero);else{toast("Party full ("+partySize()+"). Rank up, or reach Lv "+(lvSeats()+1)*10+" for one more seat");return}save();render();toast(ix>=0?rwById(ds.hero).name+" left the party":rwById(ds.hero).name+" joined the party");return}
     if(ds.hero){S.summon.hero=null;LD().party=[];save();render();toast(ds.hero==="none"?"Advisor dismissed":rwById(ds.hero).name+" is now your advisor");return}
-    if(ds.skin){S.summon.skin=ds.skin;save();applySkin();render();toast("Skin: "+SKINS[ds.skin].name);return}
+    if(ds.skin){S.summon.skin=ds.skin;save();applySkin();render();toast("Skin: "+SKINS[ds.skin].name+" · "+skinBTxt(ds.skin));return}
   }
   var t2=e.target;
   if(t2.closest("#addDebt"))debtSheet(null);
