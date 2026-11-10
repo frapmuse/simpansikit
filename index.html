@@ -1036,6 +1036,7 @@ document.addEventListener("visibilitychange",function(){SND.music()});
 
 function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
 function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());if(off)offlineWar(dt/1000);var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;if(off)addSouls(Math.floor(dt/60000*6));return off?gain:0}
+function kfmt(v){v=Math.floor(v||0);var u=[[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e4,"K"]];for(var i=0;i<u.length;i++)if(v>=u[i][0])return (v/u[i][0]).toFixed(v>=u[i][0]*100?0:1).replace(/\.0$/,"")+u[i][1];return v.toLocaleString("en-US")}
 function jfmt(v){return Math.floor(v).toLocaleString("en-US")}
 function afkInfo(){var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var cp=document.querySelector(".afkbar .camp");if(cp)cp.textContent=(msReady()>0||LG().cl!==todayStr())?"WAR CAMP !":"WAR CAMP";var hs=partyHeroes().length,sq=troopSprites();
   jv.innerHTML="◆ "+jfmt(AF().jade)+"<small>JADE</small>";
@@ -1137,7 +1138,7 @@ function afkLoop(ts){
   function poly(pts,f,s){c.beginPath();c.moveTo(pts[0],pts[1]);for(var i=2;i<pts.length;i+=2)c.lineTo(pts[i],pts[i+1]);c.closePath();P2(f,s)}
   function ln(x1,y1,x2,y2,col,w){c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.strokeStyle=col;c.lineWidth=w;c.lineCap="round";c.stroke()}
   if(HD){var bw=SPR.bg.naturalWidth,bh=SPR.bg.naturalHeight,dw=Math.max(W,Hh*2.4),dh=dw*bh/bw;c.imageSmoothingEnabled=true;c.imageSmoothingQuality="high";c.drawImage(SPR.bg,(W-dw)/2,gy-dh*0.80,dw,dh)}else pxBG(c,W,Hh,gy,t);
-  var TIc=towerInfo(AF().stage);c.font="10px VT323,monospace";c.textAlign="left";c.fillStyle="rgba(0,0,0,.45)";var stl="STAGE "+AF().stage+" · "+TIc.name.toUpperCase()+"  "+Math.min(12,AF().wave)+"/12  FALLEN "+(AF().dead||0);c.fillRect(3,3,c.measureText(stl).width+6,10);c.fillStyle="#ffd166";c.fillText(stl,6,10.5);
+  var TIc=towerInfo(AF().stage);c.font="10px VT323,monospace";c.textAlign="left";c.fillStyle="rgba(0,0,0,.45)";var stl="STAGE "+AF().stage+" · "+TIc.name.toUpperCase()+"  "+Math.min(12,AF().wave)+"/12  FALLEN "+kfmt(AF().dead||0)+"  KILLS "+kfmt(AF().kills||0);c.fillRect(3,3,c.measureText(stl).width+6,10);c.fillStyle="#ffd166";c.fillText(stl,6,10.5);
   // ---- party (combat v2: soldiers can fall, hero skills, Moonrise, enemy armies)
   if(!AFKV.init2){AFKV.init2=1;grantLiGuang();AFKV.cd={};AFKV.dead={};AFKV.buffT=0;AFKV.buffM=1;AFKV.shT=0;AFKV.shV=0;AFKV.slowT=0;AFKV.rallyT=0;AFKV.rallyN=0;AFKV.yfCd=5;AFKV.vfx=[]}
   ["buffT","shT","slowT","rallyT"].forEach(function(k){AFKV[k]=Math.max(0,AFKV[k]-dt)});if(!AFKV.buffT)AFKV.buffM=1;if(!AFKV.shT)AFKV.shV=0;if(!AFKV.rallyT)AFKV.rallyN=0;
