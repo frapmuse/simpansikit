@@ -867,6 +867,10 @@ var GEAR={
 function AF(){return S.afk}
 function gearCost(k){return Math.round(GEAR[k].base*Math.pow(1.6,AF().gear[k]||0))}
 function fragCost(){return 600+150*(n(AF().fragBought)||0)}
+function wkStr(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)}
+function mkt(){var a=AF(),m=a.mkt=a.mkt||{};if(m.day!==todayStr()){m.day=todayStr();m.card=0}if(m.wk!==wkStr()){m.wk=wkStr();m.epic=0}return m}
+function cardCost(){return Math.round(4000*Math.pow(1.5,mkt().card))}
+var EPIC_COST=20000;
 function fragBuysToday(){var b=AF().buys||{};return b.date===todayStr()?b.n:0}
 function armyTroops(){var sv=sum(S.goals,function(g){return Math.max(0,goalSaved(g))}),per=n(S.settings.soldier)||10;return Math.floor(sv/per*(S.lord&&S.lord.cls==="steward"?1.1:1))}
 function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor(Math.log(t+1)/Math.log(2.2)))}
@@ -897,9 +901,12 @@ function campSheet(){
     '<div class="prog2"><div class="tile"><div class="lbl">Moonripple Blade</div><div class="v" style="color:'+gradeCol(BG.name)+'">'+BG.name+'</div><div class="s">'+jfmt(FN().souls||0)+' souls'+(BG.next?' · '+jfmt(BG.need)+' to '+BG.next:'')+' · jade ×'+bladeMult()+'</div></div>'+
     '<div class="tile"><div class="lbl">Lord rank</div><div class="v" style="color:var(--purple)">'+LR.name+'</div><div class="s">'+jfmt(FN().merit||0)+' Merit'+(LR.next?' · '+jfmt(LR.need)+' to '+LR.next:'')+'</div></div></div>'+
     '<div class="hint" style="margin:10px 0 0">Souls: ordinary 1 · elite 10 · boss 50. Real-life kills: bill paid before its due day = Elite (+1 fragment). Debt cleared = Boss (+3 fragments, Epic+ card). Debt of RM5k+ cleared = Crown (+5, Legendary card).</div>'+
-    '<div class="card shop" style="margin-top:12px">';
+    '<div class="lbl" style="margin:14px 0 4px">Market · spend Moon Jade (game only)</div><div class="card shop" style="margin-top:4px">';
   var fc=fragCost(),left=2-fragBuysToday();
   h+='<div class="it">'+ico("#3df0e0","✦")+'<div class="grow"><div class="t">Card fragment</div><div class="d">+1 fragment toward a Summon card. '+left+' of 2 left today.</div></div><button class="btn" data-buy="frag"'+(a.jade<fc||left<1?" disabled":"")+'>◆ '+jfmt(fc)+'</button></div>';
+  var M=mkt(),cc=cardCost();
+  h+='<div class="it">'+ico("#ffd166","♠")+'<div class="grow"><div class="t">Summon card</div><div class="d">A full card, ready to open in Summon. '+(3-M.card)+' of 3 left today · price rises each buy.</div></div><button class="btn" data-buy="card"'+(a.jade<cc||M.card>=3?" disabled":"")+'>◆ '+jfmt(cc)+'</button></div>';
+  h+='<div class="it">'+ico("#b18cff","♛")+'<div class="grow"><div class="t">Epic card</div><div class="d">Summon card that is Epic or better. '+(1-M.epic)+' of 1 left this week.</div></div><button class="btn" data-buy="epic"'+(a.jade<EPIC_COST||M.epic>=1?" disabled":"")+'>◆ '+jfmt(EPIC_COST)+'</button></div>';
   var gl={blade:["#5fd4ff","⚔"],drum:["#ffd166","◎"],banner:["#3dffa8","⚑"],seal:["#b18cff","◈"]};
   Object.keys(GEAR).forEach(function(k){var G=GEAR[k],lv=a.gear[k]||0,mx=lv>=G.max,c=gearCost(k);
     h+='<div class="it">'+ico(gl[k][0],gl[k][1])+'<div class="grow"><div class="t">'+G.name+' <span class="lbl">Lv '+lv+'/'+G.max+'</span></div><div class="d">'+G.d+'</div></div><button class="btn" data-buy="'+k+'"'+(mx||a.jade<c?" disabled":"")+'>'+(mx?"MAX":"◆ "+jfmt(c))+'</button></div>'});
@@ -909,6 +916,8 @@ function campSheet(){
     sh.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){
       accrue();var k=b.dataset.buy,a=AF();
       if(k==="frag"){var c=fragCost();if(a.jade<c||fragBuysToday()>=2)return;a.jade-=c;a.fragBought=(a.fragBought||0)+1;a.buys={date:todayStr(),n:fragBuysToday()+1};SM().bonus=(n(SM().bonus)||0)+1;save();toast(cardsLeft()&&totalFrag()%10===0?"Fragment bought · a Summon card is ready!":"+1 card fragment")}
+      else if(k==="card"){var M=mkt(),cc=cardCost();if(a.jade<cc||M.card>=3)return;a.jade-=cc;M.card++;SM().bonus=(n(SM().bonus)||0)+10;save();toast("Summon card bought · open it in Summon")}
+      else if(k==="epic"){var M2=mkt();if(a.jade<EPIC_COST||M2.epic>=1)return;a.jade-=EPIC_COST;M2.epic++;SM().gcards=SM().gcards||[];SM().gcards.push("Epic");save();toast("Epic card bought · open it in Summon")}
       else{var c2=gearCost(k);if(a.jade<c2||(a.gear[k]||0)>=GEAR[k].max)return;a.jade-=c2;a.gear[k]=(a.gear[k]||0)+1;save();toast(GEAR[k].name+" Lv "+a.gear[k])}
       campSheet()}});
   });
@@ -1651,6 +1660,5 @@ if("serviceWorker" in navigator){window.addEventListener("load",function(){navig
 </script>
 
 </body></html>
-
 </body>
 </html>
