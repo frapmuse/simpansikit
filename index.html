@@ -585,7 +585,8 @@ function nextPayday(){
   var t=new Date();t.setHours(0,0,0,0);var best=null;
   S.incomes.forEach(function(i){if(!n(i.day))return;
     var d=new Date(t.getFullYear(),t.getMonth(),Math.min(i.day,dim(t.getFullYear(),t.getMonth())));
-    if(d<t){d=new Date(t.getFullYear(),t.getMonth()+1,1);d.setDate(Math.min(i.day,dim(d.getFullYear(),d.getMonth())))}
+    var got=S.tx.some(function(x){return x.type==="in"&&x.src===i.id&&inMonth(x,t.getFullYear(),t.getMonth())});
+    if(d<t||got){d=new Date(t.getFullYear(),t.getMonth()+1,1);d.setDate(Math.min(i.day,dim(d.getFullYear(),d.getMonth())))}
     var days=Math.round((d-t)/864e5);if(!best||days<best.days)best={inc:i,date:d,days:days}});
   return best;
 }
