@@ -801,7 +801,7 @@ function summonSheet(){
       '<div class="face front" id="sfront"></div></button></div>'+
     '<div class="sumnote" id="snote"></div>'+
     '<div class="row"><button class="btn g grow" id="sDone">Close</button><button class="btn sum grow" id="sAgain" style="display:none">Summon again</button></div>'+
-    '<div class="odds">[Odds] '+GRADES.map(function(g){return '<b style="color:'+g[1]+'">'+g[0]+'</b> '+g[2]+'%'}).join(" · ")+'<br>Duplicates turn into 3 card fragments. 10 fragments = 1 summon card.</div>';
+    '<div class="odds">[Odds] '+GRADES.map(function(g){return '<b style="color:'+g[1]+'">'+g[0]+'</b> '+g[2]+'%'}).join(" · ")+'<br>Duplicate heroes gain a ★ (max 5 · stronger, faster skill) plus 3 card fragments. 10 fragments = 1 summon card.</div>';
   openSheet(h,function(){
     var busy=false,done=false;
     $("sDone").onclick=function(){closeSheet();render()};
@@ -816,7 +816,7 @@ function summonSheet(){
       $("sfront").innerHTML='<div class="gr">'+(r.g==="Anomaly"?"! Anomaly !":r.g)+'</div><div class="ic2">'+rwIcon(r)+'</div><div class="rw">'+esc(r.name)+'</div><div class="ty">'+(r.t==="hero"?"Hero advisor · "+esc(r.role)+(PX_SK[r.id]?'<br><span style="color:var(--gold)">Skill · '+esc(PX_SK[r.id].n)+'</span>':''):r.t==="skin"?"Panel skin":r.t==="blessing"?"Blessing":"Badge")+'</div><div class="ln">'+esc(r.line)+'</div>';
       function finish(){
         $("scard").classList.add("flip");done=true;busy=false;
-        var note=res.dupe?"[Duplicate: turned into 3 card fragments]":r.t==="hero"?(LD().party.indexOf(r.id)>=0?"[Hero joined · added to your party]":"[Hero joined · set as advisor in the Council]"):r.t==="skin"?"[Skin unlocked · apply it in the Council]":r.t==="blessing"?"[PING! The wheel spun past every grade]":"[Badge added to your collection]";
+        var note=res.dupe?(r.t==="hero"?"[Duplicate: "+esc(r.name)+" rises to "+starTxt(r.id)+" · skill stronger · +3 fragments]":"[Duplicate: turned into 3 card fragments]"):r.t==="hero"?(LD().party.indexOf(r.id)>=0?"[Hero joined · added to your party]":"[Hero joined · set as advisor in the Council]"):r.t==="skin"?"[Skin unlocked · apply it in the Council]":r.t==="blessing"?"[PING! The wheel spun past every grade]":"[Badge added to your collection]";
         setTimeout(function(){$("snote").textContent=note;if(cardsLeft()>0)$("sAgain").style.display=""},reduce?0:650);
       }
       if(reduce){w.textContent=r.g;finish();return}
@@ -844,7 +844,7 @@ function hallSection(){
   h+='<div class="lbl" style="margin:14px 0 8px">Party '+partyList().length+'/'+partySize()+' · heroes '+own.length+'/'+allH.length+' · tap to add or remove</div><div class="hgrid">';
   if(!own.length)h+='<div class="empty" style="grid-column:1/-1">No heroes yet. Open a Summon card.</div>';
   own.forEach(function(r){var on=LD().party.indexOf(r.id)>=0,c=gradeCol(r.g);
-    h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div><div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">PARTY</div>':'')+'</button>'});
+    h+='<button class="hcell'+(on?" on":"")+'" data-hero="'+r.id+'">'+HERO(r.ab,c)+'<div class="nm">'+esc(r.name)+'</div>'+(r.t==="hero"&&SM().owned[r.id]?'<div class="gd" style="color:var(--gold)">'+starTxt(r.id)+'</div>':'')+'<div class="gd" style="color:'+c+'">'+r.g+'</div>'+(on?'<div class="act">PARTY</div>':'')+'</button>'});
   h+='</div><button class="btn g sm" data-roster="1" style="width:100%;margin-top:10px">Hero roster · all '+allH.length+'</button>';
   h+='<div class="lbl" style="margin:14px 0 8px">Panel skins · tap to apply</div><div class="hint" style="margin:-4px 0 8px">Changes the colour of every window frame, gold text and battle borders.</div><div class="skinrow">';
   var sk=[{id:"holo",g:"Common"}].concat(REWARDS.filter(function(r){return r.t==="skin"}).map(function(r){return {id:r.skin,g:r.g,rid:r.id}}));
@@ -880,21 +880,134 @@ function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor
 function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
 function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3,Celestial:5};
   var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
-  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()}
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()}
 var OFFW=null;
 /* while the app is closed the army keeps climbing the tower at half the live pace; harder stages take longer */
-function offlineWar(sec){var a=AF();a.stage=a.stage||1;a.wave=a.wave||0;var lv=S.lord?lordLevel():1,P=(24+jadeRate()*3)*lvPow()*1.6,bud=sec*0.5,st0=a.stage,k=0,cr=0,it=0,xp=0;
+function offlineWar(sec){var a=AF();a.stage=a.stage||1;a.wave=a.wave||0;var lv=S.lord?lordLevel():1,P=(24+jadeRate()*3)*powerMul()*1.6,bud=sec*0.5,st0=a.stage,k=0,cr=0,it=0,xp=0,gd=0;
   while(it++<5000){var hs=1+0.12*Math.max(0,a.stage-1),ex=Math.min(3,Math.floor((a.stage-1)/10)),boss=a.wave>=12,TI=towerInfo(a.stage),
     hp=boss?((TI.crown?520:320)*(1+0.1*Math.floor(lv/5))+3*74)*hs:(4.5+ex)*74*hs,cost=7+hp/P;
     if(bud<cost)break;bud-=cost;k+=boss?4:Math.round(4.5+ex);xp+=boss?killExp("boss",a.stage)+3*killExp("gob",a.stage):Math.round((4.5+ex)*(0.8*killExp("gob",a.stage)+0.2*killExp("brute",a.stage)));
-    if(boss){if(TI.crown&&a.crownDay!==todayStr()){a.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;cr++}a.stage++;a.wave=0}else a.wave++}
+    if(boss){gd+=dropGear(TI.crown,true);if(TI.crown&&a.crownDay!==todayStr()){a.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;cr++}a.stage++;a.wave=0}else a.wave++}
   a.kills=(a.kills||0)+k;var lvA=lordLevel();addExp(xp);if(typeof AFKV!=="undefined"&&AFKV)AFKV.ens=[];
-  OFFW={st:a.stage-st0,k:k,cr:cr,now:a.stage,xp:xp,lv:lordLevel()-lvA}}
-function offMsg(g){var m="While you were away, Ye Feng's army earned ◆ "+jfmt(g);if(OFFW&&OFFW.st>0)m+=" and cleared "+OFFW.st+" stage"+(OFFW.st>1?"s":"")+" (now Stage "+OFFW.now+")";if(OFFW&&OFFW.xp)m+=" · +"+jfmt(OFFW.xp)+" EXP"+(OFFW.lv?" (Lv +"+OFFW.lv+")":"");if(OFFW&&OFFW.cr)m+=" · Crown taken +1 card fragment";OFFW=null;return m}
+  OFFW={st:a.stage-st0,k:k,cr:cr,now:a.stage,xp:xp,lv:lordLevel()-lvA,gd:gd}}
+function offMsg(g){var m="While you were away, Ye Feng's army earned ◆ "+jfmt(g);if(OFFW&&OFFW.st>0)m+=" and cleared "+OFFW.st+" stage"+(OFFW.st>1?"s":"")+" (now Stage "+OFFW.now+")";if(OFFW&&OFFW.xp)m+=" · +"+jfmt(OFFW.xp)+" EXP"+(OFFW.lv?" (Lv +"+OFFW.lv+")":"");if(OFFW&&OFFW.gd)m+=" · "+OFFW.gd+" gear upgrade"+(OFFW.gd>1?"s":"");if(OFFW&&OFFW.cr)m+=" · Crown taken +1 card fragment";OFFW=null;return m}
+/* ===== Game v3: stars, missions, gear, raid, synergy, realm buff, login, sound (game only, never real money) ===== */
+function stars(id){return Math.max(1,Math.min(5,n(SM().owned[id])||1))}
+function starTxt(id){var s=stars(id);return "★".repeat(s)}
+function starSk(id,sk){var st=stars(id),o={n:sk.n,k:sk.k,v:sk.v,cd:sk.cd};if(st>1){o.v=sk.k==="rally"||sk.k==="soul"?Math.round(sk.v*(1+0.25*(st-1))):sk.v*(1+0.25*(st-1));o.cd=sk.cd*(1-0.06*(st-1))}o.cd*=SYNV().cd;return o}
+var SYN=[
+ {id:"nus",name:"Laksamana of the Straits",need:3,ids:["h_hangtuah","h_hangjebat","h_hangkasturi","h_hanglekir","h_hanglekiu","h_hangnadim","h_tunperak","h_gajahmada","h_malahayati"],d:"Army damage +15%",fx:{dmg:0.15}},
+ {id:"arc",name:"Twin Bows",need:2,ids:["h_liguang","h_xuerengui"],d:"Volley skills +30%",fx:{volley:0.3}},
+ {id:"hero",name:"Heroines' Banner",need:3,ids:["h_fuhao","h_huamulan","h_lianghongyu","h_qinliangyu","h_ladyxian","h_muguiying","h_shenyunying","h_malahayati","h_nieyinniang","h_xunguan","h_huangyueying","h_waner","h_xing"],d:"Jade +15%",fx:{jade:0.15}},
+ {id:"str",name:"War Council",need:2,ids:["h_hanxin","h_zhuge","h_zhangliang","h_jiaxu","h_sunbin","h_lijing","h_chenping"],d:"Skill cooldown -15%",fx:{cd:0.15}},
+ {id:"smith",name:"Forge Masters",need:2,ids:["h_ganjiang","h_moye","h_ouyezi","h_luban"],d:"Army damage +10%, gear salvage ×2",fx:{dmg:0.1,salv:1}},
+ {id:"qin",name:"Generals of Qin",need:2,ids:["h_baiqi","h_wangjian","h_mengtian"],d:"Damage vs bosses +20%",fx:{boss:0.2}},
+ {id:"heal",name:"Healers' Pact",need:2,ids:["h_huatuo","h_xing"],d:"Army takes 10% less damage",fx:{arm:0.1}}];
+var _synC={k:null,v:null};
+function SYNV(){var pl=(S.lord&&S.lord.party)||[],k=pl.join(",");if(_synC.k===k)return _synC.v;var v={dmg:1,volley:1,jade:1,cd:1,boss:1,arm:0,salv:1,act:[]};
+  SYN.forEach(function(s){var c=s.ids.filter(function(id){return pl.indexOf(id)>=0&&SM().owned[id]}).length;if(c>=s.need){v.act.push(s.id);var f=s.fx;if(f.dmg)v.dmg+=f.dmg;if(f.volley)v.volley+=f.volley;if(f.jade)v.jade+=f.jade;if(f.cd)v.cd-=f.cd;if(f.boss)v.boss+=f.boss;if(f.arm)v.arm+=f.arm;if(f.salv)v.salv+=f.salv}});
+  _synC={k:k,v:v};return v}
+var _rlmC={t:0,i:0};
+function realmI(){var t=Date.now();if(t-_rlmC.t>3000){_rlmC={t:t,i:realm(netWorth()).i}}return _rlmC.i}
+function realmDmg(){return 1+0.05*realmI()}
+function realmJade(){return 1+0.1*realmI()}
+/* gear */
+var GEARG=["Common","Fine","Rare","Epic","Legendary"],GEARS={w:{name:"Moonfang Spear",fx:[0.05,0.1,0.2,0.35,0.6],d:"army damage"},a:{name:"Nightscale Mail",fx:[0.03,0.06,0.1,0.15,0.22],d:"less damage taken"},c:{name:"Jade Lotus Charm",fx:[0.05,0.1,0.15,0.25,0.4],d:"jade"}};
+function EQ(){var a=AF();a.eq=a.eq||{w:-1,a:-1,c:-1};return a.eq}
+function eqV(s){var g=EQ()[s];return g>=0?GEARS[s].fx[g]:0}
+function eqDmg(){return 1+eqV("w")}
+function eqArm(){return Math.min(0.6,eqV("a")+SYNV().arm)}
+function eqJade(){return 1+eqV("c")}
+function rollGearG(crown){var r=Math.random()*100,g=r<60?0:r<87?1:r<97?2:r<99.7?3:4;if(crown)g=Math.min(4,Math.max(1,g+1));return g}
+function dropGear(crown,quiet){if(!crown&&Math.random()>0.15)return 0;var sl=["w","a","c"][Math.floor(Math.random()*3)],g=rollGearG(crown),E=EQ();
+  if(g>E[sl]){E[sl]=g;if(!quiet)showPing('<b>GEAR DROP</b>['+GEARG[g].toUpperCase()+' · '+GEARS[sl].name+' equipped]<br>[+'+Math.round(GEARS[sl].fx[g]*100)+'% '+GEARS[sl].d+']');return 1}
+  var j=Math.round((g+1)*Math.max(20,jadeRate()*5)*SYNV().salv);AF().jade=(AF().jade||0)+j;if(!quiet)toast("Gear drop · "+GEARG[g]+" "+GEARS[sl].name+" salvaged · +"+jfmt(j)+" ◆");return 0}
+function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()}
+/* missions */
+function wk7(){return wkStr()}
+function MS(){var a=AF(),m=a.ms=a.ms||{};var sm=SM(),td=todayStr(),wk=wk7();
+  if(m.d!==td){m.d=td;m.k0=a.kills||0;m.s0=a.stage||1;m.c={};m.raid=0}
+  if(m.w!==wk){m.w=wk;m.wk0=a.kills||0;m.ws0=a.stage||1;m.wl0=(sm.log||[]).length;m.wc={};m.days=[]}
+  if(m.days.indexOf(td)<0)m.days.push(td);return m}
+function txToday(){var t0=new Date();t0.setHours(0,0,0,0);return S.tx.filter(function(x){return !x.auto&&(x.ts||0)>=t0.getTime()}).length}
+function MDEF(){var a=AF(),m=MS(),sm=SM();return {
+  day:[{id:"k",n:"Defeat 300 enemies",g:300,v:(a.kills||0)-m.k0},{id:"s",n:"Clear 3 tower stages",g:3,v:(a.stage||1)-m.s0},{id:"r",n:"Log 1 record in your ledger",g:1,v:txToday()},{id:"a",n:"Attack the Raid Boss",g:1,v:m.raid||0}],
+  week:[{id:"k",n:"Defeat 3,000 enemies",g:3000,v:(a.kills||0)-m.wk0},{id:"s",n:"Clear 20 tower stages",g:20,v:(a.stage||1)-m.ws0},{id:"o",n:"Open 3 Summon cards",g:3,v:(sm.log||[]).length-m.wl0},{id:"l",n:"Open the app on 5 days",g:5,v:m.days.length}]}}
+function dayRw(){return Math.max(150,Math.round(jadeRate()*20))}
+function weekRw(){return Math.max(1500,Math.round(jadeRate()*120))}
+function msReady(){var D=MDEF(),m=MS(),k=0;D.day.forEach(function(q){if(q.v>=q.g&&!m.c[q.id])k++});D.week.forEach(function(q){if(q.v>=q.g&&!m.wc[q.id])k++});if(D.day.every(function(q){return m.c[q.id]})&&!m.c.all)k++;if(D.week.every(function(q){return m.wc[q.id]})&&!m.wc.all)k++;return k}
+/* raid */
+function RAID(){var a=AF(),r=a.raid=a.raid||{};if(r.wk!==wk7()){var P=Math.max(40,(24+jadeRate()*3)*powerMul());r.wk=wk7();r.hp=Math.max(50000,Math.round(P*30*15/1000)*1000);r.dmg=0;r.cl={};r.nm=RAIDN[Math.floor(Math.random()*RAIDN.length)]}if(r.day!==todayStr()){r.day=todayStr();r.t=0}return r}
+var RAIDN=["Gorvash the Tide-Eater","The Hollow Colossus","Queen Ashveil","The Iron Leviathan","Morrow, the Moon-Devourer","The Thousand-Eyed Toad"];
+var RAIDM=[[0.25,"jade",60],[0.5,"frag",3],[0.75,"jade",180],[1,"epic",1]];
+function raidHit(){var r=RAID();if(r.t>=3||r.dmg>=r.hp)return null;r.t++;MS().raid=(MS().raid||0)+1;var P=(24+jadeRate()*3)*powerMul(),d=Math.round(P*30*(0.85+Math.random()*0.3));r.dmg=Math.min(r.hp,r.dmg+d);return d}
+/* login */
+var LOGINR=[["jade",30],["frag",1],["jade",60],["frag",2],["jade",120],["frag",3],["epic",1]];
+function LG(){var a=AF(),l=a.login=a.login||{last:"",st:0,cl:""};var td=todayStr();if(l.last!==td){var y=new Date();y.setDate(y.getDate()-1);l.st=(l.last===ymd(y))?(l.st%7)+1:1;l.last=td}return l}
+function giveRw(k,v){if(k==="jade"){var j=Math.max(v*5,Math.round(jadeRate()*v));AF().jade=(AF().jade||0)+j;return "+"+jfmt(j)+" ◆"}if(k==="frag"){SM().bonus=(n(SM().bonus)||0)+v;return "+"+v+" card fragment"+(v>1?"s":"")}if(k==="epic"){SM().gcards=SM().gcards||[];SM().gcards.push("Epic");return "Epic Summon card"}return ""}
+function rwLabel(k,v){return k==="jade"?"◆ "+jfmt(Math.max(v*5,Math.round(jadeRate()*v))):k==="frag"?v+" frag":"Epic card"}
+
+function g2bar(v,g){return '<span class="bb sp" style="display:block;margin-top:3px"><i style="width:'+Math.min(100,Math.max(0,v/g*100))+'%"></i></span>'}
+function campExtra(){var h='',l=LG(),D=MDEF(),m=MS(),r=RAID(),E=EQ(),sv=SYNV(),snd=SNDS();
+  h+='<div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-g2="music">♪ Music '+(snd.m?"ON":"OFF")+'</button><button class="btn sm grow" data-g2="sfx">♫ Sound FX '+(snd.s?"ON":"OFF")+'</button></div>';
+  // login
+  h+='<div class="lbl" style="margin:14px 0 4px">Daily login · day '+l.st+' of 7</div><div class="card" style="padding:10px"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
+  LOGINR.forEach(function(x,i){var d=i+1,got=d<l.st||(d===l.st&&l.cl===todayStr()),now=d===l.st&&l.cl!==todayStr();h+='<div style="text-align:center;padding:5px 2px;border:2px solid '+(now?"var(--gold)":"rgba(255,255,255,.25)")+';border-radius:4px;opacity:'+(got?.45:1)+'"><div class="lbl" style="font-size:7px">D'+d+'</div><div style="font-family:var(--f-num);font-size:13px;line-height:1.1">'+(got?"✓":rwLabel(x[0],x[1]))+'</div></div>'});
+  h+='</div>'+(l.cl!==todayStr()?'<button class="btn y" data-g2="login" style="width:100%;margin-top:8px">Claim day '+l.st+'</button>':'<div class="hint" style="margin:8px 0 0">Claimed today. Come back tomorrow, my lord. Miss a day and it starts again from day 1.</div>')+'</div>';
+  // missions
+  function ql(q,done,claimed,kind,rw){return '<div class="q"><div class="grow"><div class="t" style="font-size:14px">'+q.n+'</div><div class="d">'+jfmt(Math.min(q.v,q.g))+' / '+jfmt(q.g)+' · '+rw+'</div>'+g2bar(q.v,q.g)+'</div>'+(claimed?'<div class="check on">✓</div>':'<button class="btn sm" data-g2="'+kind+':'+q.id+'"'+(done?'':' disabled style="opacity:.4"')+'>Claim</button>')+'</div>'}
+  h+='<div class="lbl" style="margin:14px 0 4px">Daily missions</div><div class="card" style="padding:4px 12px">';
+  D.day.forEach(function(q){h+=ql(q,q.v>=q.g,m.c[q.id],"md",'◆ '+jfmt(dayRw()))});
+  var allD=D.day.every(function(q){return m.c[q.id]});h+='<div class="q"><div class="grow"><div class="t" style="font-size:14px">All 4 done · bonus chest</div><div class="d">+1 card fragment</div></div>'+(m.c.all?'<div class="check on">✓</div>':'<button class="btn sm" data-g2="md:all"'+(allD?'':' disabled style="opacity:.4"')+'>Claim</button>')+'</div></div>';
+  h+='<div class="lbl" style="margin:14px 0 4px">Weekly missions · reset Monday</div><div class="card" style="padding:4px 12px">';
+  D.week.forEach(function(q){h+=ql(q,q.v>=q.g,m.wc[q.id],"mw",'◆ '+jfmt(weekRw()))});
+  var allW=D.week.every(function(q){return m.wc[q.id]});h+='<div class="q"><div class="grow"><div class="t" style="font-size:14px">All 4 done · weekly chest</div><div class="d">+10 card fragments (1 Summon card)</div></div>'+(m.wc.all?'<div class="check on">✓</div>':'<button class="btn sm" data-g2="mw:all"'+(allW?'':' disabled style="opacity:.4"')+'>Claim</button>')+'</div></div>';
+  // raid
+  var pc=r.dmg/r.hp;h+='<div class="lbl" style="margin:14px 0 4px">Weekly Raid Boss</div><div class="card" style="padding:12px"><div class="row"><div style="flex:none">'+spx("crownboss",70)+'</div><div class="grow"><div style="font-family:var(--f-display);font-size:10px;line-height:1.5">'+esc(r.nm)+'</div><div class="hpl"><span>HP</span><span>'+jfmt(r.hp-r.dmg)+' / '+jfmt(r.hp)+'</span></div><div class="hp"><i style="width:'+Math.max(0,100-pc*100)+'%"></i></div><div class="d muted" style="font-size:13px;margin-top:4px">Attacks today: '+r.t+' / 3 · each attack = 30s of your full army</div></div></div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">'+RAIDM.map(function(x,i){var ok=pc>=x[0],cl=r.cl[i];return '<button class="btn sm" data-g2="rm:'+i+'"'+(ok&&!cl?'':' disabled style="opacity:.45"')+'>'+(cl?"✓ ":"")+Math.round(x[0]*100)+'% · '+rwLabel(x[1],x[2])+'</button>'}).join("")+'</div>';
+  var rd=r.t>=3||r.dmg>=r.hp;h+='<button class="btn r" data-g2="raid" style="width:100%;margin-top:8px'+(rd?';opacity:.45':'')+'"'+(rd?' disabled':'')+'>'+(r.dmg>=r.hp?"Raid boss defeated!":"⚔ Attack ("+(3-r.t)+" left today)")+'</button></div>';
+  // armoury
+  h+='<div class="lbl" style="margin:14px 0 4px">Ye Feng\'s armoury · drops from tower bosses</div><div class="card" style="padding:4px 12px">';
+  ["w","a","c"].forEach(function(sl){var g=E[sl],G=GEARS[sl];h+='<div class="li"><div class="ic" style="font-size:20px;font-family:var(--f-body);border-color:'+(g>=0?gradeCol(GEARG[g]):"#666")+'">'+(sl==="w"?"⚔":sl==="a"?"⛨":"❀")+'</div><div class="grow"><div class="t" style="font-size:14px;color:'+(g>=0?gradeCol(GEARG[g]):"inherit")+'">'+(g>=0?GEARG[g]+" ":"")+G.name+'</div><div class="d">'+(g>=0?'+'+Math.round(G.fx[g]*100)+'% '+G.d:'Not found yet · tower bosses drop gear 15% of the time, Crown bosses always')+'</div></div></div>'});
+  h+='</div>';
+  // synergy + realm
+  h+='<div class="lbl" style="margin:14px 0 4px">Formation bonuses · from your party</div><div class="card" style="padding:4px 12px">';
+  var pl=(S.lord&&S.lord.party)||[];SYN.forEach(function(s){var c=s.ids.filter(function(id){return pl.indexOf(id)>=0&&SM().owned[id]}).length,on=c>=s.need;h+='<div class="li" style="opacity:'+(on?1:.55)+'"><div class="ic">'+(on?"✓":c+"/"+s.need)+'</div><div class="grow"><div class="t" style="font-size:14px'+(on?';color:var(--gold)':'')+'">'+s.name+'</div><div class="d">'+s.d+' · needs '+s.need+': '+s.ids.map(function(id){var r2=rwById(id);return r2?r2.name:id}).join(", ")+'</div></div></div>'});
+  var ri=realmI();h+='<div class="li"><div class="ic">'+(ri+1)+'</div><div class="grow"><div class="t" style="font-size:14px;color:var(--gold)">Realm: '+TIERS[ri][0]+'</div><div class="d">From your real net worth · jade +'+Math.round(ri*10)+'%, army damage +'+Math.round(ri*5)+'%. Each tier up adds +10% / +5%.</div></div></div></div>';
+  return h}
+function campBind(sh){sh.querySelectorAll("[data-g2]").forEach(function(b){b.onclick=function(){var k=b.dataset.g2,m=MS(),msg="";accrue();
+  if(k==="music"||k==="sfx"){var s=SNDS();if(k==="music")s.m=!s.m;else s.s=!s.s;save();SND.unlock();SND.music();campSheet();return}
+  if(k==="login"){var l=LG();if(l.cl===todayStr())return;l.cl=todayStr();var x=LOGINR[l.st-1];msg="Day "+l.st+" reward · "+giveRw(x[0],x[1])}
+  else if(k.indexOf("md:")===0||k.indexOf("mw:")===0){var wk=k[1]==="w",id=k.slice(3),D=MDEF(),L=wk?D.week:D.day,c=wk?m.wc:m.c;if(c[id])return;
+    if(id==="all"){if(!L.every(function(q){return c[q.id]}))return;c.all=1;msg=wk?"Weekly chest · "+giveRw("frag",10):"Bonus chest · "+giveRw("frag",1)}
+    else{var q=L.find(function(z){return z.id===id});if(!q||q.v<q.g)return;c[id]=1;var j=wk?weekRw():dayRw();AF().jade=(AF().jade||0)+j;msg="Mission done · +"+jfmt(j)+" ◆"}}
+  else if(k==="raid"){var d=raidHit();if(d==null)return;SND.sfx("raid");msg="⚔ Raid hit · "+jfmt(d)+" damage"+(RAID().dmg>=RAID().hp?" · RAID BOSS DEFEATED!":"")}
+  else if(k.indexOf("rm:")===0){var i=+k.slice(3),r=RAID(),x2=RAIDM[i];if(r.cl[i]||r.dmg/r.hp<x2[0])return;r.cl[i]=1;msg="Raid reward · "+giveRw(x2[1],x2[2])}
+  save();if(k!=="raid")SND.sfx("coin");toast(msg);campSheet()}})}
+function loginCheck(){var l=LG();save();if(l.cl===todayStr())return;if(document.querySelector(".sheet"))return;showPing('<b>DAILY LOGIN</b>[Day '+l.st+' of 7 reward is waiting]<br>[Open War Camp to claim]')}
+/* ===== sound: original chiptune loop + effects (Web Audio, no files) ===== */
+function SNDS(){S.settings.snd=S.settings.snd||{m:1,s:1};return S.settings.snd}
+var SND=(function(){var C=null,mt=null,step=0,master=null;
+  var MEL=[69,72,76,74,72,69,67,69, 72,76,79,76,74,72,74,76, 69,72,76,81,79,76,74,72, 74,72,69,67,64,67,69,0];
+  var BAS=[45,45,48,48,43,43,40,40];
+  function f(m){return 440*Math.pow(2,(m-69)/12)}
+  function tone(fr,t,d,type,vol,slide){if(!C)return;var o=C.createOscillator(),g=C.createGain();o.type=type||"square";o.frequency.setValueAtTime(fr,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+0.02)}
+  function unlock(){try{if(!C){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;C=new AC();master=C.createGain();master.gain.value=0.5;master.connect(C.destination)}if(C.state==="suspended")C.resume()}catch(e){}}
+  function music(){var on=SNDS().m&&C&&!document.hidden;if(on&&!mt){step=0;mt=setInterval(function(){if(!C)return;var t=C.currentTime+0.05,nn=MEL[step%MEL.length];if(nn)tone(f(nn),t,0.22,"square",0.035);if(step%4===0)tone(f(BAS[(step/4)%BAS.length]),t,0.42,"triangle",0.06);if(step%2===1)tone(2000,t,0.03,"square",0.008);step++},230)}else if(!on&&mt){clearInterval(mt);mt=null}}
+  var last={};function sfx(k){if(!SNDS().s||!C)return;var nw=Date.now();if(last[k]&&nw-last[k]<120)return;last[k]=nw;var t=C.currentTime+0.01;
+    if(k==="ping"){[76,81,88].forEach(function(m,i){tone(f(m),t+i*0.07,0.16,"square",0.06)})}
+    else if(k==="summon"){[60,64,67,72,76,79,84].forEach(function(m,i){tone(f(m),t+i*0.06,0.2,"square",0.05)});tone(f(96),t+0.45,0.5,"triangle",0.06)}
+    else if(k==="coin"){tone(f(83),t,0.08,"square",0.06);tone(f(88),t+0.08,0.25,"square",0.06)}
+    else if(k==="raid"){tone(160,t,0.35,"sawtooth",0.09,40);tone(f(57),t+0.05,0.2,"square",0.05)}
+    else if(k==="skill"){tone(f(79),t,0.08,"square",0.025,f(91))}}
+  return {unlock:unlock,music:music,sfx:sfx}})();
+document.addEventListener("pointerdown",function(){SND.unlock();SND.music()});
+document.addEventListener("visibilitychange",function(){SND.music()});
+
 function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
 function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());if(off)offlineWar(dt/1000);var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;if(off)addSouls(Math.floor(dt/60000*6));return off?gain:0}
 function jfmt(v){return Math.floor(v).toLocaleString("en-US")}
-function afkInfo(){var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var hs=partyHeroes().length,sq=troopSprites();
+function afkInfo(){var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var cp=document.querySelector(".afkbar .camp");if(cp)cp.textContent=(msReady()>0||LG().cl!==todayStr())?"WAR CAMP !":"WAR CAMP";var hs=partyHeroes().length,sq=troopSprites();
   jv.innerHTML="◆ "+jfmt(AF().jade)+"<small>JADE</small>";
   ai.textContent="+"+jadeRate().toFixed(1)+"/min · Blade "+bladeGrade().name+" · "+jfmt(FN().souls||0)+" souls · "+hs+" hero"+(hs===1?"":"es")}
 function campSheet(){
@@ -904,7 +1017,7 @@ function campSheet(){
     '<div class="prog2"><div class="tile"><div class="lbl">Moonripple Blade</div><div class="v" style="color:'+gradeCol(BG.name)+'">'+BG.name+'</div><div class="s">'+jfmt(FN().souls||0)+' souls'+(BG.next?' · '+jfmt(BG.need)+' to '+BG.next:'')+' · jade ×'+bladeMult()+'</div></div>'+
     '<div class="tile"><div class="lbl">Lord rank</div><div class="v" style="color:var(--purple)">'+LR.name+'</div><div class="s">'+jfmt(FN().merit||0)+' Merit'+(LR.next?' · '+jfmt(LR.need)+' to '+LR.next:'')+'</div></div></div>'+
     '<div class="hint" style="margin:10px 0 0">Souls: ordinary 1 · elite 10 · boss 50. Real-life kills: bill paid before its due day = Elite (+1 fragment). Debt cleared = Boss (+3 fragments, Epic+ card). Debt of RM5k+ cleared = Crown (+5, Legendary card).</div>'+
-    '<div class="lbl" style="margin:14px 0 4px">Market · spend Moon Jade (game only)</div><div class="card shop" style="margin-top:4px">';
+    ''+campExtra()+'<div class="lbl" style="margin:14px 0 4px">Market · spend Moon Jade (game only)</div><div class="card shop" style="margin-top:4px">';
   var fc=fragCost(),left=2-fragBuysToday();
   h+='<div class="it">'+ico("#3df0e0","✦")+'<div class="grow"><div class="t">Card fragment</div><div class="d">+1 fragment toward a Summon card. '+left+' of 2 left today.</div></div><button class="btn" data-buy="frag"'+(a.jade<fc||left<1?" disabled":"")+'>◆ '+jfmt(fc)+'</button></div>';
   var M=mkt(),cc=cardCost();
@@ -915,7 +1028,7 @@ function campSheet(){
     h+='<div class="it">'+ico(gl[k][0],gl[k][1])+'<div class="grow"><div class="t">'+G.name+' <span class="lbl">Lv '+lv+'/'+G.max+'</span></div><div class="d">'+G.d+'</div></div><button class="btn" data-buy="'+k+'"'+(mx||a.jade<c?" disabled":"")+'>'+(mx?"MAX":"◆ "+jfmt(c))+'</button></div>'});
   h+='</div><div class="hint" style="margin:10px 0 0">Earning now: +'+jadeRate().toFixed(1)+' jade/min. While you are away the army keeps fighting for up to '+(capMs()/3600000)+' hours.</div><button class="btn g" id="campX" style="width:100%;margin-top:12px">Close</button>';
   openSheet(h,function(sh){
-    $("campX").onclick=function(){closeSheet();render()};
+    $("campX").onclick=function(){closeSheet();render()};campBind(sh);
     sh.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){
       accrue();var k=b.dataset.buy,a=AF();
       if(k==="frag"){var c=fragCost();if(a.jade<c||fragBuysToday()>=2)return;a.jade-=c;a.fragBought=(a.fragBought||0)+1;a.buys={date:todayStr(),n:fragBuysToday()+1};SM().bonus=(n(SM().bonus)||0)+1;save();toast(cardsLeft()&&totalFrag()%10===0?"Fragment bought · a Summon card is ready!":"+1 card fragment")}
@@ -1012,18 +1125,18 @@ function afkLoop(ts){
   var front=null;AFKV.ens.forEach(function(E,ix){var stop=hitX+ix*15+(E.ty==="boss"?10:0);if(E.die>0){E.die-=dt;return}if(E.x>stop&&AFKV.slowT<=0)E.x-=42*dt;if(!front)front=E});
   AFKV.ens=AFKV.ens.filter(function(E){return !(E.die<0)});
   var engaged=front&&front.x<=hitX+(front.ty==="boss"?12:2);
-  var blade=(1+0.15*(AF().gear.blade||0))*lvPow(),mul=AFKV.buffT>0?AFKV.buffM:1;
+  var blade=(1+0.15*(AF().gear.blade||0))*powerMul(),mul=AFKV.buffT>0?AFKV.buffM:1;
   function live(){return AFKV.ens.filter(function(q){return q.die<=0&&q.hp>0})}
   function pop(x,y,txt,col,big){AFKV.pops.push({x:x,y:y,txt:txt,col:col,life:big?1.5:0.8,big:big})}
   function killE(E){E.die=0.45;AF().kills=(AF().kills||0)+1;addExp(killExp(E.ty,AF().stage));addSouls(E.ty==="boss"?50:E.ty==="brute"?10:1);
-    if(live().length===0){var A2=AF();if(AFKV.ens.some(function(q){return q.ty==="boss"})){var TI2=towerInfo(A2.stage);if(TI2.crown&&A2.crownDay!==todayStr()){A2.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;showPing("<b>PING!</b>[CROWN TAKEN · "+esc(TI2.name)+"]<br>[Reward: +1 card fragment]")}else toast("Stage "+A2.stage+" cleared · "+TI2.name);A2.stage++;A2.wave=0}else A2.wave++;save()}
+    if(live().length===0){var A2=AF();if(AFKV.ens.some(function(q){return q.ty==="boss"})){var TI2=towerInfo(A2.stage);dropGear(TI2.crown);if(TI2.crown&&A2.crownDay!==todayStr()){A2.crownDay=todayStr();SM().bonus=(n(SM().bonus)||0)+1;showPing("<b>PING!</b>[CROWN TAKEN · "+esc(TI2.name)+"]<br>[Reward: +1 card fragment]")}else toast("Stage "+A2.stage+" cleared · "+TI2.name);A2.stage++;A2.wave=0}else A2.wave++;save()}
     var g=Math.max(1,Math.round(AFKV.killGain));AFKV.killGain=0;pop(E.x,gy-50,"+"+g+" ◆","#7dffcf",true)}
   function cast(m,sk,col){var L=live();
-    pop(m.x,m.y-50,sk.n,col,true);AFKV.vfx.push({k:sk.k,x:m.x,y:m.y,life:0.9,col:col});
+    SND.sfx("skill");pop(m.x,m.y-50,sk.n,col,true);AFKV.vfx.push({k:sk.k,x:m.x,y:m.y,life:0.9,col:col});
     if(sk.k==="heal")U.forEach(function(u){AFKV.hp[u.id]=Math.min(1,AFKV.hp[u.id]+sk.v)});
     else if(sk.k==="buff"){AFKV.buffT=5;AFKV.buffM=Math.max(AFKV.buffM,1+sk.v)}
     else if(sk.k==="strike"&&front){var d=Math.round(40*sk.v*blade*mul);front.hp-=d;pop(front.x,gy-40,"-"+d,"#ffd166",true)}
-    else if(sk.k==="volley")L.forEach(function(E){var d=Math.round(25*sk.v*blade*mul);E.hp-=d;pop(E.x,gy-36,"-"+d,"#fff",false);AFKV.fx.push({x:m.x+6,y:m.y-24,k:"a",tx:E.x,col:col,life:0.32,dmg:0,quiet:true})});
+    else if(sk.k==="volley")L.forEach(function(E){var d=Math.round(25*sk.v*blade*mul*SYNV().volley);E.hp-=d;pop(E.x,gy-36,"-"+d,"#fff",false);AFKV.fx.push({x:m.x+6,y:m.y-24,k:"a",tx:E.x,col:col,life:0.32,dmg:0,quiet:true})});
     else if(sk.k==="shield"){AFKV.shT=4;AFKV.shV=Math.max(AFKV.shV,sk.v)}
     else if(sk.k==="slow")AFKV.slowT=Math.max(AFKV.slowT,sk.v);
     else if(sk.k==="rally"){AFKV.rallyT=8;AFKV.rallyN=Math.max(AFKV.rallyN,sk.v)}
@@ -1033,15 +1146,15 @@ function afkLoop(ts){
     L.forEach(function(E){if(E.hp<=0&&E.die<=0)killE(E)})}
   // ---- skills: every hero has one; Ye Feng's Moonrise lifts the whole army
   var hurt=U.some(function(u){return AFKV.hp[u.id]<0.85});
-  U.forEach(function(m){if(m.k!=="h")return;var sk=PX_SK[m.r.id]||{n:"Hero's Blow",k:"strike",v:2,cd:9};if(AFKV.cd[m.id]==null)AFKV.cd[m.id]=2+Math.random()*sk.cd;AFKV.cd[m.id]-=dt;
+  U.forEach(function(m){if(m.k!=="h")return;var sk=starSk(m.r.id,PX_SK[m.r.id]||{n:"Hero's Blow",k:"strike",v:2,cd:9});if(AFKV.cd[m.id]==null)AFKV.cd[m.id]=2+Math.random()*sk.cd;AFKV.cd[m.id]-=dt;
     if(AFKV.cd[m.id]<=0&&(engaged||(sk.k==="heal"&&hurt))){AFKV.cd[m.id]=sk.cd;cast(m,sk,gradeCol(m.r.g))}});
   AFKV.yfCd-=dt;if(AFKV.yfCd<=0&&engaged){AFKV.yfCd=12;AFKV.buffT=5;AFKV.buffM=Math.max(AFKV.buffM,1.4);AFKV.shT=Math.max(AFKV.shT,5);AFKV.shV=Math.max(AFKV.shV,0.15);pop(yfx,gy-58,"MOONRISE · ALL +40%","#ffe27a",true);AFKV.vfx.push({k:"moon",x:yfx,y:gy,life:1.2,col:"#ffe27a"})}
   mul=AFKV.buffT>0?AFKV.buffM:1;
-  if(engaged){front.hp-=(24+jadeRate()*3)*lvPow()*dt*mul*(front.ty==="boss"&&LD().cls==="strategist"?1.2:1);
+  if(engaged){front.hp-=(24+jadeRate()*3)*powerMul()*dt*mul*(front.ty==="boss"&&LD().cls==="strategist"?1.2:1)*(front.ty==="boss"?SYNV().boss:1);
     AFKV.shot-=dt;if(AFKV.shot<=0){AFKV.shot=0.3;var a=U[Math.floor(Math.random()*U.length)];AFKV.fx.push({x:a.x+8,y:a.y-20,k:a.arch?"a":a.k,col:a.k==="h"?gradeCol(a.r.g):"#e8d9a8",life:a.k==="y"?0.25:0.32,dmg:Math.round((a.k==="y"?18:a.k==="h"?12:a.k==="c"?8:5)*blade*mul+Math.random()*6)})}
     if(AFKV.slowT<=0)AFKV.ens.forEach(function(E){if(E.die>0||E.x>hitX+70)return;E.atk-=dt;if(E.atk<=0){E.atk=E.ty==="boss"?0.9:E.ty==="brute"?1.4:1.6;E.af=0.28;
       var sol=U.filter(function(u){return u.sol}),tg=sol.length&&Math.random()<0.75?sol[sol.length-1-Math.floor(Math.random()*Math.min(3,sol.length))]:U[Math.floor(Math.random()*U.length)];
-      var dm=(E.ty==="boss"?0.22:E.ty==="brute"?0.15:0.09)*(1+0.06*((AF().stage||1)-1))*(1-(AFKV.shT>0?AFKV.shV:0));AFKV.hp[tg.id]-=dm;pop(tg.x,tg.y-40,"-"+Math.round(dm*250),"#ff6b81",false);
+      var dm=(E.ty==="boss"?0.22:E.ty==="brute"?0.15:0.09)*(1+0.06*((AF().stage||1)-1))*(1-(AFKV.shT>0?AFKV.shV:0))*(1-eqArm());AFKV.hp[tg.id]-=dm;pop(tg.x,tg.y-40,"-"+Math.round(dm*250),"#ff6b81",false);
       if(AFKV.hp[tg.id]<=0){if(tg.sol){AFKV.dead[tg.id]=t+10;AF().dead=(AF().dead||0)+1;pop(tg.x,tg.y-50,"FALLEN","#ff4d6d",true)}else AFKV.hp[tg.id]=0.1}}});
     if(front.hp<=0&&front.die<=0)killE(front)}
   function hpbar(x,y,v,col){c.fillStyle="rgba(0,0,0,.55)";c.fillRect(x-11,y,22,3.2);c.fillStyle=col;c.fillRect(x-11,y,22*v,3.2)}
@@ -1657,6 +1770,8 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()
 applySkin();
 (function(){var g=accrue();save();render();if(g>=1)setTimeout(function(){toast(offMsg(g))},600)})();
 document.addEventListener("visibilitychange",function(){if(document.hidden){accrue();save()}else{var g=accrue();save();if(g>=1){render();toast(offMsg(g))}}});
+var _dc=drawCard;drawCard=function(){SND.sfx("summon");return _dc.apply(this,arguments)};var _sp=showPing;showPing=function(h){SND.sfx("ping");return _sp(h)};
+setTimeout(loginCheck,1800);document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(loginCheck,1200)});
 requestAnimationFrame(afkLoop);
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
