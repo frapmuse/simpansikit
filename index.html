@@ -905,7 +905,7 @@ function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor
 function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
 function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3,Celestial:5};
   var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
-  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()*(1+skinB()[0])*badgeJade()}
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()*(1+skinB()[0])*badgeJade()*stJade()}
 var OFFW=null;
 /* while the app is closed the army keeps climbing the tower at half the live pace; harder stages take longer */
 function offlineWar(sec){var a=AF();a.stage=a.stage||1;a.wave=a.wave||0;var lv=S.lord?lordLevel():1,P=(24+jadeRate()*3)*powerMul()*1.6,bud=sec*0.5,st0=a.stage,k=0,cr=0,it=0,xp=0,gd=0;
@@ -941,13 +941,18 @@ var GEARG=["Common","Fine","Rare","Epic","Legendary"],GEARS={w:{name:"Moonfang S
 function EQ(){var a=AF();a.eq=a.eq||{w:-1,a:-1,c:-1};return a.eq}
 function eqV(s){var g=EQ()[s];return g>=0?GEARS[s].fx[g]:0}
 function eqDmg(){return 1+eqV("w")}
-function eqArm(){return Math.min(0.6,eqV("a")+SYNV().arm)}
+function eqArm(){return Math.min(0.7,eqV("a")+SYNV().arm+stArm())}
 function eqJade(){return 1+eqV("c")}
 function rollGearG(crown){var r=Math.random()*100,g=r<60?0:r<87?1:r<97?2:r<99.7?3:4;if(crown)g=Math.min(4,Math.max(1,g+1));return g}
 function dropGear(crown,quiet){if(!crown&&Math.random()>0.15)return 0;var sl=["w","a","c"][Math.floor(Math.random()*3)],g=rollGearG(crown),E=EQ();
   if(g>E[sl]){E[sl]=g;if(!quiet)showPing('<b>GEAR DROP</b>['+GEARG[g].toUpperCase()+' · '+GEARS[sl].name+' equipped]<br>[+'+Math.round(GEARS[sl].fx[g]*100)+'% '+GEARS[sl].d+']');return 1}
   var j=Math.round((g+1)*Math.max(20,jadeRate()*5)*SYNV().salv);AF().jade=(AF().jade||0)+j;if(!quiet)toast("Gear drop · "+GEARG[g]+" "+GEARS[sl].name+" salvaged · +"+jfmt(j)+" ◆");return 0}
-function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()*(1+skinB()[1])}
+var _stC={t:0,v:null};
+function STB(){var t=Date.now();if(!_stC.v||t-_stC.t>15000){var v={tot:0,stm:0,cha:0};try{var L=lordStats();v.tot=L.total||0;L.st.forEach(function(x){if(x.k==="STM")v.stm=x.v||0;if(x.k==="CHA")v.cha=x.v||0})}catch(e){}_stC={t:t,v:v}}return _stC.v}
+function stDmg(){return 1+STB().tot*0.001}
+function stArm(){return Math.min(0.25,STB().stm/400)}
+function stJade(){return 1+STB().cha*0.002}
+function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()*(1+skinB()[1])*stDmg()}
 /* missions */
 function wk7(){return wkStr()}
 function MS(){var a=AF(),m=a.ms=a.ms||{};var sm=SM(),td=todayStr(),wk=wk7();
@@ -1420,7 +1425,7 @@ function lordSheet(){
     '[Party '+pl.length+'/'+partySize()+' (rank '+(PARTY_SIZE[lordRank().i]||2)+' + level '+lvSeats()+', next seat at Lv '+(lvSeats()+1)*10+'): '+(pl.length?pl.map(function(id){return esc(rwById(id).name)}).join(" · "):'empty')+']<br>[Lord\'s Grace: jade ×'+graceMult().toFixed(2)+'] [Spirit Pool: <span class="m">'+coin(ST.spirit,true)+'</span>]</div></div>';
   var jd=Math.floor(AF().jade||0);h+='<div class="card" style="padding:10px 12px;margin-top:10px"><div class="lbl">Train Ye Feng · 1 jade = 1 EXP</div><div class="muted" style="font-size:13px;margin:4px 0 8px">You have ◆ '+jfmt(jd)+'. Each level: army +4% damage. Game only, never touches real money.</div><div class="row">'+[100,1000].map(function(v){return '<button class="btn sm grow" data-train="'+v+'"'+(jd<v?' disabled style="opacity:.4"':'')+'>◆ '+jfmt(v)+'</button>'}).join("")+'<button class="btn sm grow" data-train="all"'+(jd<1?' disabled style="opacity:.4"':'')+'>All</button></div></div>';
   h+='<div class="row" style="margin:10px 0"><button class="btn grow" id="pickCls">'+(cl?"Change class":"Choose class")+'</button><button class="btn grow" id="pickTal">Talents</button></div>';
-  h+='<div class="lbl" style="margin:8px 0 6px">Stats · from your real ledger</div><div class="statg">';
+  h+='<div class="lbl" style="margin:8px 0 6px">Stats · from your real ledger</div><div class="hint" style="margin:0 0 8px;color:var(--gold)">[Battle buff from stats] Total '+ST.total+' → army damage +'+(ST.total*0.1).toFixed(1)+'% · STM → army takes '+Math.round(stArm()*100)+'% less damage · CHA → jade +'+Math.round((stJade()-1)*100)+'%</div><div class="statg">';
   ST.st.forEach(function(x){h+='<div class="stat'+(x.v===null?' na':'')+'"><div class="k"><b>'+x.k+'</b><span>'+(x.v===null?'—':x.v)+'</span></div><div class="d"><b style="color:var(--silver);font-weight:700">'+x.n+'</b> · '+esc(x.d)+'</div></div>'});
   h+='</div><div class="hint" style="margin:8px 0 0">Scores run 0-99. A dash means the app has no data for it yet; nothing is guessed.</div>';
   h+='<div class="lbl" style="margin:14px 0 6px">Achievements</div><div class="card" style="padding:4px 12px">';
