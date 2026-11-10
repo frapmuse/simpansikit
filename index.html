@@ -1220,7 +1220,7 @@ function killExp(ty,st){return Math.round((ty==="boss"?40:ty==="brute"?6:2)*(1+0
 function hasTalent(id){return LD().talents.indexOf(id)>=0}
 function talentSlots(){var r=lordRank().i;return r>=5?3:r>=3?2:1}
 function lvSeats(){return Math.floor(lordLevel()/10)}
-function partySize(){return Math.min(12,(PARTY_SIZE[lordRank().i]||2)+lvSeats())}
+function partySize(){return Math.min(20,(PARTY_SIZE[lordRank().i]||2)+lvSeats())}
 function partyList(){var sm=SM();return LD().party.filter(function(id){return sm.owned[id]&&rwById(id)})}
 function advisorId(){var pl=partyList();if(pl.length){var d=Math.floor(Date.now()/86400000);return pl[d%pl.length]}return SM().hero}
 function graceMult(){return 1+0.01*Math.floor(lordLevel()/5)}
