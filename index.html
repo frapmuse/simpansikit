@@ -740,6 +740,9 @@ function rwIcon(r){
   if(r.t==="blessing")return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18" fill="none" stroke="#ff4d6d" stroke-width="2" stroke-dasharray="3 3"/><path d="M24 8 L28 20 L40 24 L28 28 L24 40 L20 28 L8 24 L20 20Z" fill="rgba(255,209,102,.3)" stroke="#ffd166" stroke-width="2"/></svg>';
   var c=gradeCol(r.g);return '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 L40 10 V24 C40 34 32 41 24 44 C16 41 8 34 8 24 V10Z" fill="rgba(255,255,255,.05)" stroke="'+c+'" stroke-width="2"/><path d="M17 24 L22 29 L32 18" stroke="'+c+'" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>'}
 var PITYN=20;
+function rollHeroG(){if(SM().luck)return "Legendary";return Math.random()<0.2?"Legendary":"Epic"}
+function relicDraw(){var sm=SM(),pool=REWARDS.filter(function(r){return r.t!=="hero"&&(r.t==="blessing"||!sm.owned[r.id])});if(!pool.length)pool=REWARDS.filter(function(r){return r.t==="badge"});var gw={};GRADES.forEach(function(g){gw[g[0]]=g[2]});var tot=sum(pool,function(r){return gw[r.g]||1}),x=Math.random()*tot,r=pool[0];for(var i=0;i<pool.length;i++){x-=gw[pool[i].g]||1;if(x<0){r=pool[i];break}}var dupe=r.t!=="blessing"&&!!sm.owned[r.id];if(r.t==="blessing"){sm.luck=true;sm.owned[r.id]=(sm.owned[r.id]||0)+1}else if(dupe){sm.owned[r.id]++;sm.bonus=(n(sm.bonus)||0)+3}else sm.owned[r.id]=1;save();return {r:r,dupe:dupe}}
+function heroRefund(){var sm=SM();if(sm.rf1)return;sm.rf1=1;var c=(sm.log||[]).filter(function(l){var r=rwById(l.id);return r&&r.t!=="hero"}).length;if(c>0){sm.opened=Math.max(1,(n(sm.opened)||0)-c);save();setTimeout(function(){showPing("<b>CARDS RETURNED</b>["+c+" Summon card"+(c>1?"s":"")+" back]<br>[Summon cards now give heroes only]")},1500)}}
 function rollGrade(){
   var pool=GRADES;
   if(SM().luck)pool=GRADES.filter(function(g){return g[0]==="Legendary"||g[0]==="Mythical"||g[0]==="Celestial"});
@@ -748,8 +751,8 @@ function rollGrade(){
   return pool[0][0];
 }
 function drawCard(){
-  var sm=SM(),gf=(sm.gcards&&sm.gcards.length)?sm.gcards.shift():null,wasLucky=!!sm.luck&&!gf,first=!gf&&!(n(sm.opened)>0),pityHit=!gf&&!first&&(n(sm.pity)||0)>=PITYN-1,g=gf?rollFloor(gf):first?"Celestial":pityHit?"Legendary":rollGrade();if(!gf&&!first&&hasTalent("luck")){var g2=rollGrade(),gx=function(q){return GRADES.findIndex(function(z){return z[0]===q})};if(gx(g2)>gx(g))g=g2}if(!gf)sm.luck=false;
-  var inG=REWARDS.filter(function(r){return r.g===g&&(!(first||gf||pityHit)||r.t==="hero")}),fresh=inG.filter(function(r){return !sm.owned[r.id]});
+  var sm=SM(),gf=(sm.gcards&&sm.gcards.length)?sm.gcards.shift():null,wasLucky=!!sm.luck&&!gf,first=!gf&&!(n(sm.opened)>0),pityHit=!gf&&!first&&(n(sm.pity)||0)>=PITYN-1,g=first?"Celestial":(pityHit||gf==="Legendary")?"Legendary":rollHeroG();if(!first&&g==="Epic"&&hasTalent("luck"))g=rollHeroG();if(!gf)sm.luck=false;
+  var inG=HEROES.filter(function(r){return r.g===g}),fresh=inG.filter(function(r){return !sm.owned[r.id]});
   var r=(fresh.length?fresh:inG)[Math.floor(Math.random()*(fresh.length?fresh.length:inG.length))];
   var dupe=r.t!=="blessing"&&!!sm.owned[r.id];
   if(r.t==="blessing"){sm.luck=true;sm.owned[r.id]=(sm.owned[r.id]||0)+1}
@@ -864,7 +867,7 @@ function rosterSheet(){
 function hallSection(){
   var sm=SM(),left=cardsLeft();
   var h=H("Hall of Heroes","Summon rewards","purple")+'<div class="card">';
-  h+='<div class="row" style="align-items:center"><div class="grow"><div class="lbl" style="color:var(--purple)">Summon cards '+left+' · Fragments '+(totalFrag()%10)+'/10</div><div class="hint" style="margin:4px 0 0">All 3 daily quests = 1 fragment. 10 fragments = 1 card.</div><div class="hint" style="margin:4px 0 0;color:var(--gold)">Pity '+Math.min(PITYN,(n(sm.pity)||0))+'/'+PITYN+' · card no. '+PITYN+' without one = guaranteed Legendary+ hero</div></div><button class="btn sum'+(left?" ready":"")+'" data-sum="1">Summon</button></div>';
+  h+='<div class="row" style="align-items:center"><div class="grow"><div class="lbl" style="color:var(--purple)">Summon cards '+left+' · Fragments '+(totalFrag()%10)+'/10</div><div class="hint" style="margin:4px 0 0">All 3 daily quests = 1 fragment. 10 fragments = 1 card.</div><div class="hint" style="margin:4px 0 0;color:var(--gold)">Pity '+Math.min(PITYN,(n(sm.pity)||0))+'/'+PITYN+' · card no. '+PITYN+' without one = guaranteed Legendary hero · Summon cards give heroes only (80% Epic, 20% Legendary)</div></div><button class="btn sum'+(left?" ready":"")+'" data-sum="1">Summon</button></div>';
   var allH=REWARDS.filter(function(r){return r.t==="hero"}),own=allH.filter(function(r){return sm.owned[r.id]}),GO={Celestial:0,Mythical:1,Legendary:2,Epic:3,Rare:4,Fine:5,Common:6};
   own.sort(function(a,b){return GO[a.g]-GO[b.g]});
   h+='<div class="lbl" style="margin:14px 0 8px">Party '+partyList().length+'/'+partySize()+' · heroes '+own.length+'/'+allH.length+' · tap to add or remove</div><div class="hint" style="margin:-4px 0 8px">LV = hero level. Heroes in your party gain EXP from every kill; each level gives +3% skill power. Gold bar = EXP to next level.</div><div class="hgrid">';
@@ -898,7 +901,7 @@ function AF(){return S.afk}
 function gearCost(k){return Math.round(GEAR[k].base*Math.pow(1.6,AF().gear[k]||0))}
 function fragCost(){return 600+150*(n(AF().fragBought)||0)}
 function wkStr(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)}
-function mkt(){var a=AF(),m=a.mkt=a.mkt||{};if(m.day!==todayStr()){m.day=todayStr();m.card=0}if(m.wk!==wkStr()){m.wk=wkStr();m.epic=0;m.skin=0}return m}
+function mkt(){var a=AF(),m=a.mkt=a.mkt||{};if(m.day!==todayStr()){m.day=todayStr();m.card=0;m.relic=0}if(m.wk!==wkStr()){m.wk=wkStr();m.epic=0;m.skin=0}return m}
 function cardCost(){return Math.round(4000*Math.pow(1.5,mkt().card))}
 var EPIC_COST=20000;
 function fragBuysToday(){var b=AF().buys||{};return b.date===todayStr()?b.n:0}
@@ -1117,7 +1120,7 @@ function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
 function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());if(off)offlineWar(dt/1000);var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;if(off)addSouls(Math.floor(dt/60000*6));return off?gain:0}
 function kfmt(v){v=Math.floor(v||0);var u=[[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e4,"K"]];for(var i=0;i<u.length;i++)if(v>=u[i][0])return (v/u[i][0]).toFixed(v>=u[i][0]*100?0:1).replace(/\.0$/,"")+u[i][1];return v.toLocaleString("en-US")}
 function jfmt(v){return Math.floor(v).toLocaleString("en-US")}
-function afkInfo(){var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var cp=document.querySelector(".afkbar .camp");if(cp)achCheck();cp.textContent=(msReady()>0||LG().cl!==todayStr())?"WAR CAMP !":"WAR CAMP";var hs=partyHeroes().length,sq=troopSprites();
+function afkInfo(){if(!(S.summon&&S.summon.rf1))heroRefund();var jv=$("jadeV"),ai=$("afkInfo");if(!jv)return;var cp=document.querySelector(".afkbar .camp");if(cp)achCheck();cp.textContent=(msReady()>0||LG().cl!==todayStr())?"WAR CAMP !":"WAR CAMP";var hs=partyHeroes().length,sq=troopSprites();
   jv.innerHTML="◆ "+jfmt(AF().jade)+"<small>JADE</small>";
   ai.textContent="+"+jadeRate().toFixed(1)+"/min · Blade "+bladeGrade().name+" · "+jfmt(FN().souls||0)+" souls · "+hs+" hero"+(hs===1?"":"es")}
 function campSheet(){
@@ -1132,6 +1135,7 @@ function campSheet(){
   h+='<div class="it">'+ico("#3df0e0","✦")+'<div class="grow"><div class="t">Card fragment</div><div class="d">+1 fragment toward a Summon card. '+left+' of 2 left today.</div></div><button class="btn" data-buy="frag"'+(a.jade<fc||left<1?" disabled":"")+'>◆ '+jfmt(fc)+'</button></div>';
   var M=mkt(),cc=cardCost();
   h+='<div class="it">'+ico("#ffd166","♠")+'<div class="grow"><div class="t">Summon card</div><div class="d">A full card, ready to open in Summon. '+(3-M.card)+' of 3 left today · price rises each buy.</div></div><button class="btn" data-buy="card"'+(a.jade<cc||M.card>=3?" disabled":"")+'>◆ '+jfmt(cc)+'</button></div>';
+  var rl=M.relic||0;h+='<div class="it">'+ico("#3dffa8","✦")+'<div class="grow"><div class="t">Relic card</div><div class="d">Badges, panel skins and Blessings (Summon cards only give heroes). '+(3-rl)+' of 3 left today.</div></div><button class="btn" data-buy="relic"'+(a.jade<3000||rl>=3?" disabled":"")+'>◆ 3,000</button></div>';
   h+='<div class="it">'+ico("#b18cff","♛")+'<div class="grow"><div class="t">Epic card</div><div class="d">Summon card that is Epic or better. '+(1-M.epic)+' of 1 left this week.</div></div><button class="btn" data-buy="epic"'+(a.jade<EPIC_COST||M.epic>=1?" disabled":"")+'>◆ '+jfmt(EPIC_COST)+'</button></div>';
   var SKC=REWARDS.filter(function(r){return r.t==="skin"&&!SM().owned[r.id]}),skcOk=SKC.length&&M.skin!==1;
   h+='<div class="it">'+ico("#ff7828","✺")+'<div class="grow"><div class="t">Skin crate</div><div class="d">'+(SKC.length?'A random panel skin you do not own yet ('+SKC.length+' left). 1 a week.':'You own every skin, my lord.')+'</div></div><button class="btn" data-buy="skinc"'+(a.jade<25000||!skcOk?" disabled":"")+'>◆ 25,000</button></div>';
@@ -1145,6 +1149,7 @@ function campSheet(){
       accrue();var k=b.dataset.buy,a=AF();
       if(k==="frag"){var c=fragCost();if(a.jade<c||fragBuysToday()>=2)return;a.jade-=c;a.fragBought=(a.fragBought||0)+1;a.buys={date:todayStr(),n:fragBuysToday()+1};SM().bonus=(n(SM().bonus)||0)+1;save();toast(cardsLeft()&&totalFrag()%10===0?"Fragment bought · a Summon card is ready!":"+1 card fragment")}
       else if(k==="card"){var M=mkt(),cc=cardCost();if(a.jade<cc||M.card>=3)return;a.jade-=cc;M.card++;SM().bonus=(n(SM().bonus)||0)+10;save();toast("Summon card bought · open it in Summon")}
+      else if(k==="relic"){var M4=mkt();if(a.jade<3000||(M4.relic||0)>=3)return;a.jade-=3000;M4.relic=(M4.relic||0)+1;var rr=relicDraw();showPing("<b>RELIC</b>["+esc(rr.r.name).toUpperCase()+" · "+rr.r.g+"]<br>["+(rr.r.t==="skin"?"Panel skin · apply in Summon":rr.r.t==="blessing"?"Blessing · next Summon card is Legendary":rr.dupe?"Duplicate · +3 fragments":"Badge · +jade rate")+"]")}
       else if(k==="skinc"){var M3=mkt(),L3=REWARDS.filter(function(r){return r.t==="skin"&&!SM().owned[r.id]});if(a.jade<25000||M3.skin===1||!L3.length)return;var rs=L3[Math.floor(Math.random()*L3.length)];a.jade-=25000;M3.skin=1;SM().owned[rs.id]=1;save();showPing('<b>NEW SKIN</b>['+esc(rs.name).toUpperCase()+' · '+rs.g+']<br>[Apply it in Summon › Panel skins]')}
       else if(k==="epic"){var M2=mkt();if(a.jade<EPIC_COST||M2.epic>=1)return;a.jade-=EPIC_COST;M2.epic++;SM().gcards=SM().gcards||[];SM().gcards.push("Epic");save();toast("Epic card bought · open it in Summon")}
       else{var c2=gearCost(k);if(a.jade<c2||(a.gear[k]||0)>=GEAR[k].max)return;a.jade-=c2;a.gear[k]=(a.gear[k]||0)+1;save();toast(GEAR[k].name+" Lv "+a.gear[k])}
