@@ -895,13 +895,13 @@ function hallSection(){
 
 /* ===== AFK battle: Ye Feng, soldiers and summoned heroes earn Moon Jade (game currency only) ===== */
 var GEAR={
- blade:{name:"Moonripple Blade",d:"Ye Feng strikes harder. +15% jade per level.",base:150,max:10},
- drum:{name:"War Drum",d:"The whole army fights faster. +10% jade per level.",base:250,max:10},
- banner:{name:"Iron Banner",d:"Each soldier earns +0.3 jade/min per level.",base:200,max:10},
- seal:{name:"Jade Seal",d:"Away earnings cap +2 hours per level (base 8h).",base:400,max:4}
+ blade:{name:"Moonripple Blade",d:"Ye Feng strikes harder. +15% jade per level.",base:150,max:1e9},
+ drum:{name:"War Drum",d:"The whole army fights faster. +10% jade per level.",base:250,max:1e9},
+ banner:{name:"Iron Banner",d:"Each soldier earns +0.3 jade/min per level.",base:200,max:1e9},
+ seal:{name:"Jade Seal",d:"Away earnings cap +2 hours per level (base 8h).",base:400,max:8}
 };
 function AF(){return S.afk}
-function gearCost(k){return Math.round(GEAR[k].base*Math.pow(1.6,AF().gear[k]||0))}
+function gearCost(k){var l=AF().gear[k]||0;return Math.round(GEAR[k].base*Math.pow(1.6,Math.min(l,10))*Math.pow(1.25,Math.max(0,l-10))*forgeD())}
 function fragCost(){return 600+150*(n(AF().fragBought)||0)}
 function wkStr(){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)}
 function mkt(){var a=AF(),m=a.mkt=a.mkt||{};if(m.day!==todayStr()){m.day=todayStr();m.card=0;m.relic=0}if(m.wk!==wkStr()){m.wk=wkStr();m.epic=0;m.skin=0}return m}
@@ -913,7 +913,7 @@ function troopSprites(){var t=armyTroops();return t<=0?1:Math.min(8,1+Math.floor
 function partyHeroes(){return REWARDS.filter(function(r){return r.t==="hero"&&SM().owned[r.id]})}
 function jadeRate(){var g=AF().gear,hb={Rare:1,Epic:2,Legendary:3,Celestial:5};
   var base=2+troopSprites()*(0.5+0.3*(g.banner||0))+sum(partyHeroes(),function(r){return hb[r.g]||1});
-  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()*(1+skinB()[0])*badgeJade()*stJade()*shardJade()}
+  return base*(1+0.15*(g.blade||0)+0.1*(g.drum||0))*bladeMult()*graceMult()*phantomMult()*eqJade()*SYNV().jade*realmJade()*(1+skinB()[0])*badgeJade()*stJade()*shardJade()*bldJade()}
 var OFFW=null;
 /* while the app is closed the army keeps climbing the tower at half the live pace; harder stages take longer */
 function offlineWar(sec){var a=AF();a.stage=a.stage||1;a.wave=a.wave||0;var lv=S.lord?lordLevel():1,P=(24+jadeRate()*3)*powerMul()*1.6,bud=sec*0.5,st0=a.stage,k=0,cr=0,it=0,xp=0,gd=0,cd2=0;
@@ -927,7 +927,7 @@ function offMsg(g){var m="While you were away, Ye Feng's army earned ◆ "+jfmt(
 /* ===== Game v3: stars, missions, gear, raid, synergy, realm buff, login, sound (game only, never real money) ===== */
 function stars(id){return Math.max(1,Math.min(5,n(SM().owned[id])||1))}
 function starTxt(id){var s=stars(id);return "★".repeat(s)}
-function starSk(id,sk){var st=stars(id),o={n:sk.n,k:sk.k,v:sk.v,cd:sk.cd};if(st>1){o.v=sk.k==="rally"||sk.k==="soul"?Math.round(sk.v*(1+0.25*(st-1))):sk.v*(1+0.25*(st-1));o.cd=sk.cd*(1-0.06*(st-1))}o.v*=1+0.03*(heroLvl(id)-1);if(o.k==="rally"||o.k==="soul")o.v=Math.round(o.v);o.cd*=SYNV().cd;return o}
+function starSk(id,sk){var st=stars(id),o={n:sk.n,k:sk.k,v:sk.v,cd:sk.cd};if(st>1){o.v=sk.k==="rally"||sk.k==="soul"?Math.round(sk.v*(1+0.25*(st-1))):sk.v*(1+0.25*(st-1));o.cd=sk.cd*(1-0.06*(st-1))}o.v*=(1+0.03*(heroLvl(id)-1))*bldSk();if(o.k==="rally"||o.k==="soul")o.v=Math.round(o.v);o.cd*=SYNV().cd;return o}
 var SYN=[
  {id:"nus",name:"Laksamana of the Straits",need:3,ids:["h_hangtuah","h_hangjebat","h_hangkasturi","h_hanglekir","h_hanglekiu","h_hangnadim","h_tunperak","h_gajahmada","h_malahayati"],d:"Army damage +15%",fx:{dmg:0.15}},
  {id:"arc",name:"Twin Bows",need:2,ids:["h_liguang","h_xuerengui"],d:"Volley skills +30%",fx:{volley:0.3}},
@@ -960,7 +960,7 @@ function STB(){var t=Date.now();if(!_stC.v||t-_stC.t>15000){var v={tot:0,stm:0,c
 function stDmg(){return 1+STB().tot*0.001}
 function stArm(){return Math.min(0.25,STB().stm/400)}
 function stJade(){return 1+STB().cha*0.002}
-function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()*(1+skinB()[1])*stDmg()*shardDmg()}
+function powerMul(){return lvPow()*eqDmg()*SYNV().dmg*realmDmg()*(1+skinB()[1])*stDmg()*shardDmg()*bldDmg()}
 /* missions */
 function wk7(){return wkStr()}
 function MS(){var a=AF(),m=a.ms=a.ms||{};var sm=SM(),td=todayStr(),wk=wk7();
@@ -1119,6 +1119,71 @@ function campBind2(sh){sh.querySelectorAll("[data-g3]").forEach(function(b){b.on
   if(k==="reb"){var g=rebGain(AF().stage||1);if(!g)return;if(!confirm("Rebirth now? Ye Feng goes back to stage 1 and gains "+g+" Moon Shards. Level, heroes, gear and jade stay."))return;doRebirth();closeSheet();render();return}
   if(k.indexOf("title:")===0){AF().title=k.slice(6);save();toast("Title: "+titleName());campSheet()}}})}
 
+/* ===== Game v5: jade sinks — training, star up, Danshui, wheel, expeditions (game only, never real money) ===== */
+var BLD={bar:{n:"Barracks",ic:"⚔",c:"#ff6b6b",base:5000,d:"Army damage +4% per level"},
+ mkt:{n:"Market",ic:"◆",c:"#3dffa8",base:5000,d:"Jade +3% per level"},
+ tmp:{n:"Temple",ic:"✧",c:"#b18cff",base:8000,d:"Hero skill power +3% per level"},
+ wal:{n:"Wall",ic:"▥",c:"#7fd8ff",base:6000,d:"Soldiers take 2% less damage per level (max 60%)"},
+ frg:{n:"Forge",ic:"⚒",c:"#ffd166",base:10000,d:"Gear and training cost 2% less per level (max 50%)"}};
+function TWN(){var a=AF();a.town=a.town||{};return a.town}
+function bLv(k){return TWN()[k]||0}
+function bCost(k){return Math.round(BLD[k].base*Math.pow(1.3,bLv(k)))}
+function bldDmg(){return 1+0.04*bLv("bar")}
+function bldJade(){return 1+0.03*bLv("mkt")}
+function bldSk(){return 1+0.03*bLv("tmp")}
+function wallR(){return Math.min(0.6,0.02*bLv("wal"))}
+function forgeD(){return 1-Math.min(0.5,0.02*bLv("frg"))}
+function trainCost(id){var L=heroLvl(id),e=HX()[id]||0;return Math.max(1,Math.round((expAt(L+1)/3-e)*forgeD()))}
+function starCost(id){return 20000*Math.pow(2,stars(id)-1)}
+/* Moon Wheel */
+function WHL(){var a=AF(),w=a.wheel=a.wheel||{};if(w.day!==todayStr()){w.day=todayStr();w.free=1;w.paid=0}return w}
+function wheelCost(){var w=WHL();return w.free?0:Math.round(3000*Math.pow(2,w.paid))}
+var WPRZ=[["jade2",30],["frag3",22],["relic",15],["hexp",15],["card",10],["jack",6],["leg",2]];
+function spinWheel(){var w=WHL(),c=wheelCost(),a=AF();if(!w.free&&w.paid>=5)return;if(c&&a.jade<c){toast("Need ◆"+jfmt(c));return}
+ if(c){a.jade-=c;w.paid++}else w.free=0;var base=Math.max(3000,c),tot=sum(WPRZ,function(p){return p[1]}),x=Math.random()*tot,k=WPRZ[0][0];for(var i=0;i<WPRZ.length;i++){x-=WPRZ[i][1];if(x<0){k=WPRZ[i][0];break}}
+ var sm=SM(),msg;
+ if(k==="jade2"){a.jade+=base*2;msg="+◆"+jfmt(base*2)+" jade"}
+ else if(k==="jack"){a.jade+=base*10;msg="JACKPOT +◆"+jfmt(base*10)}
+ else if(k==="frag3"){sm.bonus=(n(sm.bonus)||0)+3;msg="+3 card fragments"}
+ else if(k==="relic"){var r=relicDraw();msg="Relic: "+esc(r.r.name)}
+ else if(k==="hexp"){var v=Math.round(Math.max(500,jadeRate()*60));partyList().forEach(function(id){HX()[id]=(HX()[id]||0)+v});msg="+"+jfmt(v)+" EXP to every party hero"}
+ else if(k==="card"){sm.bonus=(n(sm.bonus)||0)+10;msg="A Summon card!"}
+ else {sm.gcards=sm.gcards||[];sm.gcards.push("Legendary");msg="LEGENDARY card!"}
+ save();SND.sfx("coin");showPing("<b>MOON WHEEL</b>["+msg+"]");campSheet()}
+/* Expeditions */
+var EXD=[[1,2000,1,0.05],[4,6000,3,0.15],[8,10000,6,0.3]];
+function EXP2(){var a=AF();a.exped=a.exped||[];return a.exped}
+function exIdle(){var busy={};EXP2().forEach(function(e){busy[e.id]=1});var pt=LD().party;return HEROES.filter(function(h){return SM().owned[h.id]&&pt.indexOf(h.id)<0&&!busy[h.id]})}
+function sendEx(id,di){var D=EXD[di],a=AF();if(!D||EXP2().length>=3||a.jade<D[1])return;if(exIdle().map(function(h){return h.id}).indexOf(id)<0)return;a.jade-=D[1];EXP2().push({id:id,d:di,end:Date.now()+D[0]*3600000});save();toast(rwById(id).name+" set out · back in "+D[0]+"h");campSheet()}
+function claimEx(i){var e=EXP2()[i];if(!e||Date.now()<e.end)return;var D=EXD[e.d],a=AF(),sm=SM(),j=Math.round(D[1]*2.2),card=Math.random()<D[3];a.jade+=j;sm.bonus=(n(sm.bonus)||0)+D[2]+(card?10:0);HX()[e.id]=(HX()[e.id]||0)+D[1]*3;EXP2().splice(i,1);save();SND.sfx("coin");
+ showPing("<b>EXPEDITION BACK</b>["+esc(rwById(e.id).name)+" · +◆"+jfmt(j)+" · +"+D[2]+" fragments"+(card?" · Summon card!":"")+"]");campSheet()}
+function tLeft(ms){var m=Math.max(0,Math.ceil(ms/60000));return m>=60?Math.floor(m/60)+"h "+(m%60)+"m":m+"m"}
+function campExtra3(){var a=AF(),h='',J=a.jade||0;
+ function sec(title,body,open){return '<details class="card" style="padding:10px 12px;margin-top:10px"'+(open?' open':'')+'><summary style="font-family:var(--f-display);font-size:11px;color:var(--gold);cursor:pointer;list-style:none">▸ '+title+'</summary><div style="margin-top:8px">'+body+'</div></details>'}
+ function btn(k,txt,ok){return '<button class="btn sm" data-g4="'+k+'" style="flex:1;font-size:10px;padding:8px 6px;min-width:0;white-space:nowrap'+(ok?'':';opacity:.45')+'"'+(ok?'':' disabled')+'>'+txt+'</button>'}
+ // training + stars
+ var b='',pl=partyList();if(!pl.length)b='<div class="hint">Put heroes in your party first.</div>';
+ pl.forEach(function(id){var r=rwById(id),tc=trainCost(id),st=stars(id),sc=starCost(id);b+='<div style="margin-bottom:10px"><div><span style="color:'+gradeCol(r.g)+';font-weight:700">'+esc(r.name)+'</span> <span class="hint">Lv '+heroLvl(id)+' · <span style="color:var(--gold)">'+starTxt(id)+'</span></span></div><div class="row" style="gap:6px;margin-top:4px">'+btn("tr:"+id,"+1 Lv ◆"+jfmt(tc),J>=tc)+(st<5?btn("st:"+id,"+★ ◆"+jfmt(sc),J>=sc):'<span class="lbl" style="flex:1;text-align:center;color:var(--gold)">★ MAX</span>')+'</div></div>'});
+ h+=sec("Hero training · party heroes",b+'<div class="hint" style="margin:4px 0 0">+1 Lv: jade becomes hero EXP. ★: each star gives skill +25% and faster cooldown.</div>');
+ // Danshui
+ b='';Object.keys(BLD).forEach(function(k){var B=BLD[k],c=bCost(k);b+='<div class="row" style="align-items:center;gap:6px;margin-bottom:8px"><div style="font-size:20px;color:'+B.c+';width:26px;text-align:center">'+B.ic+'</div><div class="grow"><div style="font-weight:700">'+B.n+' <span class="lbl">Lv '+bLv(k)+'</span></div><div class="hint" style="margin:0">'+B.d+'</div></div><div style="width:96px;display:flex">'+btn("bd:"+k,"◆"+jfmt(c),J>=c)+'</div></div>'});
+ h+=sec("Danshui · build your city (no level cap)",b);
+ // wheel
+ var w=WHL(),wc=wheelCost(),canW=w.free||w.paid<5;
+ h+=sec("Moon Wheel",'<div class="hint" style="margin:0 0 8px">1 free spin a day, then up to 5 paid spins (price doubles). Prizes: jade ×2, 3 fragments, Relic, party EXP, Summon card, jackpot jade ×10, or a Legendary card.</div>'+btn("wheel",!canW?"Come back tomorrow":w.free?"Spin · FREE":"Spin · ◆"+jfmt(wc),canW&&J>=wc),w.free);
+ // expeditions
+ b='';var now=Date.now();EXP2().forEach(function(e,i){var r=rwById(e.id),done=now>=e.end;b+='<div class="row" style="align-items:center;gap:6px;margin-bottom:8px"><div class="grow"><div style="font-weight:700">'+esc(r.name)+'</div><div class="hint" style="margin:0">'+EXD[e.d][0]+'h expedition · '+(done?'<b style="color:var(--gold)">back!</b>':tLeft(e.end-now)+' left')+'</div></div>'+(done?btn("ex:"+i,"Claim",true):'')+'</div>'});
+ var idle=exIdle();if(EXP2().length<3){if(idle.length){b+='<select id="exHero" style="width:100%;margin:4px 0 8px;padding:8px;background:#000;color:#fff;border:1px solid var(--line)">'+idle.map(function(h){return '<option value="'+h.id+'">'+esc(h.name)+' ('+h.g+')</option>'}).join("")+'</select><div class="row" style="gap:6px">'+EXD.map(function(D,di){return btn("go:"+di,D[0]+"h ◆"+jfmt(D[1]),J>=D[1])}).join("")+'</div>'}else b+='<div class="hint">Every hero you own is in your party or away. Heroes outside the party can go on expeditions.</div>'}
+ h+=sec("Expeditions · "+EXP2().length+"/3 out",b+'<div class="hint" style="margin:6px 0 0">Heroes outside your party bring back jade ×2.2, fragments, hero EXP and a chance of a Summon card (5% / 15% / 30%).</div>',EXP2().some(function(e){return now>=e.end}));
+ return h}
+function campBind3(sh){sh.querySelectorAll("[data-g4]").forEach(function(b){b.onclick=function(){accrue();var k=b.dataset.g4,a=AF(),p=k.split(":");
+ if(p[0]==="tr"){var c=trainCost(p[1]);if(a.jade<c)return;a.jade-=c;var L=heroLvl(p[1]);HX()[p[1]]=Math.ceil(expAt(L+1)/3);save();toast(rwById(p[1]).name+" Lv "+heroLvl(p[1]));campSheet()}
+ else if(p[0]==="st"){var c2=starCost(p[1]);if(a.jade<c2||stars(p[1])>=5)return;a.jade-=c2;SM().owned[p[1]]=stars(p[1])+1;save();toast(rwById(p[1]).name+" "+starTxt(p[1]));campSheet()}
+ else if(p[0]==="bd"){var c3=bCost(p[1]);if(a.jade<c3)return;a.jade-=c3;TWN()[p[1]]=bLv(p[1])+1;save();toast(BLD[p[1]].n+" Lv "+bLv(p[1]));campSheet()}
+ else if(k==="wheel")spinWheel();
+ else if(p[0]==="go"){var s=sh.querySelector("#exHero");if(s)sendEx(s.value,+p[1])}
+ else if(p[0]==="ex")claimEx(+p[1])}})}
+
 function capMs(){return (8+2*(AF().gear.seal||0))*3600000}
 function accrue(){var a=AF(),t=Date.now(),dt=t-(a.last||t);if(dt<0)dt=0;var off=dt>120000;dt=Math.min(dt,capMs());if(off)offlineWar(dt/1000);var gain=jadeRate()*dt/60000;a.jade=(a.jade||0)+gain;a.last=t;if(off)addSouls(Math.floor(dt/60000*6));return off?gain:0}
 function kfmt(v){v=Math.floor(v||0);var u=[[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e4,"K"]];for(var i=0;i<u.length;i++)if(v>=u[i][0])return (v/u[i][0]).toFixed(v>=u[i][0]*100?0:1).replace(/\.0$/,"")+u[i][1];return v.toLocaleString("en-US")}
@@ -1133,7 +1198,7 @@ function campSheet(){
     '<div class="prog2"><div class="tile"><div class="lbl">Moonripple Blade</div><div class="v" style="color:'+gradeCol(BG.name)+'">'+BG.name+'</div><div class="s">'+jfmt(FN().souls||0)+' souls'+(BG.next?' · '+jfmt(BG.need)+' to '+BG.next:'')+' · jade ×'+bladeMult()+'</div></div>'+
     '<div class="tile"><div class="lbl">Lord rank</div><div class="v" style="color:var(--purple)">'+LR.name+'</div><div class="s">'+jfmt(FN().merit||0)+' Merit'+(LR.next?' · '+jfmt(LR.need)+' to '+LR.next:'')+'</div></div></div>'+
     '<div class="hint" style="margin:10px 0 0">Souls: ordinary 1 · elite 10 · boss 50. Real-life kills: bill paid before its due day = Elite (+1 fragment). Debt cleared = Boss (+3 fragments, Epic+ card). Debt of RM5k+ cleared = Crown (+5, Legendary card).</div>'+
-    ''+campExtra()+campExtra2()+'<div class="lbl" style="margin:14px 0 4px">Market · spend Moon Jade (game only)</div><div class="card shop" style="margin-top:4px">';
+    ''+campExtra()+campExtra3()+campExtra2()+'<div class="lbl" style="margin:14px 0 4px">Market · spend Moon Jade (game only)</div><div class="card shop" style="margin-top:4px">';
   var fc=fragCost(),left=2-fragBuysToday();
   h+='<div class="it">'+ico("#3df0e0","✦")+'<div class="grow"><div class="t">Card fragment</div><div class="d">+1 fragment toward a Summon card. '+left+' of 2 left today.</div></div><button class="btn" data-buy="frag"'+(a.jade<fc||left<1?" disabled":"")+'>◆ '+jfmt(fc)+'</button></div>';
   var M=mkt(),cc=cardCost();
@@ -1144,10 +1209,10 @@ function campSheet(){
   h+='<div class="it">'+ico("#ff7828","✺")+'<div class="grow"><div class="t">Skin crate</div><div class="d">'+(SKC.length?'A random panel skin you do not own yet ('+SKC.length+' left). 1 a week.':'You own every skin, my lord.')+'</div></div><button class="btn" data-buy="skinc"'+(a.jade<25000||!skcOk?" disabled":"")+'>◆ 25,000</button></div>';
   var gl={blade:["#5fd4ff","⚔"],drum:["#ffd166","◎"],banner:["#3dffa8","⚑"],seal:["#b18cff","◈"]};
   Object.keys(GEAR).forEach(function(k){var G=GEAR[k],lv=a.gear[k]||0,mx=lv>=G.max,c=gearCost(k);
-    h+='<div class="it">'+ico(gl[k][0],gl[k][1])+'<div class="grow"><div class="t">'+G.name+' <span class="lbl">Lv '+lv+'/'+G.max+'</span></div><div class="d">'+G.d+'</div></div><button class="btn" data-buy="'+k+'"'+(mx||a.jade<c?" disabled":"")+'>'+(mx?"MAX":"◆ "+jfmt(c))+'</button></div>'});
+    h+='<div class="it">'+ico(gl[k][0],gl[k][1])+'<div class="grow"><div class="t">'+G.name+' <span class="lbl">Lv '+lv+(G.max<100?'/'+G.max:'')+'</span></div><div class="d">'+G.d+'</div></div><button class="btn" data-buy="'+k+'"'+(mx||a.jade<c?" disabled":"")+'>'+(mx?"MAX":"◆ "+jfmt(c))+'</button></div>'});
   h+='</div><div class="hint" style="margin:10px 0 0">Earning now: +'+jadeRate().toFixed(1)+' jade/min. While you are away the army keeps fighting for up to '+(capMs()/3600000)+' hours.</div><button class="btn g" id="campX" style="width:100%;margin-top:12px">Close</button>';
   openSheet(h,function(sh){
-    $("campX").onclick=function(){closeSheet();render()};campBind(sh);campBind2(sh);
+    $("campX").onclick=function(){closeSheet();render()};campBind(sh);campBind2(sh);campBind3(sh);
     sh.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){
       accrue();var k=b.dataset.buy,a=AF();
       if(k==="frag"){var c=fragCost();if(a.jade<c||fragBuysToday()>=2)return;a.jade-=c;a.fragBought=(a.fragBought||0)+1;a.buys={date:todayStr(),n:fragBuysToday()+1};SM().bonus=(n(SM().bonus)||0)+1;save();toast(cardsLeft()&&totalFrag()%10===0?"Fragment bought · a Summon card is ready!":"+1 card fragment")}
@@ -1276,7 +1341,7 @@ function afkLoop(ts){
     AFKV.shot-=dt;if(AFKV.shot<=0){AFKV.shot=0.3;var a=U[Math.floor(Math.random()*U.length)];AFKV.fx.push({x:a.x+8,y:a.y-20,k:a.arch?"a":a.k,col:a.k==="h"?gradeCol(a.r.g):"#e8d9a8",life:a.k==="y"?0.25:0.32,dmg:Math.round((a.k==="y"?18:a.k==="h"?12:a.k==="c"?8:5)*blade*mul+Math.random()*6)})}
     if(AFKV.slowT<=0)AFKV.ens.forEach(function(E){if(E.die>0||E.tg||(E.x>hitX+70&&E.ab!=="archer"))return;E.atk-=dt;if(E.atk<=0){E.atk=E.ty==="boss"?(E.enr?0.6:0.9):E.ty==="brute"?1.4:1.6;E.af=0.28;
       var sol=U.filter(function(u){return u.sol}),tg=sol.length&&Math.random()<0.75?sol[sol.length-1-Math.floor(Math.random()*Math.min(3,sol.length))]:U[Math.floor(Math.random()*U.length)];
-      var dm=(E.ty==="boss"?0.22:E.ty==="brute"?0.15:0.09)*(E.enr?1.4:1)*(E.el?1.5:1)*(1+0.06*((AF().stage||1)-1))*(1-(AFKV.shT>0?AFKV.shV:0))*(1-eqArm());AFKV.hp[tg.id]-=dm;pop(tg.x,tg.y-40,"-"+Math.round(dm*250),"#ff6b81",false);
+      var dm=(E.ty==="boss"?0.22:E.ty==="brute"?0.15:0.09)*(E.enr?1.4:1)*(E.el?1.5:1)*(1+0.06*((AF().stage||1)-1))*(1-(AFKV.shT>0?AFKV.shV:0))*(1-eqArm())*(1-wallR());AFKV.hp[tg.id]-=dm;pop(tg.x,tg.y-40,"-"+Math.round(dm*250),"#ff6b81",false);
       if(AFKV.hp[tg.id]<=0){if(tg.sol){AFKV.dead[tg.id]=t+10;AF().dead=(AF().dead||0)+1;pop(tg.x,tg.y-50,"FALLEN","#ff4d6d",true)}else AFKV.hp[tg.id]=0.1}}});
     if(front.hp<=0&&front.die<=0)killE(front)}
   function hpbar(x,y,v,col){c.fillStyle="rgba(0,0,0,.55)";c.fillRect(x-11,y,22,3.2);c.fillStyle=col;c.fillRect(x-11,y,22*v,3.2)}
