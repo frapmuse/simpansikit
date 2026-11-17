@@ -1133,8 +1133,8 @@ function gNow(k){var l=AF().gear[k]||0;return k==="blade"?"+"+(15*l)+"% jade, ha
 var BTIERS=[[0,"Wooden","#a0785a"],[5,"Stone","#b8c0c8"],[15,"Steel","#7fd8ff"],[30,"Golden","#ffd166"],[50,"Jade","#3dffa8"],[80,"Moon","#e6d8ff"],[120,"Celestial","#ff8ad8"]];
 function bTier(l){var t=BTIERS[0];BTIERS.forEach(function(x){if(l>=x[0])t=x});return t}
 function tierBadge(l,ic){var t=bTier(l),sz=18+Math.min(14,Math.floor(l/8));return '<div style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid '+t[2]+';border-radius:6px;box-shadow:0 0 '+Math.min(16,4+Math.floor(l/6))+'px '+t[2]+';color:'+t[2]+';font-size:'+sz+'px">'+ic+'</div>'}
-function powSnap(){return {p:powerMul(),j:jadeRate()}}
-function powDiff(a){var b=powSnap();return '<br>[Army power ×'+a.p.toFixed(2)+' → ×'+b.p.toFixed(2)+']<br>[Jade '+a.j.toFixed(1)+' → '+b.j.toFixed(1)+'/min]'}
+function powSnap(){try{return {p:powerMul(),j:jadeRate()}}catch(e){return {p:1,j:0}}}
+function powDiff(a){var b=powSnap();if(!a.j||!b.j)return '';return '<br>[Army power ×'+a.p.toFixed(2)+' → ×'+b.p.toFixed(2)+']<br>[Jade '+a.j.toFixed(1)+' → '+b.j.toFixed(1)+'/min]'}
 function bldDmg(){return 1+0.04*bLv("bar")}
 function bldJade(){return 1+0.03*bLv("mkt")}
 function bldSk(){return 1+0.03*bLv("tmp")}
@@ -1531,7 +1531,7 @@ function LD(){return S.lord}
 function expAt(L){return Math.round(150*Math.pow(Math.max(0,L-1),2.2))}
 function lordLevel(){var e=(S.lord&&S.lord.exp)||0,L=1;while(expAt(L+1)<=e)L++;return L}
 function lvPow(){return 1+0.04*((S.lord?lordLevel():1)-1)}
-function addExp(v){var L=LD();if(!L||!(v>0))return;var lv0=lordLevel(),ps0=powSnap();L.exp=(L.exp||0)+v;var lv1=lordLevel();if(lv1>lv0){var nsk=YF_SK.filter(function(q){return q.lv>lv0&&q.lv<=lv1});showPing('<b>LEVEL UP!</b>[Ye Feng · Lv '+lv0+' → Lv '+lv1+']'+powDiff(ps0)+(nsk.length?'<br>[New skill: '+nsk.map(function(q){return q.n}).join(", ")+']':''));AFKV.lvT=2.5;return}
+function addExp(v){var L=LD();if(!L||!(v>0))return;var lv0=lordLevel(),ps0=powSnap();L.exp=(L.exp||0)+v;var lv1=lordLevel();if(lv1>lv0){try{var nsk=(YF_SK||[]).filter(function(q){return q.lv>lv0&&q.lv<=lv1});showPing('<b>LEVEL UP!</b>[Ye Feng · Lv '+lv0+' → Lv '+lv1+']'+powDiff(ps0)+(nsk.length?'<br>[New skill: '+nsk.map(function(q){return q.n}).join(", ")+']':''))}catch(e){}try{AFKV.lvT=2.5}catch(e){}return}
   if(lv1>lv0)showPing('<b>LEVEL UP!</b>[Ye Feng · Lv '+lv0+' → Lv '+lv1+']<br>[Army power +'+Math.round((lvPow()-1)*100)+'%]'+(Math.floor(lv1/10)>Math.floor(lv0/10)?'<br>[New party seat unlocked]':'')+(Math.floor(lv1/5)>Math.floor(lv0/5)?'<br>[Lord\'s Grace: jade ×'+graceMult().toFixed(2)+']':''))}
 function killExp(ty,st){return Math.round((ty==="boss"?40:ty==="brute"?6:2)*(1+0.1*Math.max(0,(st||1)-1)))}
 function hasTalent(id){return LD().talents.indexOf(id)>=0}
