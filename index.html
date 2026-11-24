@@ -1733,7 +1733,7 @@ function vHutang(){
   var rank={};sim.order.forEach(function(nm,i){rank[nm]=i+1});
   S.debts.slice().sort(function(a,b){return (rank[a.name]||99)-(rank[b.name]||99)}).forEach(function(d){
     var done=n(d.orig)>0&&n(d.bal)===0,o=n(d.orig)||n(d.bal),hp=o?(n(d.bal)||0)/o:0;
-    h+='<button class="foe'+(done?' done':'')+'" data-debt="'+d.id+'"><div class="foe-top">'+MON+'<div class="grow"><div class="foe-n">'+esc(d.name)+'</div><div class="foe-b">'+(f2=FN().seen[d.id]>=5000||n(d.orig)>=5000?"Crown boss":"Boss")+' · '+esc(bossName(d))+'</div><div class="foe-m">'+(n(d.min)?'<span class="m">'+coin(d.min)+'</span>/mo':'Payment —')+' · '+(n(d.day)?'day '+d.day:'due —')+(sim.done[d.id]?' · clear ~'+addMonths(sim.done[d.id]):'')+'</div></div>'+(rank[d.name]&&!done?'<span class="tag">Stage '+rank[d.name]+'</span>':'')+'</div><div class="hpl"><span>HP</span><span class="cn m">'+coin(n(d.bal))+(o?' / '+coin(o):'')+'</span></div><div class="hp"><i style="width:'+(hp*100)+'%"></i></div>'+(done?'<div class="seal">CLEARED</div>':'')+'</button>';
+    h+='<button class="foe'+(done?' done':'')+'" data-debt="'+d.id+'"><div class="foe-top">'+MON+'<div class="grow"><div class="foe-n">'+esc(d.name)+'</div><div class="foe-b">'+(f2=FN().seen[d.id]>=5000||n(d.orig)>=5000?"Crown boss":"Boss")+' · '+esc(bossName(d))+'</div><div class="foe-m">'+(n(d.min)?'<span class="m">'+coin(d.min)+'</span>/mo':'Payment —')+' · '+(n(d.day)?'day '+d.day:'due —')+(sim.done[d.id]?' · clear ~'+addMonths(sim.done[d.id]):'')+'</div>'+(n(d.limit)>0?'<div class="foe-m">Limit <span class="m">'+coin(d.limit)+'</span> · free <span class="m">'+coin(Math.max(0,n(d.limit)-(n(d.bal)||0)))+'</span></div>':'')+'</div>'+(rank[d.name]&&!done?'<span class="tag">Stage '+rank[d.name]+'</span>':'')+'</div><div class="hpl"><span>HP</span><span class="cn m">'+coin(n(d.bal))+(o?' / '+coin(o):'')+'</span></div><div class="hp"><i style="width:'+(hp*100)+'%"></i></div>'+(done?'<div class="seal">CLEARED</div>':'')+'</button>';
   });
   h+='</div><div style="margin-top:12px"><button class="btn g" id="addDebt" style="width:100%">+ Add another foe (debt)</button></div>';
   return h;
@@ -1883,13 +1883,14 @@ function debtSheet(d){
     '<div class="field"><label class="lbl" for="dName">Name</label><input id="dName" value="'+v(d.name)+'"></div>'+
     '<div class="grid2"><div class="field"><label class="lbl" for="dBal">Balance now (RM)</label><input id="dBal" inputmode="decimal" value="'+v(d.bal)+'"></div><div class="field"><label class="lbl" for="dMin">Monthly payment</label><input id="dMin" inputmode="decimal" value="'+v(d.min)+'"></div></div>'+
     '<div class="grid2"><div class="field"><label class="lbl" for="dDay">Due day (1-31)</label><input id="dDay" inputmode="numeric" value="'+v(d.day)+'"></div><div class="field"><label class="lbl" for="dRate">Rate % per year</label><input id="dRate" inputmode="decimal" placeholder="optional" value="'+v(d.rate)+'"></div></div>'+
+    '<div class="field"><label class="lbl" for="dLim">Credit limit (RM)</label><input id="dLim" inputmode="decimal" placeholder="optional" value="'+v(d.limit)+'"></div>'+
     '<div class="hint">Never enter account or card numbers here. The rate is only used for Avalanche.</div>'+
     (!isNew&&n(d.bal)>0?'<button class="btn y" id="dPay" style="width:100%;margin-bottom:10px">Log a strike (payment)</button>':'')+
     '<div class="row"><button class="btn grow" id="dSave">Save</button>'+(!isNew?'<button class="btn r" id="dDel">Remove</button>':'')+'</div>',function(){
     $("dSave").onclick=function(){var name=val("dName");if(!name){toast("Name the foe");return}
       var bal=numVal("dBal");d.name=name;
       if(bal!==d.bal){d.bal=bal;if(bal!==null&&(n(d.orig)===null||bal>d.orig))d.orig=bal;if(bal===null)d.orig=null}
-      d.min=numVal("dMin");d.day=dayVal("dDay");d.rate=numVal("dRate");
+      d.min=numVal("dMin");d.day=dayVal("dDay");d.rate=numVal("dRate");d.limit=numVal("dLim");
       if(isNew)S.debts.push(d);save();closeSheet();render();toast("Foe updated")};
     if($("dPay"))$("dPay").onclick=function(){txSheet({type:"debt",debtId:d.id,amt:n(d.min)})};
     if($("dDel"))$("dDel").onclick=function(){confirmSheet("Remove "+esc(d.name)+"?","Old strikes stay in the records.","Remove",function(){S.debts=S.debts.filter(function(x){return x.id!==d.id});save();closeSheet();render()},function(){debtSheet(d)})};
