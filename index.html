@@ -210,7 +210,7 @@ function vHome(){
   var T=monthTotals(cur.y,cur.m),h=monthBar();
   h+='<div class="card"><div class="lbl">Main account (HLBB) · this month</div><div class="big">'+M(T.main,T.main<0?"neg":"")+'</div>'+
     '<div class="sub" style="margin-top:2px">After bills still unpaid ('+M(T.pending)+'): <b>'+M(T.free,T.free<0?"neg":"pos",true)+'</b> free to use</div>'+
-    '<div class="grid" style="margin-top:12px"><div class="tile"><div class="lbl">Income</div>'+M(T.inc,"pos")+'</div><div class="tile"><div class="lbl">Spent</div>'+M(T.out)+'</div><div class="tile"><div class="lbl">Debt paid</div>'+M(T.debt)+'</div><div class="tile"><div class="lbl">Saved</div>'+M(T.save)+'</div></div>'+
+    '<div class="grid" style="margin-top:12px"><div class="tile"><div class="lbl">Income</div>'+M(T.inc,"pos")+'</div><div class="tile"><div class="lbl">Spent</div>'+M(T.out)+'</div><div class="tile"><div class="lbl">Debt paid</div>'+M(T.debt)+'</div><div class="tile"><div class="lbl">Moved to accounts</div>'+M(T.save)+'</div></div>'+
     (T.carry?'<div class="mini" style="margin-top:8px">Brought from last month: '+M(T.carry,"",true)+'</div>':'')+'</div>';
   // bills
   var items=[];
@@ -232,7 +232,7 @@ function vHome(){
   h+='</div>';
   // summary
   var td2=totalDebt(),ts=totalSaved();
-  h+='<h2>Overview</h2><div class="grid"><div class="card" data-go="hutang" style="margin:0;cursor:pointer"><div class="lbl">Total debt</div>'+M(td2,td2>0?"neg":"")+'</div><div class="card" data-go="akaun" style="margin:0;cursor:pointer"><div class="lbl">Other accounts</div>'+M(ts,"pos")+'</div></div>';
+  h+='<div class="card" data-go="hutang" style="cursor:pointer;margin-top:16px"><div class="lbl">Total debt</div><div class="big" style="font-size:26px">'+M(td2,td2>0?"neg":"")+'</div><div class="sub">Tap to see which one to clear first.</div></div>';
   return h}
 
 function vRekod(){
