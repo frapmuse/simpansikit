@@ -265,7 +265,7 @@ function vHutang(){
   var ds=S.debts.slice().sort(function(a,b){var ra=rank[a.id]||999,rb=rank[b.id]||999;return ra-rb});
   if(!ds.length)h+='<div class="empty">No debts added.</div>';
   ds.forEach(function(d){var b=n(d.bal),l=n(d.limit),o=n(d.orig)||b,r=rank[d.id];
-    h+='<div class="li" data-debt="'+d.id+'" style="display:block"><div class="row"><div class="dot d-debt">'+(r||(b===0?"✓":"–"))+'</div><div class="grow"><div class="t">'+esc(d.name)+'</div><div class="sub">'+(l?'Limit '+M(l)+' · free '+M(Math.max(0,l-(b||0))):'No limit set')+(P.done[d.id]?' · clear ~'+addMonths(P.done[d.id]):'')+'</div></div>'+(b===null?'<span class="mini">Tap to set</span>':b===0?'<span class="tag">Cleared</span>':M(b,"neg"))+'</div>'+
+    h+='<div class="li" data-debt="'+d.id+'" style="display:block"><div class="row"><div class="dot d-debt">'+(r||(b===0?"✓":"–"))+'</div><div class="grow"><div class="t">'+esc(d.name)+'</div><div class="sub">'+(l?'Limit '+M(l)+' · free '+M(Math.max(0,l-(b||0))):'No limit set')+(P.done[d.id]?' · clear ~'+addMonths(P.done[d.id]):'')+'</div></div>'+(b===null?'<span class="mini">Tap to set</span>':b===0?'<span class="tag">Cleared</span>':'<div style="text-align:right">'+M(b,"neg")+'<div><button class="btn sm" data-paydebt="'+d.id+'" style="margin-top:4px">Pay</button></div></div>')+'</div>'+
       (o&&b!==null&&b>0?'<div class="bar b"><i style="width:'+pct(o-b,o)+'%"></i></div>':'')+'</div>'});
   h+='</div><button class="btn g w" id="addDebt">+ Add debt</button>';
   return h}
