@@ -2007,10 +2007,11 @@ function hallSection(){var left=cardsLeft();return H("Relic Hall","Card rewards"
    Kept in one block so it stays clear of the NEO v3 retheme lines. Nothing here deletes saved data:
    new fields (afk.eq.r / afk.eq.p) are added when first needed, and relic levels read the duplicate
    counts the app has always kept in summon.owned. */
-/* -- Threat: enemy HP grows with the square root of army power, enemy hits with its fourth root.
+/* -- Threat: enemy HP grows with the fourth root of army power, enemy hits with its eighth root
+      (lightened 24 Nov 2026: the square root made fights too slow for a strong army).
       A stronger army still wins faster, but foes no longer melt. Power 1 (new lord) = threat 1. */
 var _thC=_thC||{t:0,v:1}; /* boot runs accrue() before this line; threat() also guards */
-function threat(){var t=Date.now();if(!_thC)_thC={t:0,v:1};if(t-_thC.t>3000){var p=1;try{p=powerMul()*(1+0.15*(AF().gear.blade||0))}catch(e){}_thC={t:t,v:Math.max(1,Math.sqrt(Math.max(1,p||1)))}}return _thC.v}
+function threat(){var t=Date.now();if(!_thC)_thC={t:0,v:1};if(t-_thC.t>3000){var p=1;try{p=powerMul()*(1+0.15*(AF().gear.blade||0))}catch(e){}_thC={t:t,v:Math.max(1,Math.pow(Math.max(1,p||1),0.25))}}return _thC.v}
 function threatDmg(){return Math.sqrt(threat())}
 var _eDeco0=eDeco;
 eDeco=function(E,ty,st,hord){_eDeco0(E,ty,st,hord);var T=threat();if(T>1){E.max=Math.round(E.max*T);E.hp=E.max;if(E.sh0)E.sh0=Math.round(E.sh0*T)}};
