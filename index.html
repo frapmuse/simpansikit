@@ -197,7 +197,7 @@ function monthBar(){return '<div class="month"><button class="ib" data-mv="-1" a
 function txLabel(x){
   if(x.type==="in"){var i=incById(x.src);return i?i.name:"Income"}
   if(x.type==="debt"){var d=debtById(x.debtId);return "Pay "+(d?d.name:"debt")}
-  if(x.type==="save"){var g=goalById(x.goalId);return (x.amt<0?"Withdraw · ":"Save · ")+(g?g.name:"savings")}
+  if(x.type==="save"){var g=goalById(x.goalId);return (x.amt<0?"From ":"To ")+(g?g.name:"account")}
   if(x.commitId){var c=S.commits.find(function(k){return k.id===x.commitId});if(c)return c.name}
   return x.cat||"Spending"}
 function txDot(x){if(x.type==="in")return '<div class="dot d-in">IN</div>';if(x.type==="debt")return '<div class="dot d-debt">PAY</div>';if(x.type==="save")return '<div class="dot d-save">'+(x.amt<0?"OUT":"SAVE")+'</div>';return '<div class="dot d-out">'+(CAT_AB[x.cat]||"OT")+'</div>'}
@@ -232,7 +232,7 @@ function vHome(){
   h+='</div>';
   // summary
   var td2=totalDebt(),ts=totalSaved();
-  h+='<h2>Overview</h2><div class="grid"><div class="card" data-go="hutang" style="margin:0;cursor:pointer"><div class="lbl">Total debt</div>'+M(td2,td2>0?"neg":"")+'</div><div class="card" data-go="akaun" style="margin:0;cursor:pointer"><div class="lbl">Total savings</div>'+M(ts,"pos")+'</div></div>';
+  h+='<h2>Overview</h2><div class="grid"><div class="card" data-go="hutang" style="margin:0;cursor:pointer"><div class="lbl">Total debt</div>'+M(td2,td2>0?"neg":"")+'</div><div class="card" data-go="akaun" style="margin:0;cursor:pointer"><div class="lbl">Other accounts</div>'+M(ts,"pos")+'</div></div>';
   return h}
 
 function vRekod(){
@@ -272,14 +272,14 @@ function vHutang(){
 
 function vAkaun(){
   var T=monthTotals(now.getFullYear(),now.getMonth()),ob=S.settings.opening;
-  var h='<div class="card" id="openBal" style="cursor:pointer"><div class="lbl">Main account (HLBB)</div><div class="big">'+M(T.main,T.main<0?"neg":"")+'</div><div class="sub">'+(ob?'Starting balance '+M(n(ob.amt))+' on '+fmtDate(ob.date)+'. Tap to change.':'Tap to set your starting balance so this matches your bank.')+'</div></div>';
-  h+='<h2>Savings accounts</h2><div class="card">';
+  var h='<div class="card" id="openBal" style="cursor:pointer"><div class="lbl">Main account (HLBB)</div><div class="big">'+M(T.main,T.main<0?"neg":"")+'</div><div class="sub">'+(ob?'Set to '+M(n(ob.amt))+' on '+fmtDate(ob.date)+'. Tap to correct it.':'Tap to type the real balance from your bank.')+'</div></div>';
+  h+='<h2>Other accounts</h2><p class="hint" style="margin:-4px 2px 8px">Money you moved out of HLBB. Tap one to set its real balance.</p><div class="card">';
   S.goals.forEach(function(g){var s=goalSaved(g),t=n(g.target);
     h+='<div class="li" data-goal="'+g.id+'" style="display:block"><div class="row"><div class="grow"><div class="t">'+esc(g.name)+'</div><div class="sub">'+(t?'Target '+M(t)+' · '+Math.round(pct(s,t))+'%':'No target')+'</div></div>'+M(s,s<0?"neg":"")+'</div>'+(t?'<div class="bar"><i style="width:'+pct(s,t)+'%"></i></div>':'')+'</div>'});
-  if(!S.goals.length)h+='<div class="empty">No savings accounts yet.</div>';
+  if(!S.goals.length)h+='<div class="empty">No other accounts yet.</div>';
   h+='</div><button class="btn g w" id="addGoal">+ Add account</button>';
   var nw=totalSaved()+T.main-totalDebt();
-  h+='<h2>Net worth</h2><div class="card"><div class="big">'+M(nw,nw<0?"neg":"pos",true)+'</div><div class="sub">Main account + savings − debts in this app.</div></div>';
+  h+='<h2>Net worth</h2><div class="card"><div class="big">'+M(nw,nw<0?"neg":"pos",true)+'</div><div class="sub">HLBB + other accounts − debts.</div></div>';
   return h}
 
 function vSet(){
@@ -312,14 +312,14 @@ function txSheet(opts){
   var keep={amt:ex?String(Math.abs(ex.amt)):(opts.amt!=null?String(opts.amt):""),date:ex?ex.date:(opts.date||todayStr()),note:ex?(ex.note||""):(opts.note||"")};
   function body(){
     var h='<h3>'+(ex?"Edit entry":"New entry")+'</h3>';
-    if(!ex)h+='<div class="pills">'+[["out","Spending"],["in","Income"],["debt","Pay debt"],["save","Savings"]].map(function(p){return '<button class="pill'+(st.type===p[0]?" on":"")+'" data-st="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
+    if(!ex)h+='<div class="pills">'+[["out","Spending"],["in","Income"],["debt","Pay debt"],["save","Transfer"]].map(function(p){return '<button class="pill'+(st.type===p[0]?" on":"")+'" data-st="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div>';
     h+='<div class="amt"><span>RM</span><input id="fAmt" inputmode="decimal" placeholder="0.00" value="'+esc(keep.amt)+'" autocomplete="off"></div>';
     if(st.type==="out")h+='<div class="lbl" style="margin-bottom:6px">Category</div><div class="chips">'+CATS.map(function(c){return '<button class="chip'+(st.cat===c?" on":"")+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>'}).join("")+'</div>';
     if(st.type==="in"){h+='<div class="lbl" style="margin-bottom:6px">From</div><div class="chips">'+S.incomes.map(function(i){return '<button class="chip'+(st.src===i.id?" on":"")+'" data-src="'+i.id+'">'+esc(i.name)+'</button>'}).join("")+'</div>';
       var inc=incById(st.src);if(inc&&n(inc.est))h+='<p class="hint">Usual amount: '+rm(inc.est)+'. Enter the real amount.</p>'}
     if(st.type==="debt"){h+='<div class="lbl" style="margin-bottom:6px">Which debt</div><div class="chips">'+S.debts.filter(function(d){return n(d.bal)!==0||d.id===st.debtId}).map(function(d){return '<button class="chip'+(st.debtId===d.id?" on":"")+'" data-debtc="'+d.id+'">'+esc(d.name)+'</button>'}).join("")+'</div>';
       var dd=debtById(st.debtId);if(dd)h+='<p class="hint">Balance now: '+rm(n(dd.bal))+'. Paying lowers it automatically.</p>'}
-    if(st.type==="save"){h+='<div class="lbl" style="margin-bottom:6px">Account</div><div class="chips">'+S.goals.map(function(g){return '<button class="chip'+(st.goalId===g.id?" on":"")+'" data-goal2="'+g.id+'">'+esc(g.name)+'</button>'}).join("")+'</div><div class="pills">'+[[1,"Put in"],[-1,"Take out"]].map(function(p){return '<button class="pill'+(st.dir===p[0]?" on":"")+'" data-dir="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div><p class="hint">Moves money between your main account and this savings account.</p>'}
+    if(st.type==="save"){h+='<div class="lbl" style="margin-bottom:6px">Account</div><div class="chips">'+S.goals.map(function(g){return '<button class="chip'+(st.goalId===g.id?" on":"")+'" data-goal2="'+g.id+'">'+esc(g.name)+'</button>'}).join("")+'</div><div class="pills">'+[[1,"HLBB → account"],[-1,"Account → HLBB"]].map(function(p){return '<button class="pill'+(st.dir===p[0]?" on":"")+'" data-dir="'+p[0]+'">'+p[1]+'</button>'}).join("")+'</div><p class="hint">Moves money between HLBB and this account.</p>'}
     if(st.type==="out"||st.type==="debt")h+='<div class="lbl" style="margin-bottom:6px">Paid from</div><div class="chips">'+[["","Main account (HLBB)"]].concat(S.goals.map(function(g){return [g.id,g.name]})).map(function(p){return '<button class="chip'+((st.acct||"")===p[0]?" on":"")+'" data-acct="'+p[0]+'">'+esc(p[1])+'</button>'}).join("")+'</div>';
     h+='<div class="f2"><div class="field"><label for="fDate">Date</label><input id="fDate" type="date" value="'+esc(keep.date)+'"></div><div class="field"><label for="fNote">Note</label><input id="fNote" placeholder="optional" value="'+esc(keep.note)+'"></div></div>';
     h+='<div class="row"><button class="btn grow" id="fSave">Save</button>'+(ex?'<button class="btn r" id="fDel">Delete</button>':'')+'</div>';
@@ -344,7 +344,7 @@ function txSheet(opts){
     if((st.type==="out"||st.type==="debt")&&st.acct)t.acct=st.acct;else delete t.acct;
     if(opts.commitId&&!ex)t.commitId=opts.commitId;if(t.type!=="out")delete t.commitId;
     applyEffect(t);if(!ex)S.tx.push(t);save();closeSheet();render();
-    toast(ex?"Updated":t.type==="debt"?"Payment recorded":t.type==="in"?"Income recorded":t.type==="save"?"Savings updated":"Spending recorded")}
+    toast(ex?"Updated":t.type==="debt"?"Payment recorded":t.type==="in"?"Income recorded":t.type==="save"?"Transfer recorded":"Spending recorded")}
   mount()}
 
 function debtSheet(d){
@@ -367,13 +367,14 @@ function debtSheet(d){
 
 function goalSheet(g){
   var isNew=!g;g=g||{id:uid(),name:"",target:null,start:null};
-  var s=isNew?0:goalSaved(g);
-  openSheet('<h3>'+(isNew?"New savings account":esc(g.name))+'</h3>'+
-    (!isNew?'<div class="row" style="margin-bottom:14px"><button class="btn grow" id="gIn">Put in</button><button class="btn g grow" id="gOut">Take out</button></div><p class="hint">Balance now: '+rm(s)+'</p>':'')+
+  var cur0=isNew?null:goalSaved(g),moves=isNew?0:cur0-(n(g.start)||0);
+  openSheet('<h3>'+(isNew?"New account":esc(g.name))+'</h3>'+
+    (!isNew?'<div class="row" style="margin-bottom:14px"><button class="btn grow" id="gIn">Move in</button><button class="btn g grow" id="gOut">Move out</button></div>':'')+
     '<div class="field"><label for="gN">Name</label><input id="gN" placeholder="e.g. GX Bank" value="'+esc(g.name)+'"></div>'+
-    '<div class="f2"><div class="field"><label for="gT">Target (RM)</label><input id="gT" inputmode="decimal" placeholder="optional" value="'+(g.target==null?"":g.target)+'"></div><div class="field"><label for="gS">Starting balance (RM)</label><input id="gS" inputmode="decimal" value="'+(g.start==null?"":g.start)+'"></div></div>'+
-    '<p class="hint">Starting balance = money already in this account before you started using the app.</p><button class="btn w" id="gSave">Save</button>',function(){
-    $("gSave").onclick=function(){var nm=val("gN");if(!nm){toast("Enter a name");return}g.name=nm;g.target=numVal("gT");g.start=numVal("gS");if(isNew)S.goals.push(g);save();closeSheet();render();toast("Saved")};
+    '<div class="f2"><div class="field"><label for="gB">Balance now (RM)</label><input id="gB" inputmode="decimal" value="'+(cur0==null?"":Math.round(cur0*100)/100)+'"></div><div class="field"><label for="gT">Target (RM)</label><input id="gT" inputmode="decimal" placeholder="optional" value="'+(g.target==null?"":g.target)+'"></div></div>'+
+    '<p class="hint">Type the real balance from your bank app. Moves you record later are added or taken off.</p><button class="btn w" id="gSave">Save</button>',function(){
+    $("gSave").onclick=function(){var nm=val("gN");if(!nm){toast("Enter a name");return}var bal=numVal("gB");g.name=nm;g.target=numVal("gT");
+      g.start=bal==null?null:Math.round((bal-moves)*100)/100;if(isNew)S.goals.push(g);save();closeSheet();render();toast("Saved")};
     if($("gIn"))$("gIn").onclick=function(){txSheet({type:"save",goalId:g.id,dir:1})};
     if($("gOut"))$("gOut").onclick=function(){txSheet({type:"save",goalId:g.id,dir:-1})}})}
 
@@ -394,8 +395,8 @@ function commitSheet(c){
   draw()}
 
 function openBal(){var ob=S.settings.opening||{};
-  openSheet('<h3>Main account starting balance</h3><p class="hint">How much was in your main account (HLBB) on this date. Everything you record after it is added or taken off.</p><div class="amt"><span>RM</span><input id="obAmt" inputmode="decimal" placeholder="0.00" value="'+(ob.amt==null?"":ob.amt)+'"></div><div class="field"><label for="obDate">As of date</label><input id="obDate" type="date" value="'+(ob.date||todayStr())+'"></div><button class="btn w" id="obSave">Save</button>'+(ob.date?'<div style="height:8px"></div><button class="btn g w" id="obClr">Clear starting balance</button>':''),function(){
-    $("obSave").onclick=function(){var a=numVal("obAmt"),d=val("obDate")||todayStr();S.settings.opening=a==null?null:{amt:a,date:d};save();closeSheet();render();toast("Saved")};
+  openSheet('<h3>HLBB balance now</h3><p class="hint">Type the real balance from your bank app. Everything you record from this date is added or taken off.</p><div class="amt"><span>RM</span><input id="obAmt" inputmode="decimal" placeholder="0.00" value=""></div><div class="field"><label for="obDate">As of date</label><input id="obDate" type="date" value="'+todayStr()+'"></div><button class="btn w" id="obSave">Save</button>'+(ob.date?'<div style="height:8px"></div><button class="btn g w" id="obClr">Clear</button>':''),function(){
+    $("obSave").onclick=function(){var a=numVal("obAmt"),d=val("obDate")||todayStr();if(a==null){toast("Enter the balance");return}S.settings.opening=a==null?null:{amt:a,date:d};save();closeSheet();render();toast("Saved")};
     if($("obClr"))$("obClr").onclick=function(){S.settings.opening=null;save();closeSheet();render()}})}
 
 function exportData(){
