@@ -463,6 +463,8 @@ nav.bottom{background:linear-gradient(180deg,rgba(11,14,38,0),#0d0b08 16px)}
 html{padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0}
 [hidden]{display:none!important}
+body.lite #afkc{display:none}
+body.lite *,body.lite *::before,body.lite *::after{animation:none!important;transition:none!important}
 </style>
 </head>
 <body>
@@ -1287,10 +1289,11 @@ var AFKV={en:null,fx:[],pops:[],t0:0,lastF:0,shot:0,lastSave:0,killGain:0,n:0};
 function afkLoop(ts){
   requestAnimationFrame(afkLoop);
   if(document.hidden)return;
-  if(ts-AFKV.lastF<33)return;var dt=Math.min(0.1,(ts-(AFKV.lastF||ts))/1000);AFKV.lastF=ts;
+  if(ts-AFKV.lastF<(S.settings.lite?1000:33))return;var dt=Math.min(0.1,(ts-(AFKV.lastF||ts))/1000);AFKV.lastF=ts;
   var before=AF().jade||0;accrue();AFKV.killGain+=(AF().jade||0)-before;
   if(ts-AFKV.lastSave>15000){AFKV.lastSave=ts;save()}
   if(ts-(AFKV.lastInfo||0)>1000){AFKV.lastInfo=ts;afkInfo()}
+  if(S.settings.lite)return;
   var cv=$("afkc");if(!cv)return;
   if(!AFKV.vis&&AFKV.io)return;if(!AFKV.io&&window.IntersectionObserver){AFKV.vis=true;AFKV.io=new IntersectionObserver(function(e){AFKV.vis=e[0].isIntersecting});AFKV.io.observe(cv);AFKV.ioEl=cv}else if(AFKV.io&&AFKV.ioEl!==cv){AFKV.io.disconnect();AFKV.io.observe(cv);AFKV.ioEl=cv;AFKV.vis=true}
   var dpr=Math.min(2,window.devicePixelRatio||1),W=cv.clientWidth,Hh=cv.clientHeight;if(!W)return;
@@ -1768,7 +1771,9 @@ function vLagi(){
   h+='</div>';
   h+=hallSection();
   h+=H("Ledger settings","System")+'<div class="card stack"><div class="hint" style="margin:0">Coins: 1g = RM100 · 1s = RM1 · 1c = RM0.01. Inputs are always in RM.</div>'+
-    '<div class="field" style="margin:0"><label class="lbl" for="soldier">Value of 1 soldier (RM)</label><input id="soldier" inputmode="decimal" value="'+esc(S.settings.soldier)+'"></div></div>';
+    '<div class="field" style="margin:0"><label class="lbl" for="soldier">Value of 1 soldier (RM)</label><input id="soldier" inputmode="decimal" value="'+esc(S.settings.soldier)+'"></div>'+
+    '<button class="btn'+(S.settings.lite?'':' g')+'" id="liteT">Lite mode: '+(S.settings.lite?'ON':'OFF')+'</button>'+
+    '<div class="hint" style="margin:0">Lite mode stops the battle animation and effects so the app runs lighter. Jade still accrues and nothing in the game is lost. Turn it off any time.</div></div>';
   h+=H("Ledger copy","Backup")+'<div class="card stack">'+
     '<div class="hint" style="margin:0">Your data lives only on this phone. Make a copy often and keep it in Files or iCloud Drive.</div>'+
     '<button class="btn" id="exp">Export ledger copy</button>'+
@@ -1788,6 +1793,7 @@ function autoTribute(){var td=todayStr(),y=now.getFullYear(),m=now.getMonth(),ke
 var _autoTRan=false;
 function render(){if(!_autoTRan){_autoTRan=true;try{autoTribute()}catch(e){}}
   document.body.classList.toggle("hide",!!S.settings.hide);
+  document.body.classList.toggle("lite",!!S.settings.lite);
   $("eye").innerHTML=S.settings.hide?ICO.eyeoff:ICO.eye;
   $("mLabel").textContent=MONTHS[cur.m]+" "+cur.y;
   $("nav").innerHTML=NAV.map(function(x){return '<button data-tab="'+x.id+'" class="'+(tab===x.id?"on":"")+'">'+x.i+x.t+'</button>'}).join("");
@@ -1968,6 +1974,7 @@ document.addEventListener("click",function(e){
     if(ds.skin){S.summon.skin=ds.skin;save();applySkin();render();toast("Skin: "+SKINS[ds.skin].name+" · "+skinBTxt(ds.skin));return}
   }
   var t2=e.target;
+  if(t2.closest("#liteT")){S.settings.lite=!S.settings.lite;save();render();toast(S.settings.lite?"Lite mode on":"Lite mode off");return}
   if(t2.closest("#addDebt"))debtSheet(null);
   else if(t2.closest("#addCommit"))commitSheet(null);
   else if(t2.closest("#exp"))exportData();
