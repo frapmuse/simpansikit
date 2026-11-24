@@ -1984,8 +1984,8 @@ $("mPrev").onclick=function(){cur.m--;if(cur.m<0){cur.m=11;cur.y--}render()};
 $("mNext").onclick=function(){cur.m++;if(cur.m>11){cur.m=0;cur.y++}render()};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
 applySkin();
-(function(){var g=accrue();save();render();if(g>=1)setTimeout(function(){toast(offMsg(g))},600)})();
-document.addEventListener("visibilitychange",function(){if(document.hidden){accrue();save()}else{var g=accrue();save();if(g>=1){render();toast(offMsg(g))}}});
+(function(){var g=0;try{g=accrue()}catch(e){try{AF().last=Date.now()}catch(e2){}};save();render();if(g>=1)setTimeout(function(){toast(offMsg(g))},600)})();
+document.addEventListener("visibilitychange",function(){if(document.hidden){accrue();save()}else{var g=0;try{g=accrue()}catch(e){try{AF().last=Date.now()}catch(e2){}};save();if(g>=1){render();toast(offMsg(g))}}});
 var _dc=drawCard;drawCard=function(){SND.sfx("summon");return _dc.apply(this,arguments)};var _sp=showPing;showPing=function(h){SND.sfx("ping");return _sp(h)};
 setTimeout(loginCheck,1800);document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(loginCheck,1200)});
 /* ===== Lord & Armies only (13 Nov): heroes removed from the game; cards now open Relics ===== */
@@ -2009,8 +2009,8 @@ function hallSection(){var left=cardsLeft();return H("Relic Hall","Card rewards"
    counts the app has always kept in summon.owned. */
 /* -- Threat: enemy HP grows with the square root of army power, enemy hits with its fourth root.
       A stronger army still wins faster, but foes no longer melt. Power 1 (new lord) = threat 1. */
-var _thC={t:0,v:1};
-function threat(){var t=Date.now();if(t-_thC.t>3000){var p=1;try{p=powerMul()*(1+0.15*(AF().gear.blade||0))}catch(e){}_thC={t:t,v:Math.max(1,Math.sqrt(Math.max(1,p||1)))}}return _thC.v}
+var _thC=_thC||{t:0,v:1}; /* boot runs accrue() before this line; threat() also guards */
+function threat(){var t=Date.now();if(!_thC)_thC={t:0,v:1};if(t-_thC.t>3000){var p=1;try{p=powerMul()*(1+0.15*(AF().gear.blade||0))}catch(e){}_thC={t:t,v:Math.max(1,Math.sqrt(Math.max(1,p||1)))}}return _thC.v}
 function threatDmg(){return Math.sqrt(threat())}
 var _eDeco0=eDeco;
 eDeco=function(E,ty,st,hord){_eDeco0(E,ty,st,hord);var T=threat();if(T>1){E.max=Math.round(E.max*T);E.hp=E.max;if(E.sh0)E.sh0=Math.round(E.sh0*T)}};
@@ -2044,7 +2044,7 @@ function dropGear(crown,quiet){if(!crown&&Math.random()>0.15)return 0;var sl=["w
 /* -- Relics: a duplicate levels the relic up to Lv 10 instead of turning into jade.
       Old duplicates already counted in summon.owned become levels straight away. */
 var RELIC_MAX=10,RUP=null;
-function rLv(id){return Math.max(0,Math.min(RELIC_MAX,n(SM().owned[id])||0))}
+function rLv(id){return Math.max(0,Math.min(RELIC_MAX||10,n(SM().owned[id])||0))}
 function badgeJade(){var t=0;REWARDS.forEach(function(r){if(r.t!=="badge")return;var l=rLv(r.id);if(l)t+=(BADGEB[r.g]||0.01)*(1+0.5*(l-1))});return 1+t}
 function skinLvM(id){var r=REWARDS.find(function(x){return x.t==="skin"&&x.skin===id});return 1+0.25*Math.max(0,(r?rLv(r.id):1)-1)}
 function skinB(){var id=(S.summon&&S.summon.skin)||"holo",b=SKINB[id]||[0,0],m=skinLvM(id);return [b[0]*m,b[1]*m]}
