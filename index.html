@@ -117,12 +117,13 @@ function pad(x){return (x<10?"0":"")+x}
 function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function todayStr(){return ymd(new Date())}
 function fresh(){return {v:2,start:todayStr(),settings:{hide:false},
-  incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:15}],
+  incomes:[{id:"perseni",name:"Perseni salary",est:3500,day:25},{id:"pm",name:"PM salary",est:4300,day:15},{id:"claim",name:"Claim",est:null,day:null}],
   debts:DEBTS.map(function(x){return {id:uid(),name:x,bal:null,orig:null,min:null,day:null,rate:null}}),
   commits:[],goals:[{id:"saving",name:"GX Bank",target:null,start:null},{id:"ef",name:"Emergency fund (TnG)",target:null,start:null},{id:"reserve",name:"Ryt",target:null,start:null}],tx:[]}}
 function migrate(d){
   d.settings=d.settings||{};d.incomes=d.incomes||[];d.debts=d.debts||[];d.commits=d.commits||[];d.goals=d.goals||[];d.tx=d.tx||[];if(!d.start)d.start=todayStr();
   d.goals.forEach(function(g){if(GOAL_NAMES[g.name])g.name=GOAL_NAMES[g.name]});
+  if(!d.incomes.some(function(i){return i.id==="claim"}))d.incomes.push({id:"claim",name:"Claim",est:null,day:null});
   return d}
 var storageOK=true,S;
 try{var raw=localStorage.getItem(KEY);S=migrate(raw?JSON.parse(raw):fresh())}catch(e){storageOK=false;S=migrate(fresh())}
@@ -284,7 +285,7 @@ function vAkaun(){
 
 function vSet(){
   var h='<h2>Income</h2><div class="card">';
-  S.incomes.forEach(function(i){h+='<div class="li" data-inc="'+i.id+'"><div class="dot d-in">IN</div><div class="grow"><div class="t">'+esc(i.name)+'</div><div class="sub">'+(n(i.day)?"Pay day "+i.day:"Pay day not set")+'</div></div>'+M(n(i.est))+'</div>'});
+  S.incomes.forEach(function(i){h+='<div class="li" data-inc="'+i.id+'"><div class="dot d-in">IN</div><div class="grow"><div class="t">'+esc(i.name)+'</div><div class="sub">'+(n(i.day)?"Pay day "+i.day:i.id==="claim"?"Add it when a claim comes in":"Pay day not set")+'</div></div>'+M(n(i.est))+'</div>'});
   h+='</div><h2>Monthly bills</h2><div class="card">';
   if(!S.commits.length)h+='<div class="empty">For example rent, electricity, internet, takaful.</div>';
   S.commits.slice().sort(function(a,b){return (n(a.day)||99)-(n(b.day)||99)}).forEach(function(c){h+='<div class="li" data-commit="'+c.id+'"><div class="dot d-out">'+(CAT_AB[c.cat]||"OT")+'</div><div class="grow"><div class="t">'+esc(c.name)+'</div><div class="sub">'+esc(c.cat||"Other")+' · '+(n(c.day)?"day "+c.day:"no due day")+'</div></div>'+M(n(c.amt))+'</div>'});
